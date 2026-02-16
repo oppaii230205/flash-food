@@ -3,13 +3,13 @@ package com.flashfood.flash_food.exception;
 /**
  * Base exception for application-specific errors
  */
-public class FlashFoodException extends RuntimeException {
+public class BaseException extends RuntimeException {
     
-    public FlashFoodException(String message) {
+    public BaseException(String message) {
         super(message);
     }
     
-    public FlashFoodException(String message, Throwable cause) {
+    public BaseException(String message, Throwable cause) {
         super(message, cause);
     }
 }

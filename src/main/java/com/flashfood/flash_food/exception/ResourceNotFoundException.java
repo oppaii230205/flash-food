@@ -3,7 +3,7 @@ package com.flashfood.flash_food.exception;
 /**
  * Exception thrown when a requested resource is not found
  */
-public class ResourceNotFoundException extends FlashFoodException {
+public class ResourceNotFoundException extends BaseException {
     
     public ResourceNotFoundException(String message) {
         super(message);

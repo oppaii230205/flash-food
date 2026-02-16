@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FoodItemRequest {
+public class CreateFoodItemRequest {
     
     @NotBlank(message = "Food name is required")
     private String name;

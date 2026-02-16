@@ -17,7 +17,7 @@ import java.time.LocalTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StoreRequest {
+public class CreateStoreRequest {
     
     @NotBlank(message = "Store name is required")
     private String name;

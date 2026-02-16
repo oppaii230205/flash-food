@@ -3,7 +3,7 @@ package com.flashfood.flash_food.exception;
 /**
  * Exception thrown when a resource already exists
  */
-public class ResourceAlreadyExistsException extends FlashFoodException {
+public class ResourceAlreadyExistsException extends BaseException {
     
     public ResourceAlreadyExistsException(String message) {
         super(message);

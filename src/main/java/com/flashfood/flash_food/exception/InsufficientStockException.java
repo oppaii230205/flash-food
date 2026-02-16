@@ -3,7 +3,7 @@ package com.flashfood.flash_food.exception;
 /**
  * Exception thrown when insufficient stock for an order
  */
-public class InsufficientStockException extends FlashFoodException {
+public class InsufficientStockException extends BaseException {
     
     public InsufficientStockException(String message) {
         super(message);
