@@ -1,17 +1,17 @@
 package com.flashfood.flash_food.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.flashfood.flash_food.entity.converter.PersistableEnum;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonValue;
+
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Order status enumeration
- * DB: 1, 2, 3... | Backend: PENDING, CONFIRMED... | Client: "pending", "confirmed"...
+ * DB: Integer (1, 2, 3...) | Backend: Enum (PENDING, CONFIRMED...) | Client: String ("pending", "confirmed"...)
  */
-@Getter
-@RequiredArgsConstructor
-public enum OrderStatus implements PersistableEnum<OrderStatus> {
+public enum OrderStatus {
     PENDING(1, "pending"),       // Order placed, waiting for payment
     CONFIRMED(2, "confirmed"),   // Payment confirmed
     PREPARING(3, "preparing"),   // Store is preparing the order
@@ -20,15 +20,55 @@ public enum OrderStatus implements PersistableEnum<OrderStatus> {
     CANCELLED(6, "cancelled"),   // Order cancelled
     EXPIRED(7, "expired");       // Order expired (not picked up in time)
     
-    private final Integer value;
+    private final int code;
     private final String displayName;
     
-    @JsonCreator
-    public static OrderStatus fromDisplayName(String displayName) {
-        return PersistableEnum.fromDisplayName(OrderStatus.class, displayName);
+    // Lookup maps for fast conversion
+    private static final Map<Integer, OrderStatus> CODE_LOOKUP = 
+            Arrays.stream(values())
+                  .collect(Collectors.toMap(OrderStatus::getCode, e -> e));
+                  
+    private static final Map<String, OrderStatus> NAME_LOOKUP = 
+            Arrays.stream(values())
+                  .collect(Collectors.toMap(e -> e.displayName.toLowerCase(), e -> e));
+    
+    OrderStatus(int code, String displayName) {
+        this.code = code;
+        this.displayName = displayName;
     }
     
-    public static OrderStatus fromValue(Integer value) {
-        return PersistableEnum.fromValue(OrderStatus.class, value);
+    public int getCode() {
+        return code;
+    }
+    
+    @JsonValue
+    public String getDisplayName() {
+        return displayName;
+    }
+    
+    /**
+     * Convert from database integer code to enum
+     */
+    public static OrderStatus fromCode(int code) {
+        OrderStatus status = CODE_LOOKUP.get(code);
+        if (status == null) {
+            throw new IllegalArgumentException("Invalid OrderStatus code: " + code);
+        }
+        return status;
+    }
+    
+    /**
+     * Convert from client string to enum
+     */
+    @JsonCreator
+    public static OrderStatus fromDisplayName(String displayName) {
+        if (displayName == null || displayName.isEmpty()) {
+            throw new IllegalArgumentException("OrderStatus displayName cannot be null or empty");
+        }
+        OrderStatus status = NAME_LOOKUP.get(displayName.toLowerCase());
+        if (status == null) {
+            throw new IllegalArgumentException("Invalid OrderStatus name: " + displayName);
+        }
+        return status;
     }
 }

@@ -77,12 +77,12 @@ public class EntityMapper {
                 .categorySlug(category != null ? category.getSlug() : null)
                 .originalPrice(foodItem.getOriginalPrice())
                 .flashPrice(foodItem.getFlashPrice())
-                .discountPercent(foodItem.getDiscountPercent())
-                .quantity(foodItem.getQuantity())
-                .soldQuantity(foodItem.getSoldQuantity())
-                .expiryTime(foodItem.getExpiryTime())
+                .discountPercentage(foodItem.getDiscountPercentage())
+                .totalQuantity(foodItem.getTotalQuantity())
+                .availableQuantity(foodItem.getAvailableQuantity())
+                .saleStartTime(foodItem.getSaleStartTime())
+                .saleEndTime(foodItem.getSaleEndTime())
                 .status(foodItem.getStatus() != null ? foodItem.getStatus().getDisplayName() : null)
-                .createdAt(foodItem.getCreatedAt())
                 .build();
     }
     
@@ -162,7 +162,7 @@ public class EntityMapper {
                 .name(category.getName())
                 .slug(category.getSlug())
                 .description(category.getDescription())
-                .imageUrl(category.getImageUrl())
+                .iconUrl(category.getIconUrl())
                 .parentId(category.getParent() != null ? category.getParent().getId() : null)
                 .parentName(category.getParent() != null ? category.getParent().getName() : null)
                 .displayOrder(category.getDisplayOrder())
