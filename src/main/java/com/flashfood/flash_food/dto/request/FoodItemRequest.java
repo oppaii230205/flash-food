@@ -11,22 +11,18 @@ import java.time.LocalDateTime;
 
 /**
  * DTO for creating/updating food item
- * Client sends categoryId instead of category enum
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateFoodItemRequest {
+public class FoodItemRequest {
     
     @NotBlank(message = "Food name is required")
     private String name;
     
     private String description;
     private String imageUrl;
-    
-    @NotNull(message = "Category is required")
-    private Long categoryId;
     
     @NotNull(message = "Original price is required")
     @DecimalMin(value = "0.01", message = "Original price must be greater than 0")
@@ -45,4 +41,7 @@ public class CreateFoodItemRequest {
     
     @NotNull(message = "Sale end time is required")
     private LocalDateTime saleEndTime;
+    
+    @NotNull(message = "Category is required")
+    private Long categoryId;
 }

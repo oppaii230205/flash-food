@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
         log.error("Resource not found: {}", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.error(ex.getMessage()));
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage()));
     }
     
     @ExceptionHandler(ResourceAlreadyExistsException.class)
@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
         log.error("Resource already exists: {}", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(ApiResponse.error(ex.getMessage()));
+                .body(ApiResponse.error(HttpStatus.CONFLICT, ex.getMessage()));
     }
     
     @ExceptionHandler(InsufficientStockException.class)
@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
         log.error("Insufficient stock: {}", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(ex.getMessage()));
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
     
     @ExceptionHandler(InvalidOperationException.class)
@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
         log.error("Invalid operation: {}", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(ex.getMessage()));
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
     
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -66,6 +66,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.<Map<String, String>>builder()
                         .success(false)
                         .message("Validation failed")
+                        .httpCode(HttpStatus.BAD_REQUEST.value())
                         .data(errors)
                         .build());
     }
@@ -75,6 +76,6 @@ public class GlobalExceptionHandler {
         log.error("Unexpected error occurred", ex);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error("An unexpected error occurred. Please try again later."));
+                .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred. Please try again later."));
     }
 }

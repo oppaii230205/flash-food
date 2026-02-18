@@ -44,7 +44,6 @@ public class Store {
     @Column(nullable = false)
     private Double longitude;
     
-    @Enumerated(EnumType.STRING)
     private StoreType type; // BAKERY, RESTAURANT, CONVENIENCE_STORE, etc.
     
     @Column(length = 1000)
@@ -59,7 +58,6 @@ public class Store {
     // Flash sale time (e.g., 9:00 PM)
     private LocalTime flashSaleTime;
     
-    @Enumerated(EnumType.STRING)
     private StoreStatus status = StoreStatus.ACTIVE;
     
     // Owner information

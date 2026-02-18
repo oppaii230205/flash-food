@@ -1,6 +1,5 @@
 package com.flashfood.flash_food.dto.request;
 
-import com.flashfood.flash_food.entity.StoreType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -12,6 +11,7 @@ import java.time.LocalTime;
 
 /**
  * DTO for creating/updating store
+ * Client sends enum values as strings
  */
 @Data
 @Builder
@@ -34,8 +34,8 @@ public class CreateStoreRequest {
     @NotNull(message = "Longitude is required")
     private Double longitude;
     
-    @NotNull(message = "Store type is required")
-    private StoreType type;
+    @NotBlank(message = "Store type is required")
+    private String type; // Client sends string like "restaurant", "supermarket", etc.
     
     private String description;
     private String imageUrl;

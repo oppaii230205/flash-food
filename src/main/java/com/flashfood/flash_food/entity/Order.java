@@ -50,13 +50,10 @@ public class Order {
     
     private BigDecimal originalAmount;
     
-    @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.PENDING;
     
-    @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
     
-    @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus = PaymentStatus.PENDING;
     
     // Pickup information

@@ -63,10 +63,10 @@ public class FoodItem {
     private LocalDateTime saleStartTime;
     private LocalDateTime saleEndTime;
     
-    @Enumerated(EnumType.STRING)
-    private FoodCategory category;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
     
-    @Enumerated(EnumType.STRING)
     private FoodItemStatus status = FoodItemStatus.PENDING;
     
     // For scheduled auto-expiry

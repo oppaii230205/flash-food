@@ -49,10 +49,8 @@ public class User {
     private Boolean notificationEnabled = true;
     private Double notificationRadius = 1.0; // in kilometers
     
-    @Enumerated(EnumType.STRING)
     private UserRole role = UserRole.CUSTOMER;
     
-    @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.ACTIVE;
     
     @CreationTimestamp

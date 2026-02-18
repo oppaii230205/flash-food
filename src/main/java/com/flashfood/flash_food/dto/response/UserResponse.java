@@ -1,7 +1,5 @@
 package com.flashfood.flash_food.dto.response;
 
-import com.flashfood.flash_food.entity.UserRole;
-import com.flashfood.flash_food.entity.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +9,7 @@ import java.time.LocalDateTime;
 
 /**
  * DTO for user response
+ * Enums are serialized as strings for client
  */
 @Data
 @Builder
@@ -26,7 +25,10 @@ public class UserResponse {
     private Double longitude;
     private Boolean notificationEnabled;
     private Double notificationRadius;
-    private UserRole role;
-    private UserStatus status;
+    
+    // Enums as strings
+    private String role;
+    private String status;
+    
     private LocalDateTime createdAt;
 }

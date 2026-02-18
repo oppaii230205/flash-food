@@ -1,8 +1,5 @@
 package com.flashfood.flash_food.dto.response;
 
-import com.flashfood.flash_food.entity.OrderStatus;
-import com.flashfood.flash_food.entity.PaymentMethod;
-import com.flashfood.flash_food.entity.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +11,7 @@ import java.util.List;
 
 /**
  * DTO for order response
+ * Enums are serialized as strings for client
  */
 @Data
 @Builder
@@ -30,9 +28,12 @@ public class OrderResponse {
     private List<OrderItemResponse> items;
     private BigDecimal totalAmount;
     private BigDecimal originalAmount;
-    private OrderStatus status;
-    private PaymentMethod paymentMethod;
-    private PaymentStatus paymentStatus;
+    
+    // Enums as strings
+    private String status;
+    private String paymentMethod;
+    private String paymentStatus;
+    
     private LocalDateTime pickupTime;
     private String specialInstructions;
     private LocalDateTime createdAt;

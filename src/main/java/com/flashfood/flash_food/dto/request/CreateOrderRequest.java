@@ -1,7 +1,7 @@
 package com.flashfood.flash_food.dto.request;
 
-import com.flashfood.flash_food.entity.PaymentMethod;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,6 +14,7 @@ import java.util.List;
 
 /**
  * DTO for creating order
+ * Client sends enum values as strings
  */
 @Data
 @Builder
@@ -27,8 +28,8 @@ public class CreateOrderRequest {
     @NotEmpty(message = "Order items cannot be empty")
     private List<OrderItemRequest> items;
     
-    @NotNull(message = "Payment method is required")
-    private PaymentMethod paymentMethod;
+    @NotBlank(message = "Payment method is required")
+    private String paymentMethod; // Client sends string like "cash", "card", "e-wallet"
     
     private LocalDateTime pickupTime;
     private String specialInstructions;

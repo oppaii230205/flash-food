@@ -1,7 +1,5 @@
 package com.flashfood.flash_food.dto.response;
 
-import com.flashfood.flash_food.entity.FoodCategory;
-import com.flashfood.flash_food.entity.FoodItemStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,8 +30,14 @@ public class FoodItemResponse {
     private Integer availableQuantity;
     private LocalDateTime saleStartTime;
     private LocalDateTime saleEndTime;
-    private FoodCategory category;
-    private FoodItemStatus status;
+    
+    // Category information
+    private Long categoryId;
+    private String categoryName;
+    private String categorySlug;
+    
+    // Status as string for client
+    private String status;
     
     // Calculated fields
     private Boolean isAvailable;

@@ -36,7 +36,6 @@ public class Notification {
     @Column(length = 1000)
     private String message;
     
-    @Enumerated(EnumType.STRING)
     private NotificationType type;
     
     // Reference to related entity (e.g., food_item_id, order_id)
