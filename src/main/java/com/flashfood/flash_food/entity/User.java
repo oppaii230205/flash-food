@@ -12,6 +12,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * User entity - Represents customers/students using the app
@@ -46,11 +48,20 @@ public class User {
     private Double longitude;
     
     // Notification preferences
+    @Builder.Default
     private Boolean notificationEnabled = true;
+    
+    @Builder.Default
     private Double notificationRadius = 1.0; // in kilometers
     
-    private UserRole role = UserRole.CUSTOMER;
+    // User roles - supports multiple roles per user
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role")
+    @Builder.Default
+    private Set<UserRole> roles = new HashSet<>();
     
+    @Builder.Default
     private UserStatus status = UserStatus.ACTIVE;
     
     @CreationTimestamp

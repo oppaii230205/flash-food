@@ -4,6 +4,8 @@ import com.flashfood.flash_food.dto.response.*;
 import com.flashfood.flash_food.entity.*;
 import lombok.experimental.UtilityClass;
 
+import java.util.stream.Collectors;
+
 /**
  * Utility class for mapping entities to DTOs
  * Handles conversion of enums to strings for client API
@@ -17,6 +19,13 @@ public class EntityMapper {
     public UserResponse toUserResponse(User user) {
         if (user == null) return null;
         
+        // Convert roles set to comma-separated string
+        String rolesStr = user.getRoles() != null && !user.getRoles().isEmpty()
+                ? user.getRoles().stream()
+                    .map(UserRole::getDisplayName)
+                    .collect(Collectors.joining(", "))
+                : null;
+        
         return UserResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
@@ -26,7 +35,7 @@ public class EntityMapper {
                 .longitude(user.getLongitude())
                 .notificationEnabled(user.getNotificationEnabled())
                 .notificationRadius(user.getNotificationRadius())
-                .role(user.getRole() != null ? user.getRole().getDisplayName() : null)
+                .role(rolesStr)
                 .status(user.getStatus() != null ? user.getStatus().getDisplayName() : null)
                 .createdAt(user.getCreatedAt())
                 .build();

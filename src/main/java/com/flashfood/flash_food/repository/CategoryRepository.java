@@ -41,6 +41,12 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findChildCategories(@Param("parentId") Long parentId);
     
     /**
+     * Check if category has child categories
+     */
+    @Query("SELECT COUNT(c) > 0 FROM Category c WHERE c.parent.id = :parentId")
+    boolean existsByParentId(@Param("parentId") Long parentId);
+    
+    /**
      * Search categories by name
      */
     @Query("""
