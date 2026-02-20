@@ -179,7 +179,7 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryResponse> findRootCategories() {
         log.debug("Finding root categories");
         
-        List<Category> categories = categoryRepository.findByParentIsNullAndIsActiveTrueOrderByDisplayOrderAsc();
+        List<Category> categories = categoryRepository.findRootCategories();
         return categories.stream()
                 .map(entityMapper::toCategoryResponse)
                 .collect(Collectors.toList());
