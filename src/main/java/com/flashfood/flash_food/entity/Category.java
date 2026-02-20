@@ -52,12 +52,14 @@ public class Category {
     /**
      * Display order for sorting categories
      */
+    @Builder.Default
     @Column(nullable = false)
     private Integer displayOrder = 0;
     
     /**
      * Active status
      */
+    @Builder.Default
     @Column(nullable = false)
     private Boolean isActive = true;
     

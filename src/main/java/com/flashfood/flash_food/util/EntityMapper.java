@@ -2,15 +2,15 @@ package com.flashfood.flash_food.util;
 
 import com.flashfood.flash_food.dto.response.*;
 import com.flashfood.flash_food.entity.*;
-import lombok.experimental.UtilityClass;
+import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
 /**
- * Utility class for mapping entities to DTOs
- * Handles conversion of enums to strings for client API
+ * Mapper component for converting entities to response DTOs.
+ * Handles enum-to-string conversion for client API.
  */
-@UtilityClass
+@Component
 public class EntityMapper {
     
     /**
@@ -110,7 +110,7 @@ public class EntityMapper {
                 .storeAddress(order.getStore() != null ? order.getStore().getAddress() : null)
                 .items(order.getOrderItems() != null ? 
                         order.getOrderItems().stream()
-                                .map(EntityMapper::toOrderItemResponse)
+                                .map(this::toOrderItemResponse)
                                 .toList() : null)
                 .totalAmount(order.getTotalAmount())
                 .originalAmount(order.getOriginalAmount())

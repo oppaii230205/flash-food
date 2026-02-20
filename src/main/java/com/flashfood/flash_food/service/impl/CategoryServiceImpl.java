@@ -194,7 +194,21 @@ public class CategoryServiceImpl implements CategoryService {
             throw new ResourceNotFoundException("Parent category not found with id: " + parentId);
         }
         
-        List<Category> categories = categoryRepository.findByParentIdAndIsActiveTrueOrderByDisplayOrderAsc(parentId);
+        List<Category> categories = categoryRepository.findChildCategories(parentId);
+        return categories.stream()
+                .map(entityMapper::toCategoryResponse)
+                .collect(Collectors.toList());
+    }
+    
+    @Override
+    public List<CategoryResponse> searchCategories(String keyword) {
+        log.debug("Searching categories with keyword: {}", keyword);
+        
+        if (keyword == null || keyword.isBlank()) {
+            return findActiveCategories();
+        }
+        
+        List<Category> categories = categoryRepository.searchByName(keyword.trim());
         return categories.stream()
                 .map(entityMapper::toCategoryResponse)
                 .collect(Collectors.toList());

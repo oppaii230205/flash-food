@@ -150,4 +150,16 @@ public class CategoryController {
         List<CategoryResponse> categories = categoryService.findChildCategories(parentId);
         return ResponseEntity.ok(ApiResponse.success(categories));
     }
+
+    /**
+     * Search categories by keyword
+     * GET /api/categories/search?keyword=banh
+     */
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<CategoryResponse>>> searchCategories(
+            @RequestParam(required = false) String keyword) {
+        log.info("REST request to search categories with keyword: {}", keyword);
+        List<CategoryResponse> categories = categoryService.searchCategories(keyword);
+        return ResponseEntity.ok(ApiResponse.success(categories));
+    }
 }

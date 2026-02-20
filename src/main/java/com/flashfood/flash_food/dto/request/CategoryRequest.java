@@ -21,7 +21,6 @@ public class CategoryRequest {
     @Size(max = 100, message = "Name must not exceed 100 characters")
     private String name;
     
-    @NotBlank(message = "Slug is required")
     @Size(max = 100, message = "Slug must not exceed 100 characters")
     private String slug;
     
