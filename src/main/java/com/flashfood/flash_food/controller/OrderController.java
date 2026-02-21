@@ -41,7 +41,7 @@ public class OrderController {
         log.info("POST /api/orders - Creating new order");
         OrderResponse response = orderService.createOrder(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(response, "Order created successfully"));
+                .body(ApiResponse.success("Order created successfully", response));
     }
 
     /**
@@ -54,7 +54,7 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderResponse>> cancelOrder(@PathVariable Long orderId) {
         log.info("PATCH /api/orders/{}/cancel - Cancelling order", orderId);
         OrderResponse response = orderService.cancelOrder(orderId);
-        return ResponseEntity.ok(ApiResponse.success(response, "Order cancelled successfully"));
+        return ResponseEntity.ok(ApiResponse.success("Order cancelled successfully", response));
     }
 
     /**
@@ -67,7 +67,7 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderResponse>> confirmOrder(@PathVariable Long orderId) {
         log.info("PATCH /api/orders/{}/confirm - Confirming order", orderId);
         OrderResponse response = orderService.confirmOrder(orderId);
-        return ResponseEntity.ok(ApiResponse.success(response, "Order confirmed successfully"));
+        return ResponseEntity.ok(ApiResponse.success("Order confirmed successfully", response));
     }
 
     /**
@@ -80,7 +80,7 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderResponse>> startPreparingOrder(@PathVariable Long orderId) {
         log.info("PATCH /api/orders/{}/preparing - Starting order preparation", orderId);
         OrderResponse response = orderService.startPreparingOrder(orderId);
-        return ResponseEntity.ok(ApiResponse.success(response, "Order preparation started"));
+        return ResponseEntity.ok(ApiResponse.success("Order preparation started", response));
     }
 
     /**
@@ -93,7 +93,7 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderResponse>> markOrderReady(@PathVariable Long orderId) {
         log.info("PATCH /api/orders/{}/ready - Marking order as ready", orderId);
         OrderResponse response = orderService.markOrderReady(orderId);
-        return ResponseEntity.ok(ApiResponse.success(response, "Order is ready for pickup"));
+        return ResponseEntity.ok(ApiResponse.success("Order is ready for pickup", response));
     }
 
     /**
@@ -106,7 +106,7 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderResponse>> completeOrder(@PathVariable Long orderId) {
         log.info("PATCH /api/orders/{}/complete - Completing order", orderId);
         OrderResponse response = orderService.completeOrder(orderId);
-        return ResponseEntity.ok(ApiResponse.success(response, "Order completed successfully"));
+        return ResponseEntity.ok(ApiResponse.success("Order completed successfully", response));
     }
 
     /**
@@ -119,7 +119,7 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderResponse>> processPayment(@PathVariable Long orderId) {
         log.info("POST /api/orders/{}/payment - Processing payment", orderId);
         OrderResponse response = orderService.processPayment(orderId);
-        return ResponseEntity.ok(ApiResponse.success(response, "Payment processed successfully"));
+        return ResponseEntity.ok(ApiResponse.success("Payment processed successfully", response));
     }
 
     /**

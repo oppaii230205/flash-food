@@ -16,7 +16,8 @@ public enum FoodItemStatus {
     AVAILABLE(2, "available"),   // Available for purchase
     SOLD_OUT(3, "sold_out"),     // Sold out
     EXPIRED(4, "expired"),       // Sale period expired
-    CANCELLED(5, "cancelled");   // Cancelled by store
+    CANCELLED(5, "cancelled"),   // Cancelled by store
+    DELETED(6, "deleted");       // Soft-deleted
     
     private final int code;
     private final String displayName;

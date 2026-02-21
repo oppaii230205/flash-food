@@ -63,6 +63,7 @@ public class EntityMapper {
                 .flashSaleTime(store.getFlashSaleTime())
                 .rating(store.getRating())
                 .totalRatings(store.getTotalRatings())
+                .ownerId(store.getOwner() != null ? store.getOwner().getId() : null)
                 .build();
     }
     

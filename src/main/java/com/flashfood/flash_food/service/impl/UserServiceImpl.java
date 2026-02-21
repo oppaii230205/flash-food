@@ -6,7 +6,6 @@ import com.flashfood.flash_food.dto.response.UserResponse;
 import com.flashfood.flash_food.entity.User;
 import com.flashfood.flash_food.entity.UserRole;
 import com.flashfood.flash_food.entity.UserStatus;
-import com.flashfood.flash_food.exception.AccessDeniedException;
 import com.flashfood.flash_food.exception.DuplicateResourceException;
 import com.flashfood.flash_food.exception.InvalidOperationException;
 import com.flashfood.flash_food.exception.ResourceNotFoundException;

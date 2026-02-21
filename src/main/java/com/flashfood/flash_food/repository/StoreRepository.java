@@ -3,6 +3,9 @@ package com.flashfood.flash_food.repository;
 import com.flashfood.flash_food.entity.Store;
 import com.flashfood.flash_food.entity.StoreStatus;
 import com.flashfood.flash_food.entity.StoreType;
+import com.flashfood.flash_food.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,10 +23,16 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     Optional<Store> findByIdAndStatus(Long id, StoreStatus status);
     
     List<Store> findByStatus(StoreStatus status);
+
+    Page<Store> findByStatus(StoreStatus status, Pageable pageable);
     
     List<Store> findByType(StoreType type);
+
+    Page<Store> findByType(StoreType type, Pageable pageable);
     
-    List<Store> findByOwnerEmail(String ownerEmail);
+    List<Store> findByOwner(User owner);
+
+    List<Store> findByIdInAndStatus(List<Long> ids, StoreStatus status);
     
     /**
      * Find stores by name (for search functionality)

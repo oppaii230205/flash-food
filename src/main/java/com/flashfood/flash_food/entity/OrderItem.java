@@ -3,12 +3,9 @@ package com.flashfood.flash_food.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.math.BigDecimal;
 
 /**
  * OrderItem entity - Represents individual items in an order
@@ -38,8 +35,8 @@ public class OrderItem {
     private Integer quantity;
     
     @Column(nullable = false)
-    private BigDecimal unitPrice;
-    
+    private Integer unitPrice;
+
     @Column(nullable = false)
-    private BigDecimal totalPrice;
+    private Integer totalPrice;
 }

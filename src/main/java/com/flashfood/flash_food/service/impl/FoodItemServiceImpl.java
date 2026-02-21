@@ -18,8 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 /**
@@ -54,7 +52,7 @@ public class FoodItemServiceImpl implements FoodItemService {
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + request.getCategoryId()));
 
         // Validate prices
-        if (request.getFlashPrice().compareTo(request.getOriginalPrice()) >= 0) {
+        if (request.getFlashPrice() >= request.getOriginalPrice()) {
             throw new InvalidOperationException("Flash price must be lower than original price");
         }
 
@@ -72,11 +70,10 @@ public class FoodItemServiceImpl implements FoodItemService {
         foodItem.setImageUrl(request.getImageUrl());
         foodItem.setOriginalPrice(request.getOriginalPrice());
         foodItem.setFlashPrice(request.getFlashPrice());
-        
+
         // Calculate discount percentage
-        BigDecimal discount = calculateDiscountPercentage(request.getOriginalPrice(), request.getFlashPrice());
-        foodItem.setDiscountPercentage(discount);
-        
+        foodItem.setDiscountPercentage(calculateDiscountPercentage(request.getOriginalPrice(), request.getFlashPrice()));
+
         foodItem.setTotalQuantity(request.getQuantity());
         foodItem.setAvailableQuantity(request.getQuantity());
         foodItem.setSaleStartTime(request.getSaleStartTime());
@@ -108,7 +105,7 @@ public class FoodItemServiceImpl implements FoodItemService {
         }
 
         // Validate prices
-        if (request.getFlashPrice().compareTo(request.getOriginalPrice()) >= 0) {
+        if (request.getFlashPrice() >= request.getOriginalPrice()) {
             throw new InvalidOperationException("Flash price must be lower than original price");
         }
 
@@ -125,8 +122,7 @@ public class FoodItemServiceImpl implements FoodItemService {
         foodItem.setFlashPrice(request.getFlashPrice());
         
         // Recalculate discount
-        BigDecimal discount = calculateDiscountPercentage(request.getOriginalPrice(), request.getFlashPrice());
-        foodItem.setDiscountPercentage(discount);
+        foodItem.setDiscountPercentage(calculateDiscountPercentage(request.getOriginalPrice(), request.getFlashPrice()));
         
         // Update quantity - calculate difference  
         int quantityDiff = request.getQuantity() - foodItem.getTotalQuantity();
@@ -187,15 +183,11 @@ public class FoodItemServiceImpl implements FoodItemService {
     public Page<FoodItemResponse> findByStore(Long storeId, Pageable pageable) {
         log.debug("Finding food items for store ID: {}", storeId);
 
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Store not found with ID: " + storeId));
+        if (!storeRepository.existsById(storeId)) {
+            throw new ResourceNotFoundException("Store not found with ID: " + storeId);
+        }
 
-        Page<FoodItem> foodItems = foodItemRepository.findAll(pageable)
-                .map(item -> item.getStore().equals(store) ? item : null)
-                .map(item -> item);
-        
-        // Better approach: use custom repository method
-        return foodItemRepository.findAll(pageable)
+        return foodItemRepository.findByStoreId(storeId, pageable)
                 .map(entityMapper::toFoodItemResponse);
     }
 
@@ -203,10 +195,11 @@ public class FoodItemServiceImpl implements FoodItemService {
     public Page<FoodItemResponse> findByCategory(Long categoryId, Pageable pageable) {
         log.debug("Finding food items for category ID: {}", categoryId);
 
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + categoryId));
+        if (!categoryRepository.existsById(categoryId)) {
+            throw new ResourceNotFoundException("Category not found with ID: " + categoryId);
+        }
 
-        return foodItemRepository.findAll(pageable)
+        return foodItemRepository.findByCategoryId(categoryId, pageable)
                 .map(entityMapper::toFoodItemResponse);
     }
 
@@ -221,30 +214,15 @@ public class FoodItemServiceImpl implements FoodItemService {
             throw new InvalidOperationException("Invalid food item status: " + status);
         }
 
-        Page<FoodItem> foodItems = foodItemRepository.findAll(pageable)
-                .map(item -> item.getStatus().equals(foodItemStatus) ? item : null)
-                .map(item -> item);
-
-        return foodItems.map(entityMapper::toFoodItemResponse);
+        return foodItemRepository.findByStatus(foodItemStatus, pageable)
+                .map(entityMapper::toFoodItemResponse);
     }
 
     @Override
     public Page<FoodItemResponse> findAvailableFoodItems(Pageable pageable) {
         log.debug("Finding available food items");
 
-        LocalDateTime now = LocalDateTime.now();
-
-        return foodItemRepository.findAll(pageable)
-                .map(item -> {
-                    if (item.getStatus() == FoodItemStatus.AVAILABLE 
-                            && item.getAvailableQuantity() > 0
-                            && !item.getIsExpired()
-                            && item.getSaleStartTime().isBefore(now)
-                            && item.getSaleEndTime().isAfter(now)) {
-                        return item;
-                    }
-                    return null;
-                })
+        return foodItemRepository.findAvailableFlashSaleItems(LocalDateTime.now(), pageable)
                 .map(entityMapper::toFoodItemResponse);
     }
 
@@ -252,19 +230,7 @@ public class FoodItemServiceImpl implements FoodItemService {
     public Page<FoodItemResponse> findFlashSaleFoodItems(Pageable pageable) {
         log.debug("Finding flash sale food items");
 
-        LocalDateTime now = LocalDateTime.now();
-
-        return foodItemRepository.findAll(pageable)
-                .map(item -> {
-                    if (item.getStatus() == FoodItemStatus.AVAILABLE 
-                            && item.getAvailableQuantity() > 0
-                            && !item.getIsExpired()
-                            && !item.getSaleStartTime().isAfter(now)
-                            && !item.getSaleEndTime().isBefore(now)) {
-                        return item;
-                    }
-                    return null;
-                })
+        return foodItemRepository.findAvailableFlashSaleItems(LocalDateTime.now(), pageable)
                 .map(entityMapper::toFoodItemResponse);
     }
 
@@ -272,16 +238,7 @@ public class FoodItemServiceImpl implements FoodItemService {
     public Page<FoodItemResponse> searchFoodItems(String keyword, Pageable pageable) {
         log.debug("Searching food items with keyword: {}", keyword);
 
-        String lowerKeyword = keyword.toLowerCase();
-
-        return foodItemRepository.findAll(pageable)
-                .map(item -> {
-                    if (item.getName().toLowerCase().contains(lowerKeyword) 
-                            || (item.getDescription() != null && item.getDescription().toLowerCase().contains(lowerKeyword))) {
-                        return item;
-                    }
-                    return null;
-                })
+        return foodItemRepository.searchByNameOrDescription(keyword, pageable)
                 .map(entityMapper::toFoodItemResponse);
     }
 
@@ -313,16 +270,9 @@ public class FoodItemServiceImpl implements FoodItemService {
     /**
      * Calculate discount percentage
      */
-    private BigDecimal calculateDiscountPercentage(BigDecimal originalPrice, BigDecimal flashPrice) {
-        if (originalPrice.compareTo(BigDecimal.ZERO) == 0) {
-            return BigDecimal.ZERO;
-        }
-        
-        BigDecimal difference = originalPrice.subtract(flashPrice);
-        BigDecimal percentage = difference.divide(originalPrice, 4, RoundingMode.HALF_UP)
-                .multiply(BigDecimal.valueOf(100));
-        
-        return percentage.setScale(1, RoundingMode.HALF_UP);
+    private Integer calculateDiscountPercentage(Integer originalPrice, Integer flashPrice) {
+        if (originalPrice == 0) return 0;
+        return (int) Math.round((double)(originalPrice - flashPrice) / originalPrice * 100);
     }
 
     /**
@@ -332,7 +282,7 @@ public class FoodItemServiceImpl implements FoodItemService {
         LocalDateTime now = LocalDateTime.now();
         
         if (quantity <= 0) {
-            return FoodItemStatus.OUT_OF_STOCK;
+            return FoodItemStatus.SOLD_OUT;
         }
         
         if (saleStartTime.isAfter(now)) {
@@ -357,7 +307,7 @@ public class FoodItemServiceImpl implements FoodItemService {
         
         // Check stock
         if (foodItem.getAvailableQuantity() <= 0) {
-            foodItem.setStatus(FoodItemStatus.OUT_OF_STOCK);
+            foodItem.setStatus(FoodItemStatus.SOLD_OUT);
             return;
         }
         

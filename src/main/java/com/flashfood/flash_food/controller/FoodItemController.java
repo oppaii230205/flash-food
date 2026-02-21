@@ -43,7 +43,7 @@ public class FoodItemController {
         log.info("POST /api/food-items/store/{} - Creating food item", storeId);
         FoodItemResponse response = foodItemService.createFoodItem(storeId, request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(response, "Food item created successfully"));
+                .body(ApiResponse.success("Food item created successfully", response));
     }
 
     /**
@@ -60,7 +60,7 @@ public class FoodItemController {
         
         log.info("PUT /api/food-items/{} - Updating food item", id);
         FoodItemResponse response = foodItemService.updateFoodItem(id, request);
-        return ResponseEntity.ok(ApiResponse.success(response, "Food item updated successfully"));
+        return ResponseEntity.ok(ApiResponse.success("Food item updated successfully", response));
     }
 
     /**
@@ -73,7 +73,11 @@ public class FoodItemController {
     public ResponseEntity<ApiResponse<Void>> deleteFoodItem(@PathVariable Long id) {
         log.info("DELETE /api/food-items/{} - Deleting food item", id);
         foodItemService.deleteFoodItem(id);
-        return ResponseEntity.ok(ApiResponse.success(null, "Food item deleted successfully"));
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .success(true)
+                .message("Food item deleted successfully")
+                .httpCode(HttpStatus.OK.value())
+                .build());
     }
 
     /**
@@ -208,6 +212,6 @@ public class FoodItemController {
         
         log.info("PATCH /api/food-items/{}/status?status={} - Updating status", id, status);
         FoodItemResponse response = foodItemService.updateStatus(id, status);
-        return ResponseEntity.ok(ApiResponse.success(response, "Food item status updated successfully"));
+        return ResponseEntity.ok(ApiResponse.success("Food item status updated successfully", response));
     }
 }

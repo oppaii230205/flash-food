@@ -3,7 +3,6 @@ package com.flashfood.flash_food.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -59,14 +58,18 @@ public class Store {
     // Flash sale time (e.g., 9:00 PM)
     private LocalTime flashSaleTime;
     
+    @Builder.Default
     private StoreStatus status = StoreStatus.ACTIVE;
     
-    // Owner information
-    @Column(nullable = false)
-    private String ownerEmail;
+    // Owner relationship (FK to users table)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
     
     // Rating
+    @Builder.Default
     private Double rating = 0.0;
+    @Builder.Default
     private Integer totalRatings = 0;
     
     @CreationTimestamp

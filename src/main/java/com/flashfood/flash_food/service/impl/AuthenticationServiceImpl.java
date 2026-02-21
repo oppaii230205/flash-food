@@ -97,7 +97,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             
             // Check if user is store owner
             if (currentUser.getRoles().contains(UserRole.STORE_OWNER)) {
-                return store.getOwner().equals(currentUser);
+                return store.getOwner() != null && store.getOwner().getId().equals(currentUser.getId());
             }
             
             return false;

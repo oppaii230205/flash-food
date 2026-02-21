@@ -30,8 +30,10 @@ public class CategoryRequest {
     private String iconUrl;
     
     @Min(value = 0, message = "Display order must be non-negative")
+    @Builder.Default
     private Integer displayOrder = 0;
-    
+
+    @Builder.Default
     private Boolean isActive = true;
     
     private Long parentId;

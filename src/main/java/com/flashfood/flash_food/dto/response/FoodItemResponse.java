@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -23,8 +22,8 @@ public class FoodItemResponse {
     private String name;
     private String description;
     private String imageUrl;
-    private BigDecimal originalPrice;
-    private BigDecimal flashPrice;
+    private Integer originalPrice;
+    private Integer flashPrice;
     private Integer discountPercentage;
     private Integer totalQuantity;
     private Integer availableQuantity;

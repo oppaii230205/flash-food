@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -52,7 +53,7 @@ public class UserController {
         
         log.info("PUT /api/users/me - Updating current user profile");
         UserResponse response = userService.updateProfile(request);
-        return ResponseEntity.ok(ApiResponse.success(response, "Profile updated successfully"));
+        return ResponseEntity.ok(ApiResponse.success("Profile updated successfully", response));
     }
 
     /**
@@ -67,7 +68,11 @@ public class UserController {
         
         log.info("POST /api/users/me/change-password - Changing password");
         userService.changePassword(request);
-        return ResponseEntity.ok(ApiResponse.success(null, "Password changed successfully"));
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .success(true)
+                .message("Password changed successfully")
+                .httpCode(HttpStatus.OK.value())
+                .build());
     }
 
     /**
@@ -163,7 +168,7 @@ public class UserController {
         
         log.info("PATCH /api/users/{}/status?status={} - Updating user status", userId, status);
         UserResponse response = userService.updateUserStatus(userId, status);
-        return ResponseEntity.ok(ApiResponse.success(response, "User status updated successfully"));
+        return ResponseEntity.ok(ApiResponse.success("User status updated successfully", response));
     }
 
     /**
@@ -180,7 +185,7 @@ public class UserController {
         
         log.info("PATCH /api/users/{}/role?role={} - Updating user role", userId, role);
         UserResponse response = userService.updateUserRole(userId, role);
-        return ResponseEntity.ok(ApiResponse.success(response, "User role updated successfully"));
+        return ResponseEntity.ok(ApiResponse.success("User role updated successfully", response));
     }
 
     /**
@@ -193,6 +198,10 @@ public class UserController {
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long userId) {
         log.info("DELETE /api/users/{} - Deleting user", userId);
         userService.deleteUser(userId);
-        return ResponseEntity.ok(ApiResponse.success(null, "User deleted successfully"));
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .success(true)
+                .message("User deleted successfully")
+                .httpCode(HttpStatus.OK.value())
+                .build());
     }
 }
