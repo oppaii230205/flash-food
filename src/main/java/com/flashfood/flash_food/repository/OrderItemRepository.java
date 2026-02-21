@@ -1,6 +1,7 @@
 package com.flashfood.flash_food.repository;
 
 import com.flashfood.flash_food.entity.OrderItem;
+import com.flashfood.flash_food.entity.OrderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,7 +30,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
         SELECT COALESCE(SUM(oi.quantity), 0) 
         FROM OrderItem oi 
         WHERE oi.foodItem.id = :foodItemId 
-        AND oi.order.status IN ('CONFIRMED', 'PREPARING', 'READY', 'COMPLETED')
+        AND oi.order.status IN (OrderStatus.CONFIRMED, OrderStatus.PREPARING, OrderStatus.READY, OrderStatus.COMPLETED)
     """)
     Integer getTotalQuantitySold(@Param("foodItemId") Long foodItemId);
 }

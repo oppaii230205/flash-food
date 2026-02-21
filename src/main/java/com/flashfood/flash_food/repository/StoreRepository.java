@@ -40,7 +40,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     @Query("""
         SELECT s FROM Store s 
         WHERE LOWER(s.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
-        AND s.status = 'ACTIVE'
+        AND s.status = StoreStatus.ACTIVE
     """)
     List<Store> searchByName(@Param("keyword") String keyword);
     
@@ -49,7 +49,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
      */
     @Query("""
         SELECT s FROM Store s 
-        WHERE s.status = 'ACTIVE' 
+        WHERE s.status = StoreStatus.ACTIVE 
         AND s.latitude IS NOT NULL 
         AND s.longitude IS NOT NULL
     """)

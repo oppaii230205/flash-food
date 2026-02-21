@@ -49,7 +49,7 @@ public interface FoodItemRepository extends JpaRepository<FoodItem, Long> {
      */
     @Query("""
         SELECT f FROM FoodItem f
-        WHERE f.status = 'AVAILABLE'
+        WHERE f.status = FoodItemStatus.AVAILABLE
         AND f.availableQuantity > 0
         AND f.saleStartTime <= :now
         AND f.saleEndTime > :now
@@ -62,7 +62,7 @@ public interface FoodItemRepository extends JpaRepository<FoodItem, Long> {
      */
     @Query("""
         SELECT f FROM FoodItem f
-        WHERE f.status = 'AVAILABLE'
+        WHERE f.status = FoodItemStatus.AVAILABLE
         AND f.availableQuantity > 0
         AND f.saleStartTime <= :now
         AND f.saleEndTime > :now
@@ -76,7 +76,7 @@ public interface FoodItemRepository extends JpaRepository<FoodItem, Long> {
     @Query("""
         SELECT f FROM FoodItem f
         WHERE f.store.id = :storeId
-        AND f.status = 'AVAILABLE'
+        AND f.status = FoodItemStatus.AVAILABLE
         AND f.availableQuantity > 0
         AND f.isExpired = false
     """)

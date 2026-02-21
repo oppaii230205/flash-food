@@ -41,7 +41,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("""
         SELECT u FROM User u 
         WHERE u.notificationEnabled = true 
-        AND u.status = 'ACTIVE'
+        AND u.status = UserStatus.ACTIVE
         AND u.latitude IS NOT NULL 
         AND u.longitude IS NOT NULL
     """)
