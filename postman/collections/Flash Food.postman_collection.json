@@ -1,0 +1,18 @@
+{
+  "info": {
+    "_postman_id": "4b0c9da8-3cea-40b3-a488-26efbd8ce28a",
+    "name": "Flash Food",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Test",
+      "id": "ff9ce8f1-2ba0-4577-9769-8eff66a7cca2",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ]
+}
