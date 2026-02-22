@@ -34,7 +34,7 @@ public class CategoryController {
      * POST /api/v1/categories
      */
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<CategoryResponse>> createCategory(@Valid @RequestBody CategoryRequest request) {
         log.info("REST request to create category: {}", request.getName());
         CategoryResponse category = categoryService.createCategory(request);
@@ -48,7 +48,7 @@ public class CategoryController {
      * PUT /api/v1/categories/{id}
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<CategoryResponse>> updateCategory(
             @PathVariable Long id,
             @Valid @RequestBody CategoryRequest request) {
@@ -62,7 +62,7 @@ public class CategoryController {
      * DELETE /api/v1/categories/{id}
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> deleteCategory(@PathVariable Long id) {
         log.info("REST request to delete category with id: {}", id);
         categoryService.deleteCategory(id);
