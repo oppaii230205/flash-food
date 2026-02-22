@@ -22,7 +22,7 @@ import java.util.List;
  * REST Controller for Category management
  */
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/api/v1/categories")
 @Slf4j
 @RequiredArgsConstructor
 public class CategoryController {
@@ -31,7 +31,7 @@ public class CategoryController {
     
     /**
      * Create a new category (Admin only)
-     * POST /api/categories
+     * POST /api/v1/categories
      */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -45,7 +45,7 @@ public class CategoryController {
     
     /**
      * Update an existing category (Admin only)
-     * PUT /api/categories/{id}
+     * PUT /api/v1/categories/{id}
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -59,7 +59,7 @@ public class CategoryController {
     
     /**
      * Delete a category (Admin only)
-     * DELETE /api/categories/{id}
+     * DELETE /api/v1/categories/{id}
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -75,7 +75,7 @@ public class CategoryController {
     
     /**
      * Get category by ID
-     * GET /api/categories/{id}
+     * GET /api/v1/categories/{id}
      */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<CategoryResponse>> getCategoryById(@PathVariable Long id) {
@@ -86,7 +86,7 @@ public class CategoryController {
     
     /**
      * Get category by slug
-     * GET /api/categories/slug/{slug}
+     * GET /api/v1/categories/slug/{slug}
      */
     @GetMapping("/slug/{slug}")
     public ResponseEntity<ApiResponse<CategoryResponse>> getCategoryBySlug(@PathVariable String slug) {
@@ -97,7 +97,7 @@ public class CategoryController {
     
     /**
      * Get all categories with pagination
-     * GET /api/categories?page=0&size=10&sort=displayOrder,asc
+     * GET /api/v1/categories?page=0&size=10&sort=displayOrder,asc
      */
     @GetMapping
     public ResponseEntity<ApiResponse<Page<CategoryResponse>>> getAllCategories(
@@ -120,7 +120,7 @@ public class CategoryController {
     
     /**
      * Get all active categories (no pagination)
-     * GET /api/categories/active
+     * GET /api/v1/categories/active
      */
     @GetMapping("/active")
     public ResponseEntity<ApiResponse<List<CategoryResponse>>> getActiveCategories() {
@@ -131,7 +131,7 @@ public class CategoryController {
     
     /**
      * Get root categories (categories without parent)
-     * GET /api/categories/root
+     * GET /api/v1/categories/root
      */
     @GetMapping("/root")
     public ResponseEntity<ApiResponse<List<CategoryResponse>>> getRootCategories() {
@@ -142,7 +142,7 @@ public class CategoryController {
     
     /**
      * Get child categories of a parent
-     * GET /api/categories/{parentId}/children
+     * GET /api/v1/categories/{parentId}/children
      */
     @GetMapping("/{parentId}/children")
     public ResponseEntity<ApiResponse<List<CategoryResponse>>> getChildCategories(@PathVariable Long parentId) {
@@ -153,7 +153,7 @@ public class CategoryController {
 
     /**
      * Search categories by keyword
-     * GET /api/categories/search?keyword=banh
+     * GET /api/v1/categories/search?keyword=banh
      */
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<List<CategoryResponse>>> searchCategories(

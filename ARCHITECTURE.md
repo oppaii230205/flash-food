@@ -47,7 +47,7 @@
 ### 1. Flash Sale Creation Flow
 
 ```
-Store Owner → POST /api/food-items
+Store Owner → POST /api/v1/food-items
               ↓
        FoodItemService
               ↓
@@ -69,7 +69,7 @@ Store Owner → POST /api/food-items
 ### 2. High Concurrency Order Flow
 
 ```
-User → POST /api/orders
+User → POST /api/v1/orders
          ↓
     OrderService
          ↓
@@ -246,7 +246,7 @@ public enum UserStatus implements PersistableEnum<Integer> {
 
 ```
 1. Client sends:
-   POST /api/stores
+   POST /api/v1/stores
    { "name": "Fresh Market", "type": "supermarket" }
 
 2. Jackson deserializes:

@@ -12,7 +12,7 @@ import java.util.Map;
  * Health check controller
  */
 @RestController
-@RequestMapping("/api/health")
+@RequestMapping("/api/v1/health")
 public class HealthController {
     
     @GetMapping

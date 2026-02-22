@@ -23,7 +23,7 @@ import java.util.Map;
  * REST Controller for Store management
  */
 @RestController
-@RequestMapping("/api/stores")
+@RequestMapping("/api/v1/stores")
 @Slf4j
 @RequiredArgsConstructor
 public class StoreController {
@@ -32,7 +32,7 @@ public class StoreController {
     
     /**
      * Create a new store (Store owner or admin)
-     * POST /api/stores
+     * POST /api/v1/stores
      */
     @PostMapping
     @PreAuthorize("hasAnyRole('STORE_OWNER', 'ADMIN')")
@@ -46,7 +46,7 @@ public class StoreController {
     
     /**
      * Update an existing store (Owner or admin)
-     * PUT /api/stores/{id}
+     * PUT /api/v1/stores/{id}
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('STORE_OWNER', 'ADMIN')")
@@ -60,7 +60,7 @@ public class StoreController {
     
     /**
      * Delete a store (Owner or admin)
-     * DELETE /api/stores/{id}
+     * DELETE /api/v1/stores/{id}
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('STORE_OWNER', 'ADMIN')")
@@ -76,7 +76,7 @@ public class StoreController {
     
     /**
      * Get store by ID
-     * GET /api/stores/{id}
+     * GET /api/v1/stores/{id}
      */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<StoreResponse>> getStoreById(@PathVariable Long id) {
@@ -87,7 +87,7 @@ public class StoreController {
     
     /**
      * Get all stores with pagination
-     * GET /api/stores?page=0&size=10&sort=name,asc
+     * GET /api/v1/stores?page=0&size=10&sort=name,asc
      */
     @GetMapping
     public ResponseEntity<ApiResponse<Page<StoreResponse>>> getAllStores(
@@ -110,7 +110,7 @@ public class StoreController {
     
     /**
      * Get stores by type
-     * GET /api/stores/type/{type}?page=0&size=10
+     * GET /api/v1/stores/type/{type}?page=0&size=10
      */
     @GetMapping("/type/{type}")
     public ResponseEntity<ApiResponse<Page<StoreResponse>>> getStoresByType(
@@ -127,7 +127,7 @@ public class StoreController {
     
     /**
      * Get stores by status (Admin only)
-     * GET /api/stores/status/{status}?page=0&size=10
+     * GET /api/v1/stores/status/{status}?page=0&size=10
      */
     @GetMapping("/status/{status}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -145,7 +145,7 @@ public class StoreController {
     
     /**
      * Find nearby stores within radius
-     * GET /api/stores/nearby?lat=10.762622&lon=106.660172&radius=5
+     * GET /api/v1/stores/nearby?lat=10.762622&lon=106.660172&radius=5
      */
     @GetMapping("/nearby")
     public ResponseEntity<ApiResponse<List<StoreResponse>>> findNearbyStores(
@@ -161,7 +161,7 @@ public class StoreController {
     
     /**
      * Get my stores (current user's stores)
-     * GET /api/stores/my-stores
+     * GET /api/v1/stores/my-stores
      */
     @GetMapping("/my-stores")
     @PreAuthorize("hasAnyRole('STORE_OWNER', 'ADMIN')")
@@ -173,7 +173,7 @@ public class StoreController {
     
     /**
      * Update store status (Admin or owner)
-     * PATCH /api/stores/{id}/status
+     * PATCH /api/v1/stores/{id}/status
      */
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasAnyRole('STORE_OWNER', 'ADMIN')")

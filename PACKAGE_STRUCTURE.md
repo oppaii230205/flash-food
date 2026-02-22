@@ -206,11 +206,11 @@ Cần tạo các service classes như:
 
 Cần tạo các REST controllers:
 
-- `AuthController.java` - `/api/auth/**`
-- `UserController.java` - `/api/users/**`
-- `StoreController.java` - `/api/stores/**`
-- `FoodItemController.java` - `/api/food-items/**`
-- `OrderController.java` - `/api/orders/**`
+- `AuthController.java` - `/api/v1/auth/**`
+- `UserController.java` - `/api/v1/users/**`
+- `StoreController.java` - `/api/v1/stores/**`
+- `FoodItemController.java` - `/api/v1/food-items/**`
+- `OrderController.java` - `/api/v1/orders/**`
 
 ### 3. **JWT Authentication**
 

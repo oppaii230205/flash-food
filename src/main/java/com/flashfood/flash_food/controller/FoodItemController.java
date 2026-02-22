@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/food-items")
+@RequestMapping("/api/v1/food-items")
 @RequiredArgsConstructor
 public class FoodItemController {
 
@@ -40,7 +40,7 @@ public class FoodItemController {
             @PathVariable Long storeId,
             @Valid @RequestBody FoodItemRequest request) {
         
-        log.info("POST /api/food-items/store/{} - Creating food item", storeId);
+        log.info("POST /api/v1/food-items/store/{} - Creating food item", storeId);
         FoodItemResponse response = foodItemService.createFoodItem(storeId, request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Food item created successfully", response));
@@ -58,7 +58,7 @@ public class FoodItemController {
             @PathVariable Long id,
             @Valid @RequestBody FoodItemRequest request) {
         
-        log.info("PUT /api/food-items/{} - Updating food item", id);
+        log.info("PUT /api/v1/food-items/{} - Updating food item", id);
         FoodItemResponse response = foodItemService.updateFoodItem(id, request);
         return ResponseEntity.ok(ApiResponse.success("Food item updated successfully", response));
     }
@@ -71,7 +71,7 @@ public class FoodItemController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('STORE_OWNER', 'ADMIN')")
     public ResponseEntity<ApiResponse<Void>> deleteFoodItem(@PathVariable Long id) {
-        log.info("DELETE /api/food-items/{} - Deleting food item", id);
+        log.info("DELETE /api/v1/food-items/{} - Deleting food item", id);
         foodItemService.deleteFoodItem(id);
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .success(true)
@@ -87,7 +87,7 @@ public class FoodItemController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<FoodItemResponse>> getFoodItemById(@PathVariable Long id) {
-        log.info("GET /api/food-items/{} - Getting food item", id);
+        log.info("GET /api/v1/food-items/{} - Getting food item", id);
         FoodItemResponse response = foodItemService.findById(id);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -101,7 +101,7 @@ public class FoodItemController {
     public ResponseEntity<ApiResponse<Page<FoodItemResponse>>> getAllFoodItems(
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
-        log.info("GET /api/food-items - Getting all food items");
+        log.info("GET /api/v1/food-items - Getting all food items");
         Page<FoodItemResponse> response = foodItemService.findAll(pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -117,7 +117,7 @@ public class FoodItemController {
             @PathVariable Long storeId,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
-        log.info("GET /api/food-items/store/{} - Getting food items by store", storeId);
+        log.info("GET /api/v1/food-items/store/{} - Getting food items by store", storeId);
         Page<FoodItemResponse> response = foodItemService.findByStore(storeId, pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -133,7 +133,7 @@ public class FoodItemController {
             @PathVariable Long categoryId,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
-        log.info("GET /api/food-items/category/{} - Getting food items by category", categoryId);
+        log.info("GET /api/v1/food-items/category/{} - Getting food items by category", categoryId);
         Page<FoodItemResponse> response = foodItemService.findByCategory(categoryId, pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -149,7 +149,7 @@ public class FoodItemController {
             @PathVariable String status,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
-        log.info("GET /api/food-items/status/{} - Getting food items by status", status);
+        log.info("GET /api/v1/food-items/status/{} - Getting food items by status", status);
         Page<FoodItemResponse> response = foodItemService.findByStatus(status, pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -163,7 +163,7 @@ public class FoodItemController {
     public ResponseEntity<ApiResponse<Page<FoodItemResponse>>> getAvailableFoodItems(
             @PageableDefault(size = 20, sort = "flashPrice", direction = Sort.Direction.ASC) Pageable pageable) {
         
-        log.info("GET /api/food-items/available - Getting available food items");
+        log.info("GET /api/v1/food-items/available - Getting available food items");
         Page<FoodItemResponse> response = foodItemService.findAvailableFoodItems(pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -177,7 +177,7 @@ public class FoodItemController {
     public ResponseEntity<ApiResponse<Page<FoodItemResponse>>> getFlashSaleFoodItems(
             @PageableDefault(size = 20, sort = "discountPercentage", direction = Sort.Direction.DESC) Pageable pageable) {
         
-        log.info("GET /api/food-items/flash-sale - Getting flash sale food items");
+        log.info("GET /api/v1/food-items/flash-sale - Getting flash sale food items");
         Page<FoodItemResponse> response = foodItemService.findFlashSaleFoodItems(pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -193,7 +193,7 @@ public class FoodItemController {
             @RequestParam String keyword,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
-        log.info("GET /api/food-items/search?keyword={} - Searching food items", keyword);
+        log.info("GET /api/v1/food-items/search?keyword={} - Searching food items", keyword);
         Page<FoodItemResponse> response = foodItemService.searchFoodItems(keyword, pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -210,7 +210,7 @@ public class FoodItemController {
             @PathVariable Long id,
             @RequestParam String status) {
         
-        log.info("PATCH /api/food-items/{}/status?status={} - Updating status", id, status);
+        log.info("PATCH /api/v1/food-items/{}/status?status={} - Updating status", id, status);
         FoodItemResponse response = foodItemService.updateStatus(id, status);
         return ResponseEntity.ok(ApiResponse.success("Food item status updated successfully", response));
     }

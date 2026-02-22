@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
 public class OrderController {
 
@@ -38,7 +38,7 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderResponse>> createOrder(
             @Valid @RequestBody CreateOrderRequest request) {
         
-        log.info("POST /api/orders - Creating new order");
+        log.info("POST /api/v1/orders - Creating new order");
         OrderResponse response = orderService.createOrder(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Order created successfully", response));
@@ -52,7 +52,7 @@ public class OrderController {
     @PatchMapping("/{orderId}/cancel")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<OrderResponse>> cancelOrder(@PathVariable Long orderId) {
-        log.info("PATCH /api/orders/{}/cancel - Cancelling order", orderId);
+        log.info("PATCH /api/v1/orders/{}/cancel - Cancelling order", orderId);
         OrderResponse response = orderService.cancelOrder(orderId);
         return ResponseEntity.ok(ApiResponse.success("Order cancelled successfully", response));
     }
@@ -65,7 +65,7 @@ public class OrderController {
     @PatchMapping("/{orderId}/confirm")
     @PreAuthorize("hasAnyRole('STORE_OWNER', 'ADMIN')")
     public ResponseEntity<ApiResponse<OrderResponse>> confirmOrder(@PathVariable Long orderId) {
-        log.info("PATCH /api/orders/{}/confirm - Confirming order", orderId);
+        log.info("PATCH /api/v1/orders/{}/confirm - Confirming order", orderId);
         OrderResponse response = orderService.confirmOrder(orderId);
         return ResponseEntity.ok(ApiResponse.success("Order confirmed successfully", response));
     }
@@ -78,7 +78,7 @@ public class OrderController {
     @PatchMapping("/{orderId}/preparing")
     @PreAuthorize("hasAnyRole('STORE_OWNER', 'ADMIN')")
     public ResponseEntity<ApiResponse<OrderResponse>> startPreparingOrder(@PathVariable Long orderId) {
-        log.info("PATCH /api/orders/{}/preparing - Starting order preparation", orderId);
+        log.info("PATCH /api/v1/orders/{}/preparing - Starting order preparation", orderId);
         OrderResponse response = orderService.startPreparingOrder(orderId);
         return ResponseEntity.ok(ApiResponse.success("Order preparation started", response));
     }
@@ -91,7 +91,7 @@ public class OrderController {
     @PatchMapping("/{orderId}/ready")
     @PreAuthorize("hasAnyRole('STORE_OWNER', 'ADMIN')")
     public ResponseEntity<ApiResponse<OrderResponse>> markOrderReady(@PathVariable Long orderId) {
-        log.info("PATCH /api/orders/{}/ready - Marking order as ready", orderId);
+        log.info("PATCH /api/v1/orders/{}/ready - Marking order as ready", orderId);
         OrderResponse response = orderService.markOrderReady(orderId);
         return ResponseEntity.ok(ApiResponse.success("Order is ready for pickup", response));
     }
@@ -104,7 +104,7 @@ public class OrderController {
     @PatchMapping("/{orderId}/complete")
     @PreAuthorize("hasAnyRole('STORE_OWNER', 'ADMIN')")
     public ResponseEntity<ApiResponse<OrderResponse>> completeOrder(@PathVariable Long orderId) {
-        log.info("PATCH /api/orders/{}/complete - Completing order", orderId);
+        log.info("PATCH /api/v1/orders/{}/complete - Completing order", orderId);
         OrderResponse response = orderService.completeOrder(orderId);
         return ResponseEntity.ok(ApiResponse.success("Order completed successfully", response));
     }
@@ -117,7 +117,7 @@ public class OrderController {
     @PostMapping("/{orderId}/payment")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<OrderResponse>> processPayment(@PathVariable Long orderId) {
-        log.info("POST /api/orders/{}/payment - Processing payment", orderId);
+        log.info("POST /api/v1/orders/{}/payment - Processing payment", orderId);
         OrderResponse response = orderService.processPayment(orderId);
         return ResponseEntity.ok(ApiResponse.success("Payment processed successfully", response));
     }
@@ -130,7 +130,7 @@ public class OrderController {
     @GetMapping("/{orderId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<OrderResponse>> getOrderById(@PathVariable Long orderId) {
-        log.info("GET /api/orders/{} - Getting order", orderId);
+        log.info("GET /api/v1/orders/{} - Getting order", orderId);
         OrderResponse response = orderService.findById(orderId);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -143,7 +143,7 @@ public class OrderController {
     @GetMapping("/number/{orderNumber}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<OrderResponse>> getOrderByNumber(@PathVariable String orderNumber) {
-        log.info("GET /api/orders/number/{} - Getting order by number", orderNumber);
+        log.info("GET /api/v1/orders/number/{} - Getting order by number", orderNumber);
         OrderResponse response = orderService.findByOrderNumber(orderNumber);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -158,7 +158,7 @@ public class OrderController {
     public ResponseEntity<ApiResponse<Page<OrderResponse>>> getMyOrders(
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
-        log.info("GET /api/orders/my-orders - Getting current user's orders");
+        log.info("GET /api/v1/orders/my-orders - Getting current user's orders");
         Page<OrderResponse> response = orderService.findMyOrders(pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -175,7 +175,7 @@ public class OrderController {
             @PathVariable String status,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
-        log.info("GET /api/orders/my-orders/status/{} - Getting user's orders by status", status);
+        log.info("GET /api/v1/orders/my-orders/status/{} - Getting user's orders by status", status);
         Page<OrderResponse> response = orderService.findMyOrdersByStatus(status, pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -192,7 +192,7 @@ public class OrderController {
             @PathVariable Long storeId,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
-        log.info("GET /api/orders/store/{} - Getting store's orders", storeId);
+        log.info("GET /api/v1/orders/store/{} - Getting store's orders", storeId);
         Page<OrderResponse> response = orderService.findStoreOrders(storeId, pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -211,7 +211,7 @@ public class OrderController {
             @PathVariable String status,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
-        log.info("GET /api/orders/store/{}/status/{} - Getting store's orders by status", storeId, status);
+        log.info("GET /api/v1/orders/store/{}/status/{} - Getting store's orders by status", storeId, status);
         Page<OrderResponse> response = orderService.findStoreOrdersByStatus(storeId, status, pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -226,7 +226,7 @@ public class OrderController {
     public ResponseEntity<ApiResponse<Page<OrderResponse>>> getAllOrders(
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
-        log.info("GET /api/orders/all - Getting all orders (admin)");
+        log.info("GET /api/v1/orders/all - Getting all orders (admin)");
         Page<OrderResponse> response = orderService.findAllOrders(pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
