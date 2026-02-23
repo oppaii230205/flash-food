@@ -3,14 +3,12 @@ package com.flashfood.flash_food.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,14 +45,16 @@ public class Order {
     private List<OrderItem> orderItems = new ArrayList<>();
     
     @Column(nullable = false)
-    private BigDecimal totalAmount;
+    private Integer totalAmount;
     
-    private BigDecimal originalAmount;
+    private Integer originalAmount;
     
+    @Builder.Default
     private OrderStatus status = OrderStatus.PENDING;
     
     private PaymentMethod paymentMethod;
     
+    @Builder.Default
     private PaymentStatus paymentStatus = PaymentStatus.PENDING;
     
     // Pickup information

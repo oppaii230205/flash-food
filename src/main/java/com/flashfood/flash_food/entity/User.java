@@ -42,7 +42,10 @@ public class User {
     
     @Column(nullable = false, unique = true)
     private String phoneNumber;
-    
+
+    // Optional address for profile
+    private String address;
+
     // User's location for geo-spatial notifications
     private Double latitude;
     private Double longitude;

@@ -3,16 +3,13 @@ package com.flashfood.flash_food.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -44,10 +41,10 @@ public class FoodItem {
     private String imageUrl;
     
     @Column(nullable = false)
-    private BigDecimal originalPrice;
+    private Integer originalPrice;
     
     @Column(nullable = false)
-    private BigDecimal flashPrice;
+    private Integer flashPrice;
     
     // Discount percentage (e.g., 70%)
     private Integer discountPercentage;
@@ -67,9 +64,11 @@ public class FoodItem {
     @JoinColumn(name = "category_id")
     private Category category;
     
+    @Builder.Default
     private FoodItemStatus status = FoodItemStatus.PENDING;
-    
+
     // For scheduled auto-expiry
+    @Builder.Default
     private Boolean isExpired = false;
     
     @CreationTimestamp

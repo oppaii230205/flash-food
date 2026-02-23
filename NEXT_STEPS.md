@@ -200,11 +200,11 @@ public OrderResponse createOrder(CreateOrderRequest request) {
 **Endpoints:**
 
 ```java
-POST   /api/auth/register        - Register new user
-POST   /api/auth/login           - Login user
-POST   /api/auth/refresh-token   - Refresh JWT token
-POST   /api/auth/logout          - Logout user
-GET    /api/auth/me              - Get current user info
+POST   /api/v1/auth/register        - Register new user
+POST   /api/v1/auth/login           - Login user
+POST   /api/v1/auth/refresh-token   - Refresh JWT token
+POST   /api/v1/auth/logout          - Logout user
+GET    /api/v1/auth/me              - Get current user info
 ```
 
 ### 3.2 User Controller
@@ -214,11 +214,11 @@ GET    /api/auth/me              - Get current user info
 **Endpoints:**
 
 ```java
-GET    /api/users/{id}              - Get user by ID
-PUT    /api/users/{id}              - Update user profile
-PUT    /api/users/{id}/location     - Update user location
-GET    /api/users/{id}/orders       - Get user's orders
-GET    /api/users/{id}/notifications - Get user's notifications
+GET    /api/v1/users/{id}              - Get user by ID
+PUT    /api/v1/users/{id}              - Update user profile
+PUT    /api/v1/users/{id}/location     - Update user location
+GET    /api/v1/users/{id}/orders       - Get user's orders
+GET    /api/v1/users/{id}/notifications - Get user's notifications
 ```
 
 ### 3.3 Store Controller
@@ -228,13 +228,13 @@ GET    /api/users/{id}/notifications - Get user's notifications
 **Endpoints:**
 
 ```java
-POST   /api/stores                  - Create store (STORE_OWNER)
-GET    /api/stores/{id}             - Get store details
-PUT    /api/stores/{id}             - Update store (STORE_OWNER)
-DELETE /api/stores/{id}             - Delete store (ADMIN)
-GET    /api/stores/nearby           - Get nearby stores
-GET    /api/stores/search           - Search stores
-GET    /api/stores/{id}/food-items  - Get store's food items
+POST   /api/v1/stores                  - Create store (STORE_OWNER)
+GET    /api/v1/stores/{id}             - Get store details
+PUT    /api/v1/stores/{id}             - Update store (STORE_OWNER)
+DELETE /api/v1/stores/{id}             - Delete store (ADMIN)
+GET    /api/v1/stores/nearby           - Get nearby stores
+GET    /api/v1/stores/search           - Search stores
+GET    /api/v1/stores/{id}/food-items  - Get store's food items
 ```
 
 ### 3.4 Food Item Controller
@@ -244,12 +244,12 @@ GET    /api/stores/{id}/food-items  - Get store's food items
 **Endpoints:**
 
 ```java
-POST   /api/food-items              - Create food item (STORE_OWNER)
-GET    /api/food-items/{id}         - Get food item
-PUT    /api/food-items/{id}         - Update food item (STORE_OWNER)
-DELETE /api/food-items/{id}         - Delete food item (STORE_OWNER)
-GET    /api/food-items/available    - Get all available items
-GET    /api/food-items/flash-sale   - Get current flash sales
+POST   /api/v1/food-items              - Create food item (STORE_OWNER)
+GET    /api/v1/food-items/{id}         - Get food item
+PUT    /api/v1/food-items/{id}         - Update food item (STORE_OWNER)
+DELETE /api/v1/food-items/{id}         - Delete food item (STORE_OWNER)
+GET    /api/v1/food-items/available    - Get all available items
+GET    /api/v1/food-items/flash-sale   - Get current flash sales
 ```
 
 ### 3.5 Order Controller
@@ -259,18 +259,18 @@ GET    /api/food-items/flash-sale   - Get current flash sales
 **Endpoints:**
 
 ```java
-POST   /api/orders                  - Create order
-GET    /api/orders/{id}             - Get order details
-GET    /api/orders                  - Get user's orders
-PUT    /api/orders/{id}/status      - Update order status (STORE_OWNER)
-POST   /api/orders/{id}/cancel      - Cancel order
+POST   /api/v1/orders                  - Create order
+GET    /api/v1/orders/{id}             - Get order details
+GET    /api/v1/orders                  - Get user's orders
+PUT    /api/v1/orders/{id}/status      - Update order status (STORE_OWNER)
+POST   /api/v1/orders/{id}/cancel      - Cancel order
 ```
 
 **Sample Controller Implementation:**
 
 ```java
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
 public class OrderController {
 
@@ -371,7 +371,7 @@ class OrderControllerIntegrationTest {
     @Test
     @WithMockUser(roles = "CUSTOMER")
     void createOrder_ShouldReturn200() throws Exception {
-        mockMvc.perform(post("/api/orders")
+        mockMvc.perform(post("/api/v1/orders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk())

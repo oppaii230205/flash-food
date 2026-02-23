@@ -11,18 +11,15 @@ import com.flashfood.flash_food.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of OrderService
@@ -78,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
 
         // Process order items with pessimistic locking
         List<OrderItem> orderItems = new ArrayList<>();
-        BigDecimal totalAmount = BigDecimal.ZERO;
+        int totalAmount = 0;
 
         for (CreateOrderRequest.OrderItemRequest itemRequest : request.getItems()) {
             // Lock food item to prevent overselling
@@ -120,7 +117,7 @@ public class OrderServiceImpl implements OrderService {
 
             // Update food item status if out of stock
             if (foodItem.getAvailableQuantity() == 0) {
-                foodItem.setStatus(FoodItemStatus.OUT_OF_STOCK);
+                foodItem.setStatus(FoodItemStatus.SOLD_OUT);
                 foodItemRepository.save(foodItem);
             }
 
@@ -131,11 +128,11 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setQuantity(itemRequest.getQuantity());
             orderItem.setUnitPrice(foodItem.getFlashPrice());
             
-            BigDecimal itemTotal = foodItem.getFlashPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity()));
-            orderItem.setSubtotal(itemTotal);
+            int itemTotal = foodItem.getFlashPrice() * itemRequest.getQuantity();
+            orderItem.setTotalPrice(itemTotal);
             
             orderItems.add(orderItem);
-            totalAmount = totalAmount.add(itemTotal);
+            totalAmount += itemTotal;
         }
 
         order.setTotalAmount(totalAmount);
@@ -176,8 +173,8 @@ public class OrderServiceImpl implements OrderService {
             int newQuantity = foodItem.getAvailableQuantity() + item.getQuantity();
             foodItem.setAvailableQuantity(newQuantity);
             
-            // Update status back to available if was out of stock
-            if (foodItem.getStatus() == FoodItemStatus.OUT_OF_STOCK && newQuantity > 0) {
+            // Update status back to available if was sold out
+            if (foodItem.getStatus() == FoodItemStatus.SOLD_OUT && newQuantity > 0) {
                 foodItem.setStatus(FoodItemStatus.AVAILABLE);
             }
             
@@ -298,7 +295,7 @@ public class OrderServiceImpl implements OrderService {
 
         // In real scenario, integrate with payment gateway here
         // For now, just mark as completed
-        payment.setStatus(PaymentStatus.COMPLETED);
+        payment.setStatus(PaymentStatus.PAID);
         payment.setTransactionId(UUID.randomUUID().toString());
         payment.setPaymentDate(LocalDateTime.now());
         paymentRepository.save(payment);
@@ -352,15 +349,8 @@ public class OrderServiceImpl implements OrderService {
             throw new InvalidOperationException("Invalid order status: " + status);
         }
 
-        List<Order> orders = orderRepository.findByUserIdAndStatus(currentUser.getId(), orderStatus);
-        
-        // Manual pagination
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), orders.size());
-        List<Order> pageContent = orders.subList(start, end);
-        
-        Page<Order> page = new PageImpl<>(pageContent, pageable, orders.size());
-        return page.map(entityMapper::toOrderResponse);
+        return orderRepository.findByUserIdAndStatus(currentUser.getId(), orderStatus, pageable)
+                .map(entityMapper::toOrderResponse);
     }
 
     @Override
@@ -370,11 +360,7 @@ public class OrderServiceImpl implements OrderService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Store not found with ID: " + storeId));
 
-        // Filter by store
-        Page<Order> orders = orderRepository.findAll(pageable)
-                .map(order -> order.getStore().equals(store) ? order : null);
-
-        return orders.map(entityMapper::toOrderResponse);
+        return orderRepository.findByStoreId(storeId, pageable).map(entityMapper::toOrderResponse);
     }
 
     @Override
@@ -392,15 +378,8 @@ public class OrderServiceImpl implements OrderService {
             throw new InvalidOperationException("Invalid order status: " + status);
         }
 
-        List<Order> orders = orderRepository.findByStoreIdAndStatus(storeId, orderStatus);
-        
-        // Manual pagination
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), orders.size());
-        List<Order> pageContent = orders.subList(start, end);
-        
-        Page<Order> page = new PageImpl<>(pageContent, pageable, orders.size());
-        return page.map(entityMapper::toOrderResponse);
+        return orderRepository.findByStoreIdAndStatus(storeId, orderStatus, pageable)
+                .map(entityMapper::toOrderResponse);
     }
 
     @Override

@@ -72,4 +72,11 @@ public interface CategoryService {
      * @return List of child categories
      */
     List<CategoryResponse> findChildCategories(Long parentId);
+
+    /**
+     * Search categories by keyword (name)
+     * @param keyword Search keyword
+     * @return List of matching active categories
+     */
+    List<CategoryResponse> searchCategories(String keyword);
 }

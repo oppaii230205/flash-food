@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -35,7 +36,7 @@ public class UserController {
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<UserResponse>> getCurrentUserProfile() {
-        log.info("GET /api/users/me - Getting current user profile");
+        log.info("GET /api/v1/users/me - Getting current user profile");
         UserResponse response = userService.getCurrentUserProfile();
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -50,9 +51,9 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserResponse>> updateProfile(
             @Valid @RequestBody UpdateProfileRequest request) {
         
-        log.info("PUT /api/users/me - Updating current user profile");
+        log.info("PUT /api/v1/users/me - Updating current user profile");
         UserResponse response = userService.updateProfile(request);
-        return ResponseEntity.ok(ApiResponse.success(response, "Profile updated successfully"));
+        return ResponseEntity.ok(ApiResponse.success("Profile updated successfully", response));
     }
 
     /**
@@ -65,9 +66,13 @@ public class UserController {
     public ResponseEntity<ApiResponse<Void>> changePassword(
             @Valid @RequestBody ChangePasswordRequest request) {
         
-        log.info("POST /api/users/me/change-password - Changing password");
+        log.info("POST /api/v1/users/me/change-password - Changing password");
         userService.changePassword(request);
-        return ResponseEntity.ok(ApiResponse.success(null, "Password changed successfully"));
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .success(true)
+                .message("Password changed successfully")
+                .httpCode(HttpStatus.OK.value())
+                .build());
     }
 
     /**
@@ -78,7 +83,7 @@ public class UserController {
     @GetMapping("/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable Long userId) {
-        log.info("GET /api/users/{} - Getting user by ID", userId);
+        log.info("GET /api/v1/users/{} - Getting user by ID", userId);
         UserResponse response = userService.getUserById(userId);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -93,7 +98,7 @@ public class UserController {
     public ResponseEntity<ApiResponse<Page<UserResponse>>> getAllUsers(
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
-        log.info("GET /api/users - Getting all users");
+        log.info("GET /api/v1/users - Getting all users");
         Page<UserResponse> response = userService.getAllUsers(pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -110,7 +115,7 @@ public class UserController {
             @PathVariable String role,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
-        log.info("GET /api/users/role/{} - Getting users by role", role);
+        log.info("GET /api/v1/users/role/{} - Getting users by role", role);
         Page<UserResponse> response = userService.getUsersByRole(role, pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -127,7 +132,7 @@ public class UserController {
             @PathVariable String status,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
-        log.info("GET /api/users/status/{} - Getting users by status", status);
+        log.info("GET /api/v1/users/status/{} - Getting users by status", status);
         Page<UserResponse> response = userService.getUsersByStatus(status, pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -144,7 +149,7 @@ public class UserController {
             @RequestParam String keyword,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         
-        log.info("GET /api/users/search?keyword={} - Searching users", keyword);
+        log.info("GET /api/v1/users/search?keyword={} - Searching users", keyword);
         Page<UserResponse> response = userService.searchUsers(keyword, pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -161,9 +166,9 @@ public class UserController {
             @PathVariable Long userId,
             @RequestParam String status) {
         
-        log.info("PATCH /api/users/{}/status?status={} - Updating user status", userId, status);
+        log.info("PATCH /api/v1/users/{}/status?status={} - Updating user status", userId, status);
         UserResponse response = userService.updateUserStatus(userId, status);
-        return ResponseEntity.ok(ApiResponse.success(response, "User status updated successfully"));
+        return ResponseEntity.ok(ApiResponse.success("User status updated successfully", response));
     }
 
     /**
@@ -178,9 +183,9 @@ public class UserController {
             @PathVariable Long userId,
             @RequestParam String role) {
         
-        log.info("PATCH /api/users/{}/role?role={} - Updating user role", userId, role);
+        log.info("PATCH /api/v1/users/{}/role?role={} - Updating user role", userId, role);
         UserResponse response = userService.updateUserRole(userId, role);
-        return ResponseEntity.ok(ApiResponse.success(response, "User role updated successfully"));
+        return ResponseEntity.ok(ApiResponse.success("User role updated successfully", response));
     }
 
     /**
@@ -191,8 +196,12 @@ public class UserController {
     @DeleteMapping("/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long userId) {
-        log.info("DELETE /api/users/{} - Deleting user", userId);
+        log.info("DELETE /api/v1/users/{} - Deleting user", userId);
         userService.deleteUser(userId);
-        return ResponseEntity.ok(ApiResponse.success(null, "User deleted successfully"));
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .success(true)
+                .message("User deleted successfully")
+                .httpCode(HttpStatus.OK.value())
+                .build());
     }
 }

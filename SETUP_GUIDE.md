@@ -107,7 +107,7 @@ Started FlashFoodApplication in X.XXX seconds
 
 Truy cập:
 
-- API Health Check: http://localhost:8080/api/health
+- API Health Check: http://localhost:8080/api/v1/health
 - Swagger UI: http://localhost:8080/swagger-ui.html
 - API Docs: http://localhost:8080/v3/api-docs
 
@@ -118,7 +118,7 @@ Truy cập:
 ### 1. Health Check
 
 ```bash
-curl http://localhost:8080/api/health
+curl http://localhost:8080/api/v1/health
 ```
 
 Expected Response:
@@ -187,7 +187,7 @@ public class UserService {
 
 ```java
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;

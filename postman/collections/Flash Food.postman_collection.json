@@ -1,0 +1,350 @@
+{
+  "info": {
+    "_postman_id": "4b0c9da8-3cea-40b3-a488-26efbd8ce28a",
+    "name": "Flash Food",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Category",
+      "item": [
+        {
+          "name": "Create Category",
+          "id": "660023c9-7ebf-4d60-b4e5-10700bba03fe",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bánh mì & Bánh ngọt\",\n  \"slug\": \"banh-mi-banh-ngot\",\n  \"description\": \"Các loại bánh mì, bánh ngọt và bánh ăn vặt buổi sáng\",\n  \"iconUrl\": \"https://example.com/icons/banh-mi.png\",\n  \"displayOrder\": 1,\n  \"isActive\": true,\n  \"parentId\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/categories",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ]
+            },
+            "description": "Create a new category. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Sub-Category",
+          "id": "d2c2fad4-fde7-407a-a587-5477c33470ac",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bánh mì kẹp\",\n  \"slug\": \"banh-mi-kep\",\n  \"description\": \"Bánh mì kẹp với các loại nhân thịt, rau củ\",\n  \"iconUrl\": \"https://example.com/icons/banh-mi-kep.png\",\n  \"displayOrder\": 1,\n  \"isActive\": true,\n  \"parentId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/categories",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ]
+            },
+            "description": "Create a sub-category under an existing parent category. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Category",
+          "id": "db71c209-e573-488a-b2f6-6ca65bc331ae",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bánh mì & Bánh ngọt (cập nhật)\",\n  \"slug\": \"banh-mi-banh-ngot\",\n  \"description\": \"Các loại bánh mì, bánh ngọt, bánh ăn vặt và đồ ăn sáng tiện lợi\",\n  \"iconUrl\": \"https://example.com/icons/banh-mi-v2.png\",\n  \"displayOrder\": 1,\n  \"isActive\": true,\n  \"parentId\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/categories/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "1"
+              ]
+            },
+            "description": "Update an existing category by ID. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Category",
+          "id": "b6a3791f-ccc4-4301-999a-a0c2bb592de9",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/categories/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "1"
+              ]
+            },
+            "description": "Delete a category by ID. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Category by ID",
+          "id": "de830421-e07a-4856-af6a-b451ac2d4a90",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/categories/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "1"
+              ]
+            },
+            "description": "Retrieve a single category by its ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Category by Slug",
+          "id": "e23f9e03-3864-461b-b805-e052bc9ee1f9",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/categories/slug/banh-mi-banh-ngot",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "slug",
+                "banh-mi-banh-ngot"
+              ]
+            },
+            "description": "Retrieve a single category by its URL-friendly slug."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Categories (Paginated)",
+          "id": "cfae66a7-99f4-46a2-aa26-725db6501ed7",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/categories?page=0&size=20&sortBy=displayOrder&sortDirection=asc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "displayOrder"
+                },
+                {
+                  "key": "sortDirection",
+                  "value": "asc"
+                }
+              ]
+            },
+            "description": "Get all categories with pagination. Supports sortBy (displayOrder, name) and sortDirection (asc, desc)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Active Categories",
+          "id": "44aea9db-7c5e-4c78-a6ee-138e42090713",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/categories/active",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "active"
+              ]
+            },
+            "description": "Get all active categories (isActive = true) without pagination."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Root Categories",
+          "id": "6b8a1d52-6093-4297-96f0-53bdc1977b2e",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/categories/root",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "root"
+              ]
+            },
+            "description": "Get all top-level (root) categories that have no parent."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Child Categories",
+          "id": "2401d79a-7fed-4321-a52c-e75542942dd5",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/categories/1/children",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "1",
+                "children"
+              ]
+            },
+            "description": "Get all direct child categories of a given parent category ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Search Categories",
+          "id": "3082fa53-c249-4b78-b31d-51fc6e33e914",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/categories/search?keyword=bánh",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "bánh"
+                }
+              ]
+            },
+            "description": "Search categories by keyword matching the category name."
+          },
+          "response": []
+        }
+      ],
+      "id": "871aae7c-0606-47ce-a283-83c93118c601"
+    }
+  ]
+}

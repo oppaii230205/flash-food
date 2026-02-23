@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,8 +25,8 @@ public class OrderResponse {
     private String storeName;
     private String storeAddress;
     private List<OrderItemResponse> items;
-    private BigDecimal totalAmount;
-    private BigDecimal originalAmount;
+    private Integer totalAmount;
+    private Integer originalAmount;
     
     // Enums as strings
     private String status;
@@ -48,7 +47,7 @@ public class OrderResponse {
         private String foodItemName;
         private String foodItemImage;
         private Integer quantity;
-        private BigDecimal unitPrice;
-        private BigDecimal totalPrice;
+        private Integer unitPrice;
+        private Integer totalPrice;
     }
 }

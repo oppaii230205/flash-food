@@ -30,9 +30,10 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers("/api/v1/public/**").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/api/v1/v1/auth/**").permitAll()
+                .requestMatchers("/api/v1/v1/public/**").permitAll()
+                // .anyRequest().authenticated()
+                .anyRequest().permitAll() // TODO: Change to authenticated() after implementing JWT
             )
             .sessionManagement(session -> 
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

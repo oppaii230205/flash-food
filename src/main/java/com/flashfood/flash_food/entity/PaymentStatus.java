@@ -15,7 +15,8 @@ public enum PaymentStatus {
     PENDING(1, "pending"),   // Waiting for payment
     PAID(2, "paid"),         // Payment successful
     FAILED(3, "failed"),     // Payment failed
-    REFUNDED(4, "refunded"); // Payment refunded
+    REFUNDED(4, "refunded"), // Payment refunded
+    CANCELLED(5, "cancelled"); // Payment cancelled (order was cancelled)
     
     private final int code;
     private final String displayName;

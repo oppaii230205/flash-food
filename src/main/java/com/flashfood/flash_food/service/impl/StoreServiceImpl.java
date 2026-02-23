@@ -216,7 +216,7 @@ public class StoreServiceImpl implements StoreService {
         log.debug("Finding stores for current user");
         
         User currentUser = authenticationService.getCurrentUser();
-        List<Store> stores = storeRepository.findByOwnerId(currentUser.getId());
+        List<Store> stores = storeRepository.findByOwner(currentUser);
         
         return stores.stream()
                 .map(entityMapper::toStoreResponse)

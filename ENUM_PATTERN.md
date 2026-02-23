@@ -159,7 +159,7 @@ public OrderResponse toOrderResponse(Order order) {
 
 ```java
 // 1. Client sends JSON
-POST /api/orders
+POST /api/v1/orders
 {
   "storeId": 1,
   "paymentMethod": "cash"  // String

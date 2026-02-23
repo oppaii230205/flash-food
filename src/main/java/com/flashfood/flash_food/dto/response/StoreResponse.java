@@ -35,6 +35,7 @@ public class StoreResponse {
     private LocalTime flashSaleTime;
     private Double rating;
     private Integer totalRatings;
+    private Long ownerId;
     
     // Distance in meters (calculated from user location)
     private Double distance;

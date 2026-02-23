@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -25,12 +24,12 @@ public class FoodItemRequest {
     private String imageUrl;
     
     @NotNull(message = "Original price is required")
-    @DecimalMin(value = "0.01", message = "Original price must be greater than 0")
-    private BigDecimal originalPrice;
+    @Min(value = 1, message = "Original price must be greater than 0")
+    private Integer originalPrice;
     
     @NotNull(message = "Flash price is required")
-    @DecimalMin(value = "0.01", message = "Flash price must be greater than 0")
-    private BigDecimal flashPrice;
+    @Min(value = 1, message = "Flash price must be greater than 0")
+    private Integer flashPrice;
     
     @NotNull(message = "Quantity is required")
     @Min(value = 1, message = "Quantity must be at least 1")

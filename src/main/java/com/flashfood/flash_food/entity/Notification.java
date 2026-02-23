@@ -42,6 +42,7 @@ public class Notification {
     // Reference to related entity (e.g., food_item_id, order_id)
     private Long referenceId;
     
+    @Builder.Default
     private Boolean isRead = false;
     
     private LocalDateTime readAt;
