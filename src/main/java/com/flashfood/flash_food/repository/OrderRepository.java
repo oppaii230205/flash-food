@@ -34,13 +34,29 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         AND o.status = :status
     """)
     List<Order> findByUserIdAndStatus(@Param("userId") Long userId, @Param("status") OrderStatus status);
-    
+
+    @Query("""
+        SELECT o FROM Order o 
+        WHERE o.user.id = :userId 
+        AND o.status = :status
+    """)
+    Page<Order> findByUserIdAndStatus(@Param("userId") Long userId, @Param("status") OrderStatus status, Pageable pageable);
+
+    Page<Order> findByStoreId(Long storeId, Pageable pageable);
+
     @Query("""
         SELECT o FROM Order o 
         WHERE o.store.id = :storeId 
         AND o.status = :status
     """)
     List<Order> findByStoreIdAndStatus(@Param("storeId") Long storeId, @Param("status") OrderStatus status);
+
+    @Query("""
+        SELECT o FROM Order o 
+        WHERE o.store.id = :storeId 
+        AND o.status = :status
+    """)
+    Page<Order> findByStoreIdAndStatus(@Param("storeId") Long storeId, @Param("status") OrderStatus status, Pageable pageable);
     
     /**
      * Find orders that need to be auto-expired

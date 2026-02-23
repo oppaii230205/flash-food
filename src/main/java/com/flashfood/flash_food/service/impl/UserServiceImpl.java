@@ -16,14 +16,10 @@ import com.flashfood.flash_food.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of UserService
@@ -146,15 +142,7 @@ public class UserServiceImpl implements UserService {
             throw new InvalidOperationException("Invalid user role: " + role);
         }
 
-        List<User> users = userRepository.findByRole(userRole);
-
-        // Manual pagination
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), users.size());
-        List<User> pageContent = users.subList(start, end);
-
-        Page<User> page = new PageImpl<>(pageContent, pageable, users.size());
-        return page.map(entityMapper::toUserResponse);
+        return userRepository.findByRole(userRole, pageable).map(entityMapper::toUserResponse);
     }
 
     @Override
@@ -169,15 +157,7 @@ public class UserServiceImpl implements UserService {
             throw new InvalidOperationException("Invalid user status: " + status);
         }
 
-        List<User> users = userRepository.findByStatus(userStatus);
-
-        // Manual pagination
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), users.size());
-        List<User> pageContent = users.subList(start, end);
-
-        Page<User> page = new PageImpl<>(pageContent, pageable, users.size());
-        return page.map(entityMapper::toUserResponse);
+        return userRepository.findByStatus(userStatus, pageable).map(entityMapper::toUserResponse);
     }
 
     @Override
@@ -267,23 +247,6 @@ public class UserServiceImpl implements UserService {
     public Page<UserResponse> searchUsers(String keyword, Pageable pageable) {
         log.debug("Searching users with keyword: {}", keyword);
 
-        String lowerKeyword = keyword.toLowerCase();
-
-        List<User> allUsers = userRepository.findAll();
-        List<User> matchingUsers = allUsers.stream()
-                .filter(user -> 
-                    user.getFullName().toLowerCase().contains(lowerKeyword) ||
-                    user.getEmail().toLowerCase().contains(lowerKeyword) ||
-                    (user.getPhoneNumber() != null && user.getPhoneNumber().contains(keyword))
-                )
-                .collect(Collectors.toList());
-
-        // Manual pagination
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), matchingUsers.size());
-        List<User> pageContent = matchingUsers.subList(start, end);
-
-        Page<User> page = new PageImpl<>(pageContent, pageable, matchingUsers.size());
-        return page.map(entityMapper::toUserResponse);
+        return userRepository.searchByKeyword(keyword, pageable).map(entityMapper::toUserResponse);
     }
 }
