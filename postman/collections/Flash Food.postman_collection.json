@@ -7,10 +7,35 @@
   "item": [
     {
       "name": "Authentication",
-      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
       "item": [
         {
           "name": "Register",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "97dc0729-ae48-4c37-99b1-5b282fd5c2fc",
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "c608e38d-2a19-4c4c-8ccd-5844684fd8fe",
+                "exec": [
+                  "const responseJson = pm.response.json();\r",
+                  "pm.environment.set('accessToken', responseJson.data.accessToken);\r",
+                  "// Refresh token is delivered via HTTP-only cookie; no need to capture it here."
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "id": "a1b2c3d4-0001-0000-0000-000000000001",
           "request": {
             "method": "POST",
@@ -34,12 +59,38 @@
               "host": ["{{baseURL}}"],
               "path": ["api", "v1", "auth", "register"]
             },
-            "description": "Register a new user account. Returns an access token and a refresh token on success."
+            "description": "Register a new user account. The access token is returned in the response body. The refresh token is set as an HTTP-only cookie named 'refreshToken' by the server — Postman's cookie jar will capture and replay it automatically."
           },
           "response": []
         },
         {
           "name": "Login",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "828564b3-18c9-405c-bc64-03697e66a56f",
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "155b30d2-877b-4ac8-a4d5-e09577403aa0",
+                "exec": [
+                  "const responseJson = pm.response.json();\r",
+                  "pm.environment.set('accessToken', responseJson.data.accessToken);\r",
+                  "// Refresh token is delivered via HTTP-only cookie; no need to capture it here."
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "id": "a1b2c3d4-0001-0000-0000-000000000002",
           "request": {
             "method": "POST",
@@ -63,36 +114,35 @@
               "host": ["{{baseURL}}"],
               "path": ["api", "v1", "auth", "login"]
             },
-            "description": "Authenticate with email and password. Returns a new access token and refresh token pair."
+            "description": "Authenticate with email and password. The access token is returned in the response body. The refresh token is set as an HTTP-only cookie named 'refreshToken' — Postman's cookie jar handles it automatically."
           },
           "response": []
         },
         {
           "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const responseJson = pm.response.json();\r",
+                  "pm.environment.set('accessToken', responseJson.data.accessToken);\r",
+                  "// New refresh token is reset as an HTTP-only cookie automatically."
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "id": "a1b2c3d4-0001-0000-0000-000000000003",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
+            "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/refresh-token",
               "host": ["{{baseURL}}"],
               "path": ["api", "v1", "auth", "refresh-token"]
             },
-            "description": "Exchange a valid refresh token for a new access token and refresh token pair (token rotation). The old refresh token is immediately revoked."
+            "description": "Rotate the access/refresh token pair. No request body required — the server reads the refresh token from the HTTP-only 'refreshToken' cookie automatically (Postman's cookie jar handles this). The old refresh token is immediately revoked and a new one is set as a cookie."
           },
           "response": []
         },
@@ -111,31 +161,18 @@
               ]
             },
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
+            "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/logout",
               "host": ["{{baseURL}}"],
               "path": ["api", "v1", "auth", "logout"]
             },
-            "description": "Revoke the supplied refresh token, ending the current session. Requires a valid access token."
+            "description": "Revoke the current session. No request body required — the server reads the refresh token from the HTTP-only 'refreshToken' cookie and revokes it, then clears the cookie. Requires a valid Bearer access token in the Authorization header."
           },
           "response": []
         }
-      ]
+      ],
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
     },
     {
       "name": "Category",
