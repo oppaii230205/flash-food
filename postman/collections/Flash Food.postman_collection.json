@@ -15,7 +15,9 @@
               "listen": "prerequest",
               "script": {
                 "id": "97dc0729-ae48-4c37-99b1-5b282fd5c2fc",
-                "exec": [""],
+                "exec": [
+                  ""
+                ],
                 "type": "text/javascript",
                 "packages": {},
                 "requests": {}
@@ -56,8 +58,15 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/register",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "auth", "register"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
             },
             "description": "Register a new user account. The access token is returned in the response body. The refresh token is set as an HTTP-only cookie named 'refreshToken' by the server — Postman's cookie jar will capture and replay it automatically."
           },
@@ -70,7 +79,9 @@
               "listen": "prerequest",
               "script": {
                 "id": "828564b3-18c9-405c-bc64-03697e66a56f",
-                "exec": [""],
+                "exec": [
+                  ""
+                ],
                 "type": "text/javascript",
                 "packages": {},
                 "requests": {}
@@ -111,8 +122,15 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/login",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "auth", "login"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
             },
             "description": "Authenticate with email and password. The access token is returned in the response body. The refresh token is set as an HTTP-only cookie named 'refreshToken' — Postman's cookie jar handles it automatically."
           },
@@ -139,8 +157,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/refresh-token",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "auth", "refresh-token"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh-token"
+              ]
             },
             "description": "Rotate the access/refresh token pair. No request body required — the server reads the refresh token from the HTTP-only 'refreshToken' cookie automatically (Postman's cookie jar handles this). The old refresh token is immediately revoked and a new one is set as a cookie."
           },
@@ -164,8 +189,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/logout",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "auth", "logout"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
             },
             "description": "Revoke the current session. No request body required — the server reads the refresh token from the HTTP-only 'refreshToken' cookie and revokes it, then clears the cookie. Requires a valid Bearer access token in the Authorization header."
           },
@@ -205,7 +237,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Bánh mì & Bánh ngọt\",\n  \"slug\": \"banh-mi-banh-ngot\",\n  \"description\": \"Các loại bánh mì, bánh ngọt và bánh ăn vặt buổi sáng\",\n  \"iconUrl\": \"https://example.com/icons/banh-mi.png\",\n  \"displayOrder\": 1,\n  \"isActive\": true,\n  \"parentId\": null\n}",
+              "raw": "{\n  \"name\": \"Bánh mì & Bánh ngọt 1\",\n  \"slug\": \"banh-mi-banh-ngot\",\n  \"description\": \"Các loại bánh mì, bánh ngọt và bánh ăn vặt buổi sáng\",\n  \"iconUrl\": \"https://example.com/icons/banh-mi.png\",\n  \"displayOrder\": 1,\n  \"isActive\": true,\n  \"parentId\": null\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -214,8 +246,14 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/categories",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ]
             },
             "description": "Create a new category. Requires ADMIN role."
           },
@@ -247,8 +285,14 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/categories",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ]
             },
             "description": "Create a sub-category under an existing parent category. Requires ADMIN role."
           },
@@ -280,8 +324,15 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/1",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "1"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "1"
+              ]
             },
             "description": "Update an existing category by ID. Requires ADMIN role."
           },
@@ -300,8 +351,15 @@
             ],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/1",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "1"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "1"
+              ]
             },
             "description": "Delete a category by ID. Requires ADMIN role."
           },
@@ -315,8 +373,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/1",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "1"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "1"
+              ]
             },
             "description": "Retrieve a single category by its ID."
           },
@@ -330,8 +395,16 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/slug/banh-mi-banh-ngot",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "slug", "banh-mi-banh-ngot"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "slug",
+                "banh-mi-banh-ngot"
+              ]
             },
             "description": "Retrieve a single category by its URL-friendly slug."
           },
@@ -345,8 +418,14 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories?page=0&size=20&sortBy=displayOrder&sortDirection=asc",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ],
               "query": [
                 {
                   "key": "page",
@@ -378,8 +457,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/active",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "active"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "active"
+              ]
             },
             "description": "Get all active categories (isActive = true) without pagination."
           },
@@ -393,8 +479,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/root",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "root"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "root"
+              ]
             },
             "description": "Get all top-level (root) categories that have no parent."
           },
@@ -408,8 +501,16 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/1/children",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "1", "children"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "1",
+                "children"
+              ]
             },
             "description": "Get all direct child categories of a given parent category ID."
           },
@@ -423,8 +524,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/search?keyword=bánh",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "search"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "search"
+              ],
               "query": [
                 {
                   "key": "keyword",
