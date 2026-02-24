@@ -4,6 +4,9 @@ import com.flashfood.flash_food.dto.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -58,6 +61,58 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
+
+    // -------------------------------------------------------------------------
+    // Authentication & token exceptions
+    // -------------------------------------------------------------------------
+
+    /**
+     * Invalid / expired / revoked refresh token.
+     */
+    @ExceptionHandler(TokenException.class)
+    public ResponseEntity<ApiResponse<Void>> handleTokenException(TokenException ex) {
+        log.error("Token error: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED, ex.getMessage()));
+    }
+
+    /**
+     * Wrong email or password during login.
+     */
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBadCredentials(BadCredentialsException ex) {
+        log.error("Bad credentials: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED, "Invalid email or password"));
+    }
+
+    /**
+     * Account is disabled (status != ACTIVE).
+     */
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDisabled(DisabledException ex) {
+        log.error("Account disabled: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED, "Account is disabled"));
+    }
+
+    /**
+     * Account is locked (status == SUSPENDED).
+     */
+    @ExceptionHandler(LockedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleLocked(LockedException ex) {
+        log.error("Account locked: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED, "Account is locked"));
+    }
+
+    // -------------------------------------------------------------------------
+    // Validation
+    // -------------------------------------------------------------------------
     
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationErrors(MethodArgumentNotValidException ex) {
