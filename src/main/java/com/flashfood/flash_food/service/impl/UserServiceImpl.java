@@ -1,6 +1,7 @@
 package com.flashfood.flash_food.service.impl;
 
 import com.flashfood.flash_food.dto.request.ChangePasswordRequest;
+import com.flashfood.flash_food.dto.request.UpdateLocationRequest;
 import com.flashfood.flash_food.dto.request.UpdateProfileRequest;
 import com.flashfood.flash_food.dto.response.UserResponse;
 import com.flashfood.flash_food.entity.Profile;
@@ -14,6 +15,7 @@ import com.flashfood.flash_food.util.EntityMapper;
 import com.flashfood.flash_food.repository.ProfileRepository;
 import com.flashfood.flash_food.repository.UserRepository;
 import com.flashfood.flash_food.service.AuthenticationService;
+import com.flashfood.flash_food.service.RedisGeoService;
 import com.flashfood.flash_food.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,7 @@ public class UserServiceImpl implements UserService {
     private final ProfileRepository profileRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationService authenticationService;
+    private final RedisGeoService redisGeoService;
     private final EntityMapper entityMapper;
 
     @Override
@@ -71,7 +74,7 @@ public class UserServiceImpl implements UserService {
 
         if (request.getPhoneNumber() != null && !request.getPhoneNumber().isBlank()) {
             if (!profile.getPhoneNumber().equals(request.getPhoneNumber()) &&
-                    profileRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+                    profileRepository.existsByPhoneNumberAndUser_IdNot(request.getPhoneNumber(), currentUser.getId())) {
                 throw new DuplicateResourceException("Phone number is already in use");
             }
             profile.setPhoneNumber(request.getPhoneNumber());
@@ -79,6 +82,14 @@ public class UserServiceImpl implements UserService {
 
         if (request.getAddress() != null) {
             profile.setAddress(request.getAddress());
+        }
+
+        if (request.getAvatarUrl() != null) {
+            profile.setAvatarUrl(request.getAvatarUrl());
+        }
+
+        if (request.getNotificationEnabled() != null) {
+            profile.setNotificationEnabled(request.getNotificationEnabled());
         }
 
         profileRepository.save(profile);
@@ -252,5 +263,34 @@ public class UserServiceImpl implements UserService {
         log.debug("Searching users with keyword: {}", keyword);
 
         return userRepository.searchByKeyword(keyword, pageable).map(entityMapper::toUserResponse);
+    }
+
+    @Override
+    @Transactional
+    public UserResponse updateLocation(UpdateLocationRequest request) {
+        log.info("Updating location for current user");
+
+        User currentUser = authenticationService.getCurrentUser();
+        Profile profile = currentUser.getProfile();
+
+        if (request.getLatitude() != null) {
+            profile.setLatitude(request.getLatitude());
+        }
+        if (request.getLongitude() != null) {
+            profile.setLongitude(request.getLongitude());
+        }
+        if (request.getNotificationRadius() != null) {
+            profile.setNotificationRadius(request.getNotificationRadius());
+        }
+
+        profileRepository.save(profile);
+
+        // Sync location to Redis geo index for proximity-based features
+        if (profile.getLatitude() != null && profile.getLongitude() != null) {
+            redisGeoService.addUserLocation(currentUser.getId(), profile.getLongitude(), profile.getLatitude());
+        }
+
+        log.info("Location updated successfully for user ID: {}", currentUser.getId());
+        return entityMapper.toUserResponse(currentUser);
     }
 }

@@ -1,6 +1,7 @@
 package com.flashfood.flash_food.controller;
 
 import com.flashfood.flash_food.dto.request.ChangePasswordRequest;
+import com.flashfood.flash_food.dto.request.UpdateLocationRequest;
 import com.flashfood.flash_food.dto.request.UpdateProfileRequest;
 import com.flashfood.flash_food.dto.response.ApiResponse;
 import com.flashfood.flash_food.dto.response.UserResponse;
@@ -65,7 +66,7 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<Void>> changePassword(
             @Valid @RequestBody ChangePasswordRequest request) {
-        
+
         log.info("POST /api/v1/users/me/change-password - Changing password");
         userService.changePassword(request);
         return ResponseEntity.ok(ApiResponse.<Void>builder()
@@ -73,6 +74,23 @@ public class UserController {
                 .message("Password changed successfully")
                 .httpCode(HttpStatus.OK.value())
                 .build());
+    }
+
+    /**
+     * Update current user's geo-location and notification radius.
+     * Syncs coordinates to the Redis geo index for proximity-based flash-sale alerts.
+     *
+     * @param request Latitude, longitude, and optional notification radius
+     * @return Updated user details
+     */
+    @PatchMapping("/me/location")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<UserResponse>> updateLocation(
+            @Valid @RequestBody UpdateLocationRequest request) {
+
+        log.info("PATCH /api/v1/users/me/location - Updating user location");
+        UserResponse response = userService.updateLocation(request);
+        return ResponseEntity.ok(ApiResponse.success("Location updated successfully", response));
     }
 
     /**
