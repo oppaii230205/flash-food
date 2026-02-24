@@ -15,25 +15,24 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repository for User entity
+ * Repository for the {@link User} entity.
+ *
+ * Note: phone number uniqueness queries now live in {@link ProfileRepository}
+ * because the {@code phone_number} column was moved to the {@code profiles} table.
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    
+
     Optional<User> findByEmail(String email);
-    
-    Optional<User> findByPhoneNumber(String phoneNumber);
-    
+
     boolean existsByEmail(String email);
-    
-    boolean existsByPhoneNumber(String phoneNumber);
 
     List<User> findByStatus(UserStatus status);
 
     Page<User> findByStatus(UserStatus status, Pageable pageable);
 
     /**
-     * Find users that have a specific role (list and paginated variants)
+     * Find users that have a specific role.
      */
     @Query("SELECT DISTINCT u FROM User u JOIN u.roles r WHERE r = :role")
     List<User> findByRole(@Param("role") UserRole role);
@@ -42,25 +41,29 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findByRole(@Param("role") UserRole role, Pageable pageable);
 
     /**
-     * Search users by full name, email or phone number
+     * Search users by full name, email or phone number.
+     * fullName and phoneNumber now reside in the joined Profile.
      */
     @Query("""
         SELECT u FROM User u
-        WHERE LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        JOIN u.profile p
+        WHERE LOWER(p.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))
         OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%'))
-        OR u.phoneNumber LIKE CONCAT('%', :keyword, '%')
+        OR p.phoneNumber LIKE CONCAT('%', :keyword, '%')
     """)
     Page<User> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
     /**
-     * Find users with push notifications enabled (for geo-notification scheduler)
+     * Find users with push notifications enabled whose location is known.
+     * Location and notification preferences now reside in the joined Profile.
      */
     @Query("""
-        SELECT u FROM User u 
-        WHERE u.notificationEnabled = true 
+        SELECT u FROM User u
+        JOIN u.profile p
+        WHERE p.notificationEnabled = true
         AND u.status = :status
-        AND u.latitude IS NOT NULL 
-        AND u.longitude IS NOT NULL
+        AND p.latitude IS NOT NULL
+        AND p.longitude IS NOT NULL
     """)
     List<User> findUsersWithNotificationsEnabled(@Param("status") UserStatus status);
 
@@ -68,3 +71,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
         return findUsersWithNotificationsEnabled(UserStatus.ACTIVE);
     }
 }
+

@@ -14,27 +14,33 @@ import java.util.stream.Collectors;
 public class EntityMapper {
     
     /**
-     * Map User entity to UserResponse DTO
+     * Map User entity to UserResponse DTO.
+     * Combines fields from the {@link com.flashfood.flash_food.entity.User} (auth) and its
+     * {@link com.flashfood.flash_food.entity.Profile} (personal data) into a flat response.
      */
     public UserResponse toUserResponse(User user) {
         if (user == null) return null;
-        
-        // Convert roles set to comma-separated string
+
+        com.flashfood.flash_food.entity.Profile profile = user.getProfile();
+
+        // Convert roles set to comma-separated display names
         String rolesStr = user.getRoles() != null && !user.getRoles().isEmpty()
                 ? user.getRoles().stream()
                     .map(UserRole::getDisplayName)
                     .collect(Collectors.joining(", "))
                 : null;
-        
+
         return UserResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
-                .fullName(user.getFullName())
-                .phoneNumber(user.getPhoneNumber())
-                .latitude(user.getLatitude())
-                .longitude(user.getLongitude())
-                .notificationEnabled(user.getNotificationEnabled())
-                .notificationRadius(user.getNotificationRadius())
+                .fullName(profile != null ? profile.getFullName() : null)
+                .phoneNumber(profile != null ? profile.getPhoneNumber() : null)
+                .address(profile != null ? profile.getAddress() : null)
+                .avatarUrl(profile != null ? profile.getAvatarUrl() : null)
+                .latitude(profile != null ? profile.getLatitude() : null)
+                .longitude(profile != null ? profile.getLongitude() : null)
+                .notificationEnabled(profile != null ? profile.getNotificationEnabled() : null)
+                .notificationRadius(profile != null ? profile.getNotificationRadius() : null)
                 .role(rolesStr)
                 .status(user.getStatus() != null ? user.getStatus().getDisplayName() : null)
                 .createdAt(user.getCreatedAt())

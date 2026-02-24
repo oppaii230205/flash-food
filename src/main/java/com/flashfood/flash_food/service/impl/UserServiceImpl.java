@@ -3,6 +3,7 @@ package com.flashfood.flash_food.service.impl;
 import com.flashfood.flash_food.dto.request.ChangePasswordRequest;
 import com.flashfood.flash_food.dto.request.UpdateProfileRequest;
 import com.flashfood.flash_food.dto.response.UserResponse;
+import com.flashfood.flash_food.entity.Profile;
 import com.flashfood.flash_food.entity.User;
 import com.flashfood.flash_food.entity.UserRole;
 import com.flashfood.flash_food.entity.UserStatus;
@@ -10,6 +11,7 @@ import com.flashfood.flash_food.exception.DuplicateResourceException;
 import com.flashfood.flash_food.exception.InvalidOperationException;
 import com.flashfood.flash_food.exception.ResourceNotFoundException;
 import com.flashfood.flash_food.util.EntityMapper;
+import com.flashfood.flash_food.repository.ProfileRepository;
 import com.flashfood.flash_food.repository.UserRepository;
 import com.flashfood.flash_food.service.AuthenticationService;
 import com.flashfood.flash_food.service.UserService;
@@ -32,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final ProfileRepository profileRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationService authenticationService;
     private final EntityMapper entityMapper;
@@ -49,38 +52,39 @@ public class UserServiceImpl implements UserService {
         log.info("Updating profile for current user");
 
         User currentUser = authenticationService.getCurrentUser();
+        Profile profile = currentUser.getProfile();
 
-        // Update fields if provided
-        if (request.getFullName() != null && !request.getFullName().isBlank()) {
-            currentUser.setFullName(request.getFullName());
-        }
-
+        // Email lives in User (auth credential)
         if (request.getEmail() != null && !request.getEmail().isBlank()) {
-            // Check if email is already used by another user
-            if (!currentUser.getEmail().equals(request.getEmail()) && 
+            if (!currentUser.getEmail().equals(request.getEmail()) &&
                     userRepository.existsByEmail(request.getEmail())) {
                 throw new DuplicateResourceException("Email is already in use");
             }
             currentUser.setEmail(request.getEmail());
+            userRepository.save(currentUser);
+        }
+
+        // All other personal fields live in Profile
+        if (request.getFullName() != null && !request.getFullName().isBlank()) {
+            profile.setFullName(request.getFullName());
         }
 
         if (request.getPhoneNumber() != null && !request.getPhoneNumber().isBlank()) {
-            // Check if phone number is already used by another user
-            if (!currentUser.getPhoneNumber().equals(request.getPhoneNumber()) && 
-                    userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+            if (!profile.getPhoneNumber().equals(request.getPhoneNumber()) &&
+                    profileRepository.existsByPhoneNumber(request.getPhoneNumber())) {
                 throw new DuplicateResourceException("Phone number is already in use");
             }
-            currentUser.setPhoneNumber(request.getPhoneNumber());
+            profile.setPhoneNumber(request.getPhoneNumber());
         }
 
         if (request.getAddress() != null) {
-            currentUser.setAddress(request.getAddress());
+            profile.setAddress(request.getAddress());
         }
 
-        User updatedUser = userRepository.save(currentUser);
-        log.info("Profile updated successfully for user ID: {}", updatedUser.getId());
+        profileRepository.save(profile);
+        log.info("Profile updated successfully for user ID: {}", currentUser.getId());
 
-        return entityMapper.toUserResponse(updatedUser);
+        return entityMapper.toUserResponse(currentUser);
     }
 
     @Override
