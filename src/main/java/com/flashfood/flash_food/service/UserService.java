@@ -1,6 +1,7 @@
 package com.flashfood.flash_food.service;
 
 import com.flashfood.flash_food.dto.request.ChangePasswordRequest;
+import com.flashfood.flash_food.dto.request.UpdateLocationRequest;
 import com.flashfood.flash_food.dto.request.UpdateProfileRequest;
 import com.flashfood.flash_food.dto.response.UserResponse;
 import org.springframework.data.domain.Page;
@@ -89,4 +90,13 @@ public interface UserService {
      * @return Page of matching users
      */
     Page<UserResponse> searchUsers(String keyword, Pageable pageable);
+
+    /**
+     * Update the current user's geo-location and notification radius.
+     * Also syncs the new coordinates to the Redis geo index.
+     *
+     * @param request Latitude, longitude and optional notification radius
+     * @return Updated user details
+     */
+    UserResponse updateLocation(UpdateLocationRequest request);
 }

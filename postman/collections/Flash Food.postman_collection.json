@@ -113,7 +113,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"nguyenvana@example.com\",\n  \"password\": \"Abc@12345\"\n}",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"Test1234\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -546,6 +546,523 @@
         }
       ],
       "id": "871aae7c-0606-47ce-a283-83c93118c601"
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "id": "b2c3d4e5-0001-0000-0000-000000000001",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/users/me",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
+            },
+            "description": "Get the currently authenticated user's profile. Requires a valid Bearer access token."
+          },
+          "response": []
+        },
+        {
+          "name": "Update My Profile",
+          "id": "b2c3d4e5-0001-0000-0000-000000000002",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Nguyễn Văn A (đã cập nhật)\",\n  \"email\": \"nguyenvana.new@example.com\",\n  \"phoneNumber\": \"0909876543\",\n  \"address\": \"123 Nguyễn Huệ, Quận 1, TP.HCM\",\n  \"avatarUrl\": \"https://example.com/avatars/nguyenvana.jpg\",\n  \"notificationEnabled\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/users/me",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
+            },
+            "description": "Update the currently authenticated user's profile. All fields are optional — only provided fields are applied. Requires a valid Bearer access token."
+          },
+          "response": []
+        },
+        {
+          "name": "Change Password",
+          "id": "b2c3d4e5-0001-0000-0000-000000000003",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"Test12345\",\n  \"newPassword\": \"Test1234\",\n  \"confirmPassword\": \"Test1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/users/me/change-password",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me",
+                "change-password"
+              ]
+            },
+            "description": "Change the current user's password. Requires the correct current password and a new password of at least 8 characters. Requires a valid Bearer access token."
+          },
+          "response": []
+        },
+        {
+          "name": "Update My Location",
+          "id": "b2c3d4e5-0001-0000-0000-000000000004",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 10.7769,\n  \"longitude\": 106.7009,\n  \"notificationRadius\": 2.5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/users/me/location",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me",
+                "location"
+              ]
+            },
+            "description": "Update the current user's geo-location and notification radius. Coordinates are synced to the Redis geo index for proximity-based flash-sale alerts. All fields are optional. Requires a valid Bearer access token."
+          },
+          "response": []
+        },
+        {
+          "name": "Get User by ID (Admin)",
+          "id": "b2c3d4e5-0001-0000-0000-000000000005",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/users/3",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "3"
+              ]
+            },
+            "description": "Retrieve a single user by their ID. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users (Admin)",
+          "id": "b2c3d4e5-0001-0000-0000-000000000006",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/users?page=0&size=20&sort=createdAt,desc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
+              ]
+            },
+            "description": "Get all users with pagination, sorted by creation date descending. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Users by Role (Admin)",
+          "id": "b2c3d4e5-0001-0000-0000-000000000007",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/users/role/admin?page=0&size=20&sort=createdAt,desc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "role",
+                "admin"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "uuid": "1090d732-72c6-4910-860f-4a41c724e4d8"
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "uuid": "8a115285-bfaa-49f2-bea2-7df95f650d1d"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc",
+                  "uuid": "7e1ab833-0afd-4f7d-a71c-56fbe59c6d39"
+                }
+              ]
+            },
+            "description": "Get all users with a specific role. Accepted role values: customer, store_owner, admin. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Users by Status (Admin)",
+          "id": "b2c3d4e5-0001-0000-0000-000000000008",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/users/status/active?page=0&size=20&sort=createdAt,desc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "status",
+                "active"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "uuid": "fe01f91a-af95-429f-bebb-0c591a1fb6b7"
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "uuid": "81aa9c46-390d-41e0-88ab-7128184edc07"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc",
+                  "uuid": "be7bb0fe-ec9a-4fe2-84d2-bc97b34447d2"
+                }
+              ]
+            },
+            "description": "Get all users with a specific status. Accepted status values: active, inactive, suspended, deleted. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Search Users (Admin)",
+          "id": "b2c3d4e5-0001-0000-0000-000000000009",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/users/search?keyword=nguyen&page=0&size=20&sort=createdAt,desc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "nguyen"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
+              ]
+            },
+            "description": "Search users by keyword matching full name, email, or phone number. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Status (Admin)",
+          "id": "b2c3d4e5-0001-0000-0000-000000000010",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/users/3/status?status=active",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "3",
+                "status"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "active",
+                  "uuid": "d416c407-03bb-4ba3-a62d-f3594a88b797"
+                }
+              ]
+            },
+            "description": "Update a user's account status. Accepted values: active, inactive, suspended, deleted. Admins cannot change their own status. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Role (Admin)",
+          "id": "b2c3d4e5-0001-0000-0000-000000000011",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/users/3/role?role=store_owner",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "3",
+                "role"
+              ],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "store_owner",
+                  "uuid": "215e0fb4-5d66-48ec-963d-38792c9abf0e"
+                }
+              ]
+            },
+            "description": "Update a user's role. Accepted values: customer, store_owner, admin. Admins cannot change their own role. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User (Admin)",
+          "id": "b2c3d4e5-0001-0000-0000-000000000012",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/users/3",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "3"
+              ]
+            },
+            "description": "Soft-delete a user account by setting their status to 'deleted'. Admins cannot delete their own account. Requires ADMIN role."
+          },
+          "response": []
+        }
+      ],
+      "id": "b2c3d4e5-f6a7-8901-bcde-f01234567890"
     }
   ]
 }

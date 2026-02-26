@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,6 +28,12 @@ import java.util.Set;
  * Implements {@link UserDetails} so it can be used directly as a Spring Security
  * principal without an extra wrapper class.
  */
+/**
+ * Automatically excludes soft-deleted users (status code 4 = DELETED) from all
+ * queries — including derived finders, JPQL, and association joins.
+ * Hibernate 6.x @SQLRestriction is the successor to the deprecated @Where.
+ */
+@SQLRestriction("status <> 4")
 @Entity
 @Table(name = "users")
 @Getter
