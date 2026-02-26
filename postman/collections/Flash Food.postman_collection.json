@@ -113,7 +113,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"nguyenvana.new@example.com\",\n  \"password\": \"Test1234\"\n}",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"Test1234\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -816,7 +816,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/api/v1/users/role/customer?page=0&size=20&sort=createdAt,desc",
+              "raw": "{{baseURL}}/api/v1/users/role/admin?page=0&size=20&sort=createdAt,desc",
               "host": [
                 "{{baseURL}}"
               ],
@@ -825,20 +825,23 @@
                 "v1",
                 "users",
                 "role",
-                "customer"
+                "admin"
               ],
               "query": [
                 {
                   "key": "page",
-                  "value": "0"
+                  "value": "0",
+                  "uuid": "1090d732-72c6-4910-860f-4a41c724e4d8"
                 },
                 {
                   "key": "size",
-                  "value": "20"
+                  "value": "20",
+                  "uuid": "8a115285-bfaa-49f2-bea2-7df95f650d1d"
                 },
                 {
                   "key": "sort",
-                  "value": "createdAt,desc"
+                  "value": "createdAt,desc",
+                  "uuid": "7e1ab833-0afd-4f7d-a71c-56fbe59c6d39"
                 }
               ]
             },
@@ -877,15 +880,18 @@
               "query": [
                 {
                   "key": "page",
-                  "value": "0"
+                  "value": "0",
+                  "uuid": "fe01f91a-af95-429f-bebb-0c591a1fb6b7"
                 },
                 {
                   "key": "size",
-                  "value": "20"
+                  "value": "20",
+                  "uuid": "81aa9c46-390d-41e0-88ab-7128184edc07"
                 },
                 {
                   "key": "sort",
-                  "value": "createdAt,desc"
+                  "value": "createdAt,desc",
+                  "uuid": "be7bb0fe-ec9a-4fe2-84d2-bc97b34447d2"
                 }
               ]
             },
@@ -960,7 +966,7 @@
             "method": "PATCH",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/api/v1/users/2/status?status=suspended",
+              "raw": "{{baseURL}}/api/v1/users/3/status?status=active",
               "host": [
                 "{{baseURL}}"
               ],
@@ -968,13 +974,14 @@
                 "api",
                 "v1",
                 "users",
-                "2",
+                "3",
                 "status"
               ],
               "query": [
                 {
                   "key": "status",
-                  "value": "suspended"
+                  "value": "active",
+                  "uuid": "d416c407-03bb-4ba3-a62d-f3594a88b797"
                 }
               ]
             },
@@ -999,7 +1006,7 @@
             "method": "PATCH",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/api/v1/users/2/role?role=store_owner",
+              "raw": "{{baseURL}}/api/v1/users/3/role?role=store_owner",
               "host": [
                 "{{baseURL}}"
               ],
@@ -1007,13 +1014,14 @@
                 "api",
                 "v1",
                 "users",
-                "2",
+                "3",
                 "role"
               ],
               "query": [
                 {
                   "key": "role",
-                  "value": "store_owner"
+                  "value": "store_owner",
+                  "uuid": "215e0fb4-5d66-48ec-963d-38792c9abf0e"
                 }
               ]
             },
@@ -1038,7 +1046,7 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/api/v1/users/2",
+              "raw": "{{baseURL}}/api/v1/users/3",
               "host": [
                 "{{baseURL}}"
               ],
@@ -1046,7 +1054,7 @@
                 "api",
                 "v1",
                 "users",
-                "2"
+                "3"
               ]
             },
             "description": "Soft-delete a user account by setting their status to 'deleted'. Admins cannot delete their own account. Requires ADMIN role."

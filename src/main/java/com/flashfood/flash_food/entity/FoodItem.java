@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,11 @@ import java.time.LocalDateTime;
 /**
  * FoodItem entity - Represents flash sale food items
  */
+/**
+ * Automatically excludes soft-deleted food items (status code 6 = DELETED) from
+ * all queries — including derived finders, JPQL, and association joins.
+ */
+@SQLRestriction("status <> 6")
 @Entity
 @Table(name = "food_items")
 @Getter
