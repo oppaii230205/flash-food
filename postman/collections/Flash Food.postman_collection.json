@@ -15,7 +15,9 @@
               "listen": "prerequest",
               "script": {
                 "id": "97dc0729-ae48-4c37-99b1-5b282fd5c2fc",
-                "exec": [""],
+                "exec": [
+                  ""
+                ],
                 "type": "text/javascript",
                 "packages": {},
                 "requests": {}
@@ -56,8 +58,15 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/register",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "auth", "register"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
             },
             "description": "Register a new user account. The access token is returned in the response body. The refresh token is set as an HTTP-only cookie named 'refreshToken' by the server — Postman's cookie jar will capture and replay it automatically."
           },
@@ -70,7 +79,9 @@
               "listen": "prerequest",
               "script": {
                 "id": "828564b3-18c9-405c-bc64-03697e66a56f",
-                "exec": [""],
+                "exec": [
+                  ""
+                ],
                 "type": "text/javascript",
                 "packages": {},
                 "requests": {}
@@ -102,7 +113,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"nguyenvana@example.com\",\n  \"password\": \"Abc@12345\"\n}",
+              "raw": "{\n  \"email\": \"nguyenvana.new@example.com\",\n  \"password\": \"Test1234\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -111,8 +122,15 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/login",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "auth", "login"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
             },
             "description": "Authenticate with email and password. The access token is returned in the response body. The refresh token is set as an HTTP-only cookie named 'refreshToken' — Postman's cookie jar handles it automatically."
           },
@@ -139,8 +157,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/refresh-token",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "auth", "refresh-token"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh-token"
+              ]
             },
             "description": "Rotate the access/refresh token pair. No request body required — the server reads the refresh token from the HTTP-only 'refreshToken' cookie automatically (Postman's cookie jar handles this). The old refresh token is immediately revoked and a new one is set as a cookie."
           },
@@ -164,8 +189,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/logout",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "auth", "logout"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
             },
             "description": "Revoke the current session. No request body required — the server reads the refresh token from the HTTP-only 'refreshToken' cookie and revokes it, then clears the cookie. Requires a valid Bearer access token in the Authorization header."
           },
@@ -214,8 +246,14 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/categories",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ]
             },
             "description": "Create a new category. Requires ADMIN role."
           },
@@ -247,8 +285,14 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/categories",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ]
             },
             "description": "Create a sub-category under an existing parent category. Requires ADMIN role."
           },
@@ -280,8 +324,15 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/1",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "1"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "1"
+              ]
             },
             "description": "Update an existing category by ID. Requires ADMIN role."
           },
@@ -300,8 +351,15 @@
             ],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/1",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "1"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "1"
+              ]
             },
             "description": "Delete a category by ID. Requires ADMIN role."
           },
@@ -315,8 +373,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/1",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "1"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "1"
+              ]
             },
             "description": "Retrieve a single category by its ID."
           },
@@ -330,8 +395,16 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/slug/banh-mi-banh-ngot",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "slug", "banh-mi-banh-ngot"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "slug",
+                "banh-mi-banh-ngot"
+              ]
             },
             "description": "Retrieve a single category by its URL-friendly slug."
           },
@@ -345,8 +418,14 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories?page=0&size=20&sortBy=displayOrder&sortDirection=asc",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ],
               "query": [
                 {
                   "key": "page",
@@ -378,8 +457,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/active",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "active"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "active"
+              ]
             },
             "description": "Get all active categories (isActive = true) without pagination."
           },
@@ -393,8 +479,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/root",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "root"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "root"
+              ]
             },
             "description": "Get all top-level (root) categories that have no parent."
           },
@@ -408,8 +501,16 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/1/children",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "1", "children"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "1",
+                "children"
+              ]
             },
             "description": "Get all direct child categories of a given parent category ID."
           },
@@ -423,8 +524,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/search?keyword=bánh",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "search"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "search"
+              ],
               "query": [
                 {
                   "key": "keyword",
@@ -441,7 +549,6 @@
     },
     {
       "name": "User",
-      "id": "b2c3d4e5-f6a7-8901-bcde-f01234567890",
       "item": [
         {
           "name": "Get My Profile",
@@ -461,8 +568,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/me",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "me"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
             },
             "description": "Get the currently authenticated user's profile. Requires a valid Bearer access token."
           },
@@ -500,8 +614,15 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/users/me",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "me"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
             },
             "description": "Update the currently authenticated user's profile. All fields are optional — only provided fields are applied. Requires a valid Bearer access token."
           },
@@ -530,7 +651,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"currentPassword\": \"Abc@12345\",\n  \"newPassword\": \"NewPass@6789\",\n  \"confirmPassword\": \"NewPass@6789\"\n}",
+              "raw": "{\n  \"currentPassword\": \"Test12345\",\n  \"newPassword\": \"Test1234\",\n  \"confirmPassword\": \"Test1234\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -539,8 +660,16 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/users/me/change-password",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "me", "change-password"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me",
+                "change-password"
+              ]
             },
             "description": "Change the current user's password. Requires the correct current password and a new password of at least 8 characters. Requires a valid Bearer access token."
           },
@@ -578,8 +707,16 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/users/me/location",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "me", "location"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me",
+                "location"
+              ]
             },
             "description": "Update the current user's geo-location and notification radius. Coordinates are synced to the Redis geo index for proximity-based flash-sale alerts. All fields are optional. Requires a valid Bearer access token."
           },
@@ -602,9 +739,16 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/api/v1/users/1",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "1"]
+              "raw": "{{baseURL}}/api/v1/users/3",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "3"
+              ]
             },
             "description": "Retrieve a single user by their ID. Requires ADMIN role."
           },
@@ -628,12 +772,27 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users?page=0&size=20&sort=createdAt,desc",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ],
               "query": [
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "20" },
-                { "key": "sort", "value": "createdAt,desc" }
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
               ]
             },
             "description": "Get all users with pagination, sorted by creation date descending. Requires ADMIN role."
@@ -658,12 +817,29 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/role/customer?page=0&size=20&sort=createdAt,desc",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "role", "customer"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "role",
+                "customer"
+              ],
               "query": [
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "20" },
-                { "key": "sort", "value": "createdAt,desc" }
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
               ]
             },
             "description": "Get all users with a specific role. Accepted role values: customer, store_owner, admin. Requires ADMIN role."
@@ -688,12 +864,29 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/status/active?page=0&size=20&sort=createdAt,desc",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "status", "active"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "status",
+                "active"
+              ],
               "query": [
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "20" },
-                { "key": "sort", "value": "createdAt,desc" }
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
               ]
             },
             "description": "Get all users with a specific status. Accepted status values: active, inactive, suspended, deleted. Requires ADMIN role."
@@ -718,13 +911,32 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/search?keyword=nguyen&page=0&size=20&sort=createdAt,desc",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "search"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "search"
+              ],
               "query": [
-                { "key": "keyword", "value": "nguyen" },
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "20" },
-                { "key": "sort", "value": "createdAt,desc" }
+                {
+                  "key": "keyword",
+                  "value": "nguyen"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
               ]
             },
             "description": "Search users by keyword matching full name, email, or phone number. Requires ADMIN role."
@@ -749,9 +961,22 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/2/status?status=suspended",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "2", "status"],
-              "query": [{ "key": "status", "value": "suspended" }]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "2",
+                "status"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "suspended"
+                }
+              ]
             },
             "description": "Update a user's account status. Accepted values: active, inactive, suspended, deleted. Admins cannot change their own status. Requires ADMIN role."
           },
@@ -775,9 +1000,22 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/2/role?role=store_owner",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "2", "role"],
-              "query": [{ "key": "role", "value": "store_owner" }]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "2",
+                "role"
+              ],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "store_owner"
+                }
+              ]
             },
             "description": "Update a user's role. Accepted values: customer, store_owner, admin. Admins cannot change their own role. Requires ADMIN role."
           },
@@ -801,14 +1039,22 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/2",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "2"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "2"
+              ]
             },
             "description": "Soft-delete a user account by setting their status to 'deleted'. Admins cannot delete their own account. Requires ADMIN role."
           },
           "response": []
         }
-      ]
+      ],
+      "id": "b2c3d4e5-f6a7-8901-bcde-f01234567890"
     }
   ]
 }
