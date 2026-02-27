@@ -15,9 +15,7 @@
               "listen": "prerequest",
               "script": {
                 "id": "97dc0729-ae48-4c37-99b1-5b282fd5c2fc",
-                "exec": [
-                  ""
-                ],
+                "exec": [""],
                 "type": "text/javascript",
                 "packages": {},
                 "requests": {}
@@ -58,15 +56,8 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/register",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "register"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "auth", "register"]
             },
             "description": "Register a new user account. The access token is returned in the response body. The refresh token is set as an HTTP-only cookie named 'refreshToken' by the server — Postman's cookie jar will capture and replay it automatically."
           },
@@ -79,9 +70,7 @@
               "listen": "prerequest",
               "script": {
                 "id": "828564b3-18c9-405c-bc64-03697e66a56f",
-                "exec": [
-                  ""
-                ],
+                "exec": [""],
                 "type": "text/javascript",
                 "packages": {},
                 "requests": {}
@@ -122,15 +111,8 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/login",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "login"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "auth", "login"]
             },
             "description": "Authenticate with email and password. The access token is returned in the response body. The refresh token is set as an HTTP-only cookie named 'refreshToken' — Postman's cookie jar handles it automatically."
           },
@@ -157,15 +139,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/refresh-token",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "refresh-token"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "auth", "refresh-token"]
             },
             "description": "Rotate the access/refresh token pair. No request body required — the server reads the refresh token from the HTTP-only 'refreshToken' cookie automatically (Postman's cookie jar handles this). The old refresh token is immediately revoked and a new one is set as a cookie."
           },
@@ -189,15 +164,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/logout",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "logout"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "auth", "logout"]
             },
             "description": "Revoke the current session. No request body required — the server reads the refresh token from the HTTP-only 'refreshToken' cookie and revokes it, then clears the cookie. Requires a valid Bearer access token in the Authorization header."
           },
@@ -246,14 +214,8 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/categories",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "categories"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "categories"]
             },
             "description": "Create a new category. Requires ADMIN role."
           },
@@ -285,14 +247,8 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/categories",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "categories"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "categories"]
             },
             "description": "Create a sub-category under an existing parent category. Requires ADMIN role."
           },
@@ -324,15 +280,8 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/1",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "categories",
-                "1"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "categories", "1"]
             },
             "description": "Update an existing category by ID. Requires ADMIN role."
           },
@@ -351,15 +300,8 @@
             ],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/1",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "categories",
-                "1"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "categories", "1"]
             },
             "description": "Delete a category by ID. Requires ADMIN role."
           },
@@ -373,15 +315,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/1",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "categories",
-                "1"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "categories", "1"]
             },
             "description": "Retrieve a single category by its ID."
           },
@@ -395,16 +330,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/slug/banh-mi-banh-ngot",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "categories",
-                "slug",
-                "banh-mi-banh-ngot"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "categories", "slug", "banh-mi-banh-ngot"]
             },
             "description": "Retrieve a single category by its URL-friendly slug."
           },
@@ -418,14 +345,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories?page=0&size=20&sortBy=displayOrder&sortDirection=asc",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "categories"
-              ],
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "categories"],
               "query": [
                 {
                   "key": "page",
@@ -457,15 +378,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/active",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "categories",
-                "active"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "categories", "active"]
             },
             "description": "Get all active categories (isActive = true) without pagination."
           },
@@ -479,15 +393,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/root",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "categories",
-                "root"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "categories", "root"]
             },
             "description": "Get all top-level (root) categories that have no parent."
           },
@@ -501,16 +408,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/1/children",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "categories",
-                "1",
-                "children"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "categories", "1", "children"]
             },
             "description": "Get all direct child categories of a given parent category ID."
           },
@@ -524,15 +423,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/search?keyword=bánh",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "categories",
-                "search"
-              ],
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "categories", "search"],
               "query": [
                 {
                   "key": "keyword",
@@ -568,15 +460,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/me",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "users",
-                "me"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "users", "me"]
             },
             "description": "Get the currently authenticated user's profile. Requires a valid Bearer access token."
           },
@@ -614,15 +499,8 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/users/me",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "users",
-                "me"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "users", "me"]
             },
             "description": "Update the currently authenticated user's profile. All fields are optional — only provided fields are applied. Requires a valid Bearer access token."
           },
@@ -660,16 +538,8 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/users/me/change-password",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "users",
-                "me",
-                "change-password"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "users", "me", "change-password"]
             },
             "description": "Change the current user's password. Requires the correct current password and a new password of at least 8 characters. Requires a valid Bearer access token."
           },
@@ -707,16 +577,8 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/users/me/location",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "users",
-                "me",
-                "location"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "users", "me", "location"]
             },
             "description": "Update the current user's geo-location and notification radius. Coordinates are synced to the Redis geo index for proximity-based flash-sale alerts. All fields are optional. Requires a valid Bearer access token."
           },
@@ -740,15 +602,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/3",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "users",
-                "3"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "users", "3"]
             },
             "description": "Retrieve a single user by their ID. Requires ADMIN role."
           },
@@ -772,14 +627,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users?page=0&size=20&sort=createdAt,desc",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "users"
-              ],
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "users"],
               "query": [
                 {
                   "key": "page",
@@ -817,16 +666,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/role/admin?page=0&size=20&sort=createdAt,desc",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "users",
-                "role",
-                "admin"
-              ],
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "users", "role", "admin"],
               "query": [
                 {
                   "key": "page",
@@ -867,16 +708,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/status/active?page=0&size=20&sort=createdAt,desc",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "users",
-                "status",
-                "active"
-              ],
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "users", "status", "active"],
               "query": [
                 {
                   "key": "page",
@@ -917,15 +750,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/search?keyword=nguyen&page=0&size=20&sort=createdAt,desc",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "users",
-                "search"
-              ],
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "users", "search"],
               "query": [
                 {
                   "key": "keyword",
@@ -967,16 +793,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/3/status?status=active",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "users",
-                "3",
-                "status"
-              ],
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "users", "3", "status"],
               "query": [
                 {
                   "key": "status",
@@ -1007,16 +825,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/3/role?role=store_owner",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "users",
-                "3",
-                "role"
-              ],
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "users", "3", "role"],
               "query": [
                 {
                   "key": "role",
@@ -1047,15 +857,8 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/3",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "users",
-                "3"
-              ]
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "users", "3"]
             },
             "description": "Soft-delete a user account by setting their status to 'deleted'. Admins cannot delete their own account. Requires ADMIN role."
           },
@@ -1063,6 +866,383 @@
         }
       ],
       "id": "b2c3d4e5-f6a7-8901-bcde-f01234567890"
+    },
+    {
+      "name": "Store",
+      "id": "c3d4e5f6-a7b8-9012-cdef-012345678901",
+      "item": [
+        {
+          "name": "Create Store",
+          "id": "c3d4e5f6-0003-0000-0000-000000000001",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tiệm bánh mì Hương Việt\",\n  \"address\": \"123 Nguyễn Huệ, Bến Nghé, Quận 1, TP.HCM\",\n  \"phoneNumber\": \"0901234567\",\n  \"latitude\": 10.7769,\n  \"longitude\": 106.7009,\n  \"type\": \"bakery\",\n  \"description\": \"Tiệm bánh mì gia truyền hơn 20 năm, chuyên bánh mì thịt nướng và bánh mì pate.\",\n  \"imageUrl\": \"https://example.com/images/huong-viet-bakery.jpg\",\n  \"openTime\": \"06:00:00\",\n  \"closeTime\": \"22:00:00\",\n  \"flashSaleTime\": \"21:00:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/stores",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "stores"]
+            },
+            "description": "Create a new store owned by the currently authenticated user. The store starts with PENDING_APPROVAL status and requires an admin to approve before going live. Requires STORE_OWNER or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Store",
+          "id": "c3d4e5f6-0003-0000-0000-000000000002",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tiệm bánh mì Hương Việt - Chi nhánh Q1\",\n  \"address\": \"123 Nguyễn Huệ, Bến Nghé, Quận 1, TP.HCM\",\n  \"phoneNumber\": \"0901234568\",\n  \"description\": \"Tiệm bánh mì gia truyền hơn 20 năm. Mở cửa từ 6h sáng.\",\n  \"imageUrl\": \"https://example.com/images/huong-viet-updated.jpg\",\n  \"openTime\": \"06:00:00\",\n  \"closeTime\": \"22:30:00\",\n  \"flashSaleTime\": \"21:30:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/stores/1",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "stores", "1"]
+            },
+            "description": "Partially update an existing store — only non-null fields are applied. Only the store owner or an admin may call this. Requires STORE_OWNER or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Store",
+          "id": "c3d4e5f6-0003-0000-0000-000000000003",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/stores/1",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "stores", "1"]
+            },
+            "description": "Hard-delete a store and remove it from the Redis Geo index. Only the store owner or an admin may call this. Requires STORE_OWNER or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Store",
+          "id": "c3d4e5f6-0003-0000-0000-000000000004",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/stores/1/approve",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "stores", "1", "approve"]
+            },
+            "description": "Approve a pending store. Transitions the store from PENDING_APPROVAL to ACTIVE status. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Store Status",
+          "id": "c3d4e5f6-0003-0000-0000-000000000005",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"inactive\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/stores/1/status",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "stores", "1", "status"]
+            },
+            "description": "Update the lifecycle status of a store. Store owners may only toggle between 'active' and 'inactive'. Admins may set any valid status: active, inactive, suspended, pending_approval. Requires STORE_OWNER or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Active Stores",
+          "id": "c3d4e5f6-0003-0000-0000-000000000006",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/stores?page=0&size=20&sortBy=name&sortDirection=asc",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "stores"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "sortBy", "value": "name" },
+                { "key": "sortDirection", "value": "asc" }
+              ]
+            },
+            "description": "Public paginated listing of all ACTIVE stores. No authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Stores (Admin)",
+          "id": "c3d4e5f6-0003-0000-0000-000000000007",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/stores/admin/all?page=0&size=20&sortBy=createdAt&sortDirection=desc",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "stores", "admin", "all"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "sortBy", "value": "createdAt" },
+                { "key": "sortDirection", "value": "desc" }
+              ]
+            },
+            "description": "Full store list for administrators — includes stores in all statuses (ACTIVE, INACTIVE, SUSPENDED, PENDING_APPROVAL). Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Store by ID",
+          "id": "c3d4e5f6-0003-0000-0000-000000000008",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/stores/1",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "stores", "1"]
+            },
+            "description": "Retrieve full details for a single store by its ID. No authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Search Stores",
+          "id": "c3d4e5f6-0003-0000-0000-000000000009",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/stores/search?keyword=bánh mì&page=0&size=20",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "stores", "search"],
+              "query": [
+                { "key": "keyword", "value": "bánh mì" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            },
+            "description": "Case-insensitive name search across all ACTIVE stores, sorted by rating descending. No authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Stores by Type",
+          "id": "c3d4e5f6-0003-0000-0000-000000000010",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/stores/type/restaurant?page=0&size=20&sortBy=rating&sortDirection=desc",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "stores", "type", "restaurant"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "sortBy", "value": "rating" },
+                { "key": "sortDirection", "value": "desc" }
+              ]
+            },
+            "description": "Paginated list of ACTIVE stores filtered by type. Valid types: bakery, restaurant, convenience_store, cafe, fast_food, buffet, other. No authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Stores by Status (Admin)",
+          "id": "c3d4e5f6-0003-0000-0000-000000000011",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/stores/status/pending_approval?page=0&size=20",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "stores", "status", "pending_approval"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            },
+            "description": "Paginated list of stores filtered by a specific status. Valid statuses: active, inactive, suspended, pending_approval. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Nearby Stores",
+          "id": "c3d4e5f6-0003-0000-0000-000000000012",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/stores/nearby?lat=10.7769&lon=106.7009&radius=5.0",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "stores", "nearby"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "10.7769",
+                  "description": "User's latitude"
+                },
+                {
+                  "key": "lon",
+                  "value": "106.7009",
+                  "description": "User's longitude"
+                },
+                {
+                  "key": "radius",
+                  "value": "5.0",
+                  "description": "Search radius in kilometres (default 5.0)"
+                }
+              ]
+            },
+            "description": "Returns all ACTIVE stores within the given radius (km) from the specified coordinates, sorted by distance ascending. Distance is returned in metres in the response. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Stores",
+          "id": "c3d4e5f6-0003-0000-0000-000000000013",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/stores/my-stores",
+              "host": ["{{baseURL}}"],
+              "path": ["api", "v1", "stores", "my-stores"]
+            },
+            "description": "Returns all stores owned by the currently authenticated user, across all statuses. Requires STORE_OWNER or ADMIN role."
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }
