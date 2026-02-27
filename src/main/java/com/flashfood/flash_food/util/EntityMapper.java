@@ -48,11 +48,23 @@ public class EntityMapper {
     }
     
     /**
-     * Map Store entity to StoreResponse DTO
+     * Map Store entity to StoreResponse DTO.
+     * Resolves owner name from the associated {@link Profile} if available.
+     * {@code isOpen} is derived from the store's declared business hours.
      */
     public StoreResponse toStoreResponse(Store store) {
         if (store == null) return null;
-        
+
+        User owner = store.getOwner();
+        com.flashfood.flash_food.entity.Profile ownerProfile =
+                (owner != null) ? owner.getProfile() : null;
+
+        // isOpen: null when business hours are not configured
+        Boolean isOpen = null;
+        if (store.getOpenTime() != null && store.getCloseTime() != null) {
+            isOpen = store.isOpen();
+        }
+
         return StoreResponse.builder()
                 .id(store.getId())
                 .name(store.getName())
@@ -60,7 +72,7 @@ public class EntityMapper {
                 .phoneNumber(store.getPhoneNumber())
                 .latitude(store.getLatitude())
                 .longitude(store.getLongitude())
-                .type(store.getType() != null ? store.getType().getDisplayName() : null)
+                .type(store.getType()   != null ? store.getType().getDisplayName()   : null)
                 .status(store.getStatus() != null ? store.getStatus().getDisplayName() : null)
                 .description(store.getDescription())
                 .imageUrl(store.getImageUrl())
@@ -69,7 +81,10 @@ public class EntityMapper {
                 .flashSaleTime(store.getFlashSaleTime())
                 .rating(store.getRating())
                 .totalRatings(store.getTotalRatings())
-                .ownerId(store.getOwner() != null ? store.getOwner().getId() : null)
+                .ownerId(owner != null ? owner.getId() : null)
+                .ownerName(ownerProfile != null ? ownerProfile.getFullName() : null)
+                .isOpen(isOpen)
+                .createdAt(store.getCreatedAt())
                 .build();
     }
     
