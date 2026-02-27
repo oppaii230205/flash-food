@@ -89,8 +89,9 @@ public class SecurityConfig {
                                 "/swagger-ui.html").permitAll()
                         // Health check
                         .requestMatchers("/api/v1/health/**").permitAll()
-                        // Everything else requires authentication
-                        .anyRequest().authenticated()
+                        // TODO: Everything else requires authentication
+                        // .anyRequest().authenticated()
+                        .anyRequest().permitAll()  // TEMP: allow all for now
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

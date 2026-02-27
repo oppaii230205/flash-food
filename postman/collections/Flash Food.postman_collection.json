@@ -15,7 +15,9 @@
               "listen": "prerequest",
               "script": {
                 "id": "97dc0729-ae48-4c37-99b1-5b282fd5c2fc",
-                "exec": [""],
+                "exec": [
+                  ""
+                ],
                 "type": "text/javascript",
                 "packages": {},
                 "requests": {}
@@ -56,8 +58,15 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/register",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "auth", "register"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
             },
             "description": "Register a new user account. The access token is returned in the response body. The refresh token is set as an HTTP-only cookie named 'refreshToken' by the server — Postman's cookie jar will capture and replay it automatically."
           },
@@ -70,7 +79,9 @@
               "listen": "prerequest",
               "script": {
                 "id": "828564b3-18c9-405c-bc64-03697e66a56f",
-                "exec": [""],
+                "exec": [
+                  ""
+                ],
                 "type": "text/javascript",
                 "packages": {},
                 "requests": {}
@@ -111,8 +122,15 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/login",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "auth", "login"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
             },
             "description": "Authenticate with email and password. The access token is returned in the response body. The refresh token is set as an HTTP-only cookie named 'refreshToken' — Postman's cookie jar handles it automatically."
           },
@@ -139,8 +157,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/refresh-token",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "auth", "refresh-token"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh-token"
+              ]
             },
             "description": "Rotate the access/refresh token pair. No request body required — the server reads the refresh token from the HTTP-only 'refreshToken' cookie automatically (Postman's cookie jar handles this). The old refresh token is immediately revoked and a new one is set as a cookie."
           },
@@ -164,8 +189,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/auth/logout",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "auth", "logout"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
             },
             "description": "Revoke the current session. No request body required — the server reads the refresh token from the HTTP-only 'refreshToken' cookie and revokes it, then clears the cookie. Requires a valid Bearer access token in the Authorization header."
           },
@@ -214,8 +246,14 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/categories",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ]
             },
             "description": "Create a new category. Requires ADMIN role."
           },
@@ -247,8 +285,14 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/categories",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ]
             },
             "description": "Create a sub-category under an existing parent category. Requires ADMIN role."
           },
@@ -280,8 +324,15 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/1",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "1"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "1"
+              ]
             },
             "description": "Update an existing category by ID. Requires ADMIN role."
           },
@@ -300,8 +351,15 @@
             ],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/1",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "1"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "1"
+              ]
             },
             "description": "Delete a category by ID. Requires ADMIN role."
           },
@@ -315,8 +373,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/1",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "1"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "1"
+              ]
             },
             "description": "Retrieve a single category by its ID."
           },
@@ -330,8 +395,16 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/slug/banh-mi-banh-ngot",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "slug", "banh-mi-banh-ngot"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "slug",
+                "banh-mi-banh-ngot"
+              ]
             },
             "description": "Retrieve a single category by its URL-friendly slug."
           },
@@ -345,8 +418,14 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories?page=0&size=20&sortBy=displayOrder&sortDirection=asc",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ],
               "query": [
                 {
                   "key": "page",
@@ -378,8 +457,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/active",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "active"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "active"
+              ]
             },
             "description": "Get all active categories (isActive = true) without pagination."
           },
@@ -393,8 +479,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/root",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "root"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "root"
+              ]
             },
             "description": "Get all top-level (root) categories that have no parent."
           },
@@ -408,8 +501,16 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/1/children",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "1", "children"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "1",
+                "children"
+              ]
             },
             "description": "Get all direct child categories of a given parent category ID."
           },
@@ -423,8 +524,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/categories/search?keyword=bánh",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "categories", "search"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "search"
+              ],
               "query": [
                 {
                   "key": "keyword",
@@ -460,8 +568,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/me",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "me"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
             },
             "description": "Get the currently authenticated user's profile. Requires a valid Bearer access token."
           },
@@ -499,8 +614,15 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/users/me",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "me"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
             },
             "description": "Update the currently authenticated user's profile. All fields are optional — only provided fields are applied. Requires a valid Bearer access token."
           },
@@ -538,8 +660,16 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/users/me/change-password",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "me", "change-password"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me",
+                "change-password"
+              ]
             },
             "description": "Change the current user's password. Requires the correct current password and a new password of at least 8 characters. Requires a valid Bearer access token."
           },
@@ -577,8 +707,16 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/users/me/location",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "me", "location"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me",
+                "location"
+              ]
             },
             "description": "Update the current user's geo-location and notification radius. Coordinates are synced to the Redis geo index for proximity-based flash-sale alerts. All fields are optional. Requires a valid Bearer access token."
           },
@@ -602,8 +740,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/3",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "3"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "3"
+              ]
             },
             "description": "Retrieve a single user by their ID. Requires ADMIN role."
           },
@@ -627,8 +772,14 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users?page=0&size=20&sort=createdAt,desc",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ],
               "query": [
                 {
                   "key": "page",
@@ -666,8 +817,16 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/role/admin?page=0&size=20&sort=createdAt,desc",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "role", "admin"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "role",
+                "admin"
+              ],
               "query": [
                 {
                   "key": "page",
@@ -708,8 +867,16 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/status/active?page=0&size=20&sort=createdAt,desc",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "status", "active"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "status",
+                "active"
+              ],
               "query": [
                 {
                   "key": "page",
@@ -750,8 +917,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/search?keyword=nguyen&page=0&size=20&sort=createdAt,desc",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "search"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "search"
+              ],
               "query": [
                 {
                   "key": "keyword",
@@ -793,8 +967,16 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/3/status?status=active",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "3", "status"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "3",
+                "status"
+              ],
               "query": [
                 {
                   "key": "status",
@@ -825,8 +1007,16 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/3/role?role=store_owner",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "3", "role"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "3",
+                "role"
+              ],
               "query": [
                 {
                   "key": "role",
@@ -857,8 +1047,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/users/3",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "users", "3"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "3"
+              ]
             },
             "description": "Soft-delete a user account by setting their status to 'deleted'. Admins cannot delete their own account. Requires ADMIN role."
           },
@@ -869,7 +1066,6 @@
     },
     {
       "name": "Store",
-      "id": "c3d4e5f6-a7b8-9012-cdef-012345678901",
       "item": [
         {
           "name": "Create Store",
@@ -903,8 +1099,14 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/stores",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "stores"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "stores"
+              ]
             },
             "description": "Create a new store owned by the currently authenticated user. The store starts with PENDING_APPROVAL status and requires an admin to approve before going live. Requires STORE_OWNER or ADMIN role."
           },
@@ -942,8 +1144,15 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/stores/1",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "stores", "1"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "stores",
+                "1"
+              ]
             },
             "description": "Partially update an existing store — only non-null fields are applied. Only the store owner or an admin may call this. Requires STORE_OWNER or ADMIN role."
           },
@@ -967,8 +1176,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/stores/1",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "stores", "1"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "stores",
+                "1"
+              ]
             },
             "description": "Hard-delete a store and remove it from the Redis Geo index. Only the store owner or an admin may call this. Requires STORE_OWNER or ADMIN role."
           },
@@ -992,8 +1208,16 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/stores/1/approve",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "stores", "1", "approve"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "stores",
+                "1",
+                "approve"
+              ]
             },
             "description": "Approve a pending store. Transitions the store from PENDING_APPROVAL to ACTIVE status. Requires ADMIN role."
           },
@@ -1022,7 +1246,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"status\": \"inactive\"\n}",
+              "raw": "{\n  \"status\": \"active\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1031,8 +1255,16 @@
             },
             "url": {
               "raw": "{{baseURL}}/api/v1/stores/1/status",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "stores", "1", "status"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "stores",
+                "1",
+                "status"
+              ]
             },
             "description": "Update the lifecycle status of a store. Store owners may only toggle between 'active' and 'inactive'. Admins may set any valid status: active, inactive, suspended, pending_approval. Requires STORE_OWNER or ADMIN role."
           },
@@ -1042,17 +1274,46 @@
           "name": "Get Active Stores",
           "id": "c3d4e5f6-0003-0000-0000-000000000006",
           "request": {
+            "auth": {
+              "type": "noauth"
+            },
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/api/v1/stores?page=0&size=20&sortBy=name&sortDirection=asc",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "stores"],
+              "raw": "{{baseURL}}/api/v1/stores",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "stores"
+              ],
               "query": [
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "20" },
-                { "key": "sortBy", "value": "name" },
-                { "key": "sortDirection", "value": "asc" }
+                {
+                  "key": "page",
+                  "value": "0",
+                  "uuid": "4d20c7c5-c87b-4e7a-9c1d-35770db2236d",
+                  "disabled": true
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "uuid": "a07c3b56-31bc-49ed-bf85-99fe20277fec",
+                  "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": "name",
+                  "uuid": "606661e0-292e-4782-aa59-1e00f6ce5e83",
+                  "disabled": true
+                },
+                {
+                  "key": "sortDirection",
+                  "value": "asc",
+                  "uuid": "7ed2ddfc-d4bb-49bf-9aa5-b14072e2882e",
+                  "disabled": true
+                }
               ]
             },
             "description": "Public paginated listing of all ACTIVE stores. No authentication required."
@@ -1077,13 +1338,33 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/stores/admin/all?page=0&size=20&sortBy=createdAt&sortDirection=desc",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "stores", "admin", "all"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "stores",
+                "admin",
+                "all"
+              ],
               "query": [
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "20" },
-                { "key": "sortBy", "value": "createdAt" },
-                { "key": "sortDirection", "value": "desc" }
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "sortDirection",
+                  "value": "desc"
+                }
               ]
             },
             "description": "Full store list for administrators — includes stores in all statuses (ACTIVE, INACTIVE, SUSPENDED, PENDING_APPROVAL). Requires ADMIN role."
@@ -1098,8 +1379,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/stores/1",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "stores", "1"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "stores",
+                "1"
+              ]
             },
             "description": "Retrieve full details for a single store by its ID. No authentication required."
           },
@@ -1113,12 +1401,28 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/stores/search?keyword=bánh mì&page=0&size=20",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "stores", "search"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "stores",
+                "search"
+              ],
               "query": [
-                { "key": "keyword", "value": "bánh mì" },
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "20" }
+                {
+                  "key": "keyword",
+                  "value": "bánh mì"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
               ]
             },
             "description": "Case-insensitive name search across all ACTIVE stores, sorted by rating descending. No authentication required."
@@ -1132,14 +1436,38 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/api/v1/stores/type/restaurant?page=0&size=20&sortBy=rating&sortDirection=desc",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "stores", "type", "restaurant"],
+              "raw": "{{baseURL}}/api/v1/stores/type/bakery?page=0&size=20&sortBy=rating&sortDirection=desc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "stores",
+                "type",
+                "bakery"
+              ],
               "query": [
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "20" },
-                { "key": "sortBy", "value": "rating" },
-                { "key": "sortDirection", "value": "desc" }
+                {
+                  "key": "page",
+                  "value": "0",
+                  "uuid": "b3e36484-4031-4a29-8027-315fe631b60d"
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "uuid": "30820aab-dd62-4e73-b59a-18a0eeae3858"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "rating",
+                  "uuid": "117483c1-ab34-4fe6-b514-f428f5496838"
+                },
+                {
+                  "key": "sortDirection",
+                  "value": "desc",
+                  "uuid": "89f9f371-dcaa-435d-a815-2c0b821766d3"
+                }
               ]
             },
             "description": "Paginated list of ACTIVE stores filtered by type. Valid types: bakery, restaurant, convenience_store, cafe, fast_food, buffet, other. No authentication required."
@@ -1163,12 +1491,28 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/api/v1/stores/status/pending_approval?page=0&size=20",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "stores", "status", "pending_approval"],
+              "raw": "{{baseURL}}/api/v1/stores/status/inactive?page=0&size=20",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "stores",
+                "status",
+                "inactive"
+              ],
               "query": [
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "20" }
+                {
+                  "key": "page",
+                  "value": "0",
+                  "uuid": "b2f90777-4c25-41c7-82a3-e2f4f51cc28b"
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "uuid": "74fd9156-efbe-41e7-a41c-4bdc5d985549"
+                }
               ]
             },
             "description": "Paginated list of stores filtered by a specific status. Valid statuses: active, inactive, suspended, pending_approval. Requires ADMIN role."
@@ -1193,8 +1537,15 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/stores/nearby?lat=10.7769&lon=106.7009&radius=5.0",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "stores", "nearby"],
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "stores",
+                "nearby"
+              ],
               "query": [
                 {
                   "key": "lat",
@@ -1235,14 +1586,22 @@
             "header": [],
             "url": {
               "raw": "{{baseURL}}/api/v1/stores/my-stores",
-              "host": ["{{baseURL}}"],
-              "path": ["api", "v1", "stores", "my-stores"]
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "stores",
+                "my-stores"
+              ]
             },
             "description": "Returns all stores owned by the currently authenticated user, across all statuses. Requires STORE_OWNER or ADMIN role."
           },
           "response": []
         }
-      ]
+      ],
+      "id": "c3d4e5f6-a7b8-9012-cdef-012345678901"
     }
   ]
 }
