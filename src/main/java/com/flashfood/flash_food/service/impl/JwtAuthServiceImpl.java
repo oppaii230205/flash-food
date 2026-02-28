@@ -18,9 +18,12 @@ import com.flashfood.flash_food.repository.RefreshTokenRepository;
 import com.flashfood.flash_food.repository.UserRepository;
 import com.flashfood.flash_food.service.JwtAuthService;
 import com.flashfood.flash_food.service.JwtService;
+import com.flashfood.flash_food.service.RedisGeoService;
 import com.flashfood.flash_food.util.EntityMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.boot.cache.autoconfigure.CacheProperties.Redis;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -54,6 +57,7 @@ public class JwtAuthServiceImpl implements JwtAuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final RedisGeoService redisGeoService;
     private final EntityMapper entityMapper;
     private final AuthenticationManager authenticationManager;
 
@@ -92,6 +96,8 @@ public class JwtAuthServiceImpl implements JwtAuthService {
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .build();
+
+        redisGeoService.addUserLocation(savedUser.getId(), request.getLongitude(), request.getLatitude());
 
         profileRepository.save(profile);
 

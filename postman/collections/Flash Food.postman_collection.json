@@ -49,7 +49,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Test1234\",\n  \"fullName\": \"Nguyễn Văn User\",\n  \"phoneNumber\": \"0901234567\",\n  \"latitude\": 10.7769,\n  \"longitude\": 106.7009\n}",
+              "raw": "{\n  \"email\": \"user2@example.com\",\n  \"password\": \"Test1234\",\n  \"fullName\": \"Nguyễn Văn User 2\",\n  \"phoneNumber\": \"0900000001\",\n  \"latitude\": 10.7769,\n  \"longitude\": 106.7009\n}",
               "options": {
                 "raw": {
                   "language": "json"
