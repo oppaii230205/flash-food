@@ -59,22 +59,31 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findByStoreIdAndStatus(@Param("storeId") Long storeId, @Param("status") OrderStatus status, Pageable pageable);
     
     /**
-     * Find orders that need to be auto-expired
+     * Find orders that need to be auto-expired (status READY or PREPARING, past pickup time).
+     * Enum values must be passed as named parameters so the registered
+     * {@link com.flashfood.flash_food.entity.converter.OrderStatusConverter} is applied
+     * correctly — never hard-code enum literals inside JPQL strings.
      */
     @Query("""
-        SELECT o FROM Order o 
-        WHERE o.status IN (OrderStatus.READY, OrderStatus.PREPARING) 
+        SELECT o FROM Order o
+        WHERE o.status IN (:ready, :preparing)
         AND o.pickupTime < :expiryTime
     """)
-    List<Order> findOrdersToExpire(@Param("expiryTime") LocalDateTime expiryTime);
-    
+    List<Order> findOrdersToExpire(
+            @Param("ready") OrderStatus ready,
+            @Param("preparing") OrderStatus preparing,
+            @Param("expiryTime") LocalDateTime expiryTime);
+
     /**
-     * Get order statistics for a store
+     * Count completed orders for a store (e.g. for store statistics).
+     * Enum parameter follows the same converter-safe convention as above.
      */
     @Query("""
-        SELECT COUNT(o) FROM Order o 
-        WHERE o.store.id = :storeId 
-        AND o.status = OrderStatus.COMPLETED
+        SELECT COUNT(o) FROM Order o
+        WHERE o.store.id = :storeId
+        AND o.status = :completed
     """)
-    Long countCompletedOrdersByStore(@Param("storeId") Long storeId);
+    Long countCompletedOrdersByStore(
+            @Param("storeId") Long storeId,
+            @Param("completed") OrderStatus completed);
 }

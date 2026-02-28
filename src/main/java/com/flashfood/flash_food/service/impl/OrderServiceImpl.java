@@ -1,13 +1,18 @@
 package com.flashfood.flash_food.service.impl;
 
 import com.flashfood.flash_food.dto.request.CreateOrderRequest;
+import com.flashfood.flash_food.dto.message.NotificationMessage;
 import com.flashfood.flash_food.dto.response.OrderResponse;
 import com.flashfood.flash_food.entity.*;
-import com.flashfood.flash_food.exception.*;
-import com.flashfood.flash_food.util.EntityMapper;
+import com.flashfood.flash_food.exception.AccessDeniedException;
+import com.flashfood.flash_food.exception.InsufficientStockException;
+import com.flashfood.flash_food.exception.InvalidOperationException;
+import com.flashfood.flash_food.exception.ResourceNotFoundException;
 import com.flashfood.flash_food.repository.*;
 import com.flashfood.flash_food.service.AuthenticationService;
+import com.flashfood.flash_food.service.MessagePublisher;
 import com.flashfood.flash_food.service.OrderService;
+import com.flashfood.flash_food.util.EntityMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,13 +22,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 /**
- * Implementation of OrderService
- * Handles order lifecycle with inventory management and payment processing
+ * Implementation of {@link OrderService}.
+ *
+ * <h3>Key design decisions</h3>
+ * <ul>
+ *   <li><b>Inventory safety</b>: stock is decremented via an atomic
+ *       {@code UPDATE … WHERE availableQuantity >= :qty} guarded by a pessimistic write-lock
+ *       on the food-item row to prevent overselling under high concurrency.</li>
+ *   <li><b>Status transitions</b>: driven by a strict state machine ({@link OrderStatus});
+ *       any out-of-order transition raises {@link InvalidOperationException}.</li>
+ *   <li><b>Authorization</b>: every mutating method re-validates ownership/role at the service
+ *       layer — the {@code @PreAuthorize} annotations on the controller are a first defence only.</li>
+ *   <li><b>Notification</b>: order events are published asynchronously to RabbitMQ via
+ *       {@link MessagePublisher} so the HTTP response is never delayed by downstream consumers.</li>
+ * </ul>
  */
 @Slf4j
 @Service
@@ -31,31 +47,33 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class OrderServiceImpl implements OrderService {
 
-    private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
-    private final FoodItemRepository foodItemRepository;
-    private final StoreRepository storeRepository;
-    private final PaymentRepository paymentRepository;
+    private final OrderRepository       orderRepository;
+    private final FoodItemRepository    foodItemRepository;
+    private final StoreRepository       storeRepository;
+    private final PaymentRepository     paymentRepository;
     private final AuthenticationService authenticationService;
-    private final EntityMapper entityMapper;
+    private final MessagePublisher      messagePublisher;
+    private final EntityMapper          entityMapper;
+
+    // =========================================================================
+    // Place order
+    // =========================================================================
 
     @Override
     @Transactional
     public OrderResponse createOrder(CreateOrderRequest request) {
-        log.info("Creating new order for store ID: {}", request.getStoreId());
+        log.info("Creating order for store id={}", request.getStoreId());
 
         User currentUser = authenticationService.getCurrentUser();
 
-        // Validate store
         Store store = storeRepository.findById(request.getStoreId())
-                .orElseThrow(() -> new ResourceNotFoundException("Store not found with ID: " + request.getStoreId()));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Store not found with ID: " + request.getStoreId()));
 
-        // Validate store is active
         if (store.getStatus() != StoreStatus.ACTIVE) {
             throw new InvalidOperationException("Store is not currently accepting orders");
         }
 
-        // Parse payment method
         PaymentMethod paymentMethod;
         try {
             paymentMethod = PaymentMethod.fromDisplayName(request.getPaymentMethod());
@@ -63,342 +81,465 @@ public class OrderServiceImpl implements OrderService {
             throw new InvalidOperationException("Invalid payment method: " + request.getPaymentMethod());
         }
 
-        // Create order
-        Order order = new Order();
-        order.setOrderNumber(generateOrderNumber());
-        order.setUser(currentUser);
-        order.setStore(store);
-        order.setStatus(OrderStatus.PENDING);
-        order.setPaymentMethod(paymentMethod);
-        order.setPickupTime(request.getPickupTime());
-        order.setSpecialInstructions(request.getSpecialInstructions());
+        // Build the order shell — items are appended to the managed collection below
+        Order order = Order.builder()
+                .orderNumber(generateOrderNumber())
+                .user(currentUser)
+                .store(store)
+                .status(OrderStatus.PENDING)
+                .paymentMethod(paymentMethod)
+                .paymentStatus(PaymentStatus.PENDING)
+                .pickupTime(request.getPickupTime())
+                .specialInstructions(request.getSpecialInstructions())
+                .build();
 
-        // Process order items with pessimistic locking
-        List<OrderItem> orderItems = new ArrayList<>();
-        int totalAmount = 0;
+        int totalAmount    = 0;
+        int originalAmount = 0;
 
         for (CreateOrderRequest.OrderItemRequest itemRequest : request.getItems()) {
-            // Lock food item to prevent overselling
+            // Acquire a pessimistic write-lock so no other transaction can modify
+            // availableQuantity between our stock check and the decrement below.
             FoodItem foodItem = foodItemRepository.findByIdWithLock(itemRequest.getFoodItemId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Food item not found with ID: " + itemRequest.getFoodItemId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Food item not found with ID: " + itemRequest.getFoodItemId()));
 
-            // Validate food item belongs to the same store
-            if (!foodItem.getStore().getId().equals(store.getId())) {
-                throw new InvalidOperationException("All items must be from the same store");
+            validateOrderItem(foodItem, store, itemRequest.getQuantity());
+
+            // Atomic decrement — returns 0 rows if stock is insufficient
+            int decremented = foodItemRepository.decrementQuantity(
+                    foodItem.getId(), itemRequest.getQuantity());
+            if (decremented == 0) {
+                throw new InsufficientStockException(
+                        "Failed to reserve stock for '" + foodItem.getName() + "'. "
+                        + "Available: " + foodItem.getAvailableQuantity()
+                        + ", Requested: " + itemRequest.getQuantity());
             }
 
-            // Validate food item is available
-            if (foodItem.getStatus() != FoodItemStatus.AVAILABLE) {
-                throw new InvalidOperationException("Food item '" + foodItem.getName() + "' is not available");
+            // Conditionally mark the item as SOLD_OUT when all stock is now depleted.
+            // We know the pre-lock quantity from the locked entity; no flush/re-fetch needed.
+            if (foodItem.getAvailableQuantity() - itemRequest.getQuantity() == 0) {
+                foodItemRepository.markSoldOutIfEmpty(foodItem.getId(), FoodItemStatus.SOLD_OUT);
             }
 
-            // Check if flash sale is active
-            LocalDateTime now = LocalDateTime.now();
-            if (now.isBefore(foodItem.getSaleStartTime()) || now.isAfter(foodItem.getSaleEndTime())) {
-                throw new InvalidOperationException("Flash sale for '" + foodItem.getName() + "' is not active");
-            }
+            int itemFlashTotal    = foodItem.getFlashPrice()    * itemRequest.getQuantity();
+            int itemOriginalTotal = foodItem.getOriginalPrice() * itemRequest.getQuantity();
 
-            // Check stock availability
-            if (foodItem.getAvailableQuantity() < itemRequest.getQuantity()) {
-                throw new InsufficientStockException("Insufficient stock for " + foodItem.getName() + 
-                        ". Available: " + foodItem.getAvailableQuantity() + ", Requested: " + itemRequest.getQuantity());
-            }
+            OrderItem orderItem = OrderItem.builder()
+                    .order(order)
+                    .foodItem(foodItem)
+                    .quantity(itemRequest.getQuantity())
+                    .unitPrice(foodItem.getFlashPrice())
+                    .totalPrice(itemFlashTotal)
+                    .build();
 
-            // Decrement quantity using atomic update
-            int updated = foodItemRepository.decrementQuantity(foodItem.getId(), itemRequest.getQuantity());
-            if (updated == 0) {
-                throw new InsufficientStockException("Failed to reserve stock for " + foodItem.getName());
-            }
-
-            // Refresh entity to get updated quantity
-            foodItemRepository.flush();
-            foodItem = foodItemRepository.findById(foodItem.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Food item not found"));
-
-            // Update food item status if out of stock
-            if (foodItem.getAvailableQuantity() == 0) {
-                foodItem.setStatus(FoodItemStatus.SOLD_OUT);
-                foodItemRepository.save(foodItem);
-            }
-
-            // Create order item
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(order);
-            orderItem.setFoodItem(foodItem);
-            orderItem.setQuantity(itemRequest.getQuantity());
-            orderItem.setUnitPrice(foodItem.getFlashPrice());
-            
-            int itemTotal = foodItem.getFlashPrice() * itemRequest.getQuantity();
-            orderItem.setTotalPrice(itemTotal);
-            
-            orderItems.add(orderItem);
-            totalAmount += itemTotal;
+            order.getOrderItems().add(orderItem);
+            totalAmount    += itemFlashTotal;
+            originalAmount += itemOriginalTotal;
         }
 
         order.setTotalAmount(totalAmount);
-        order.setOrderItems(orderItems);
+        order.setOriginalAmount(originalAmount);
 
-        // Save order
+        // CascadeType.ALL on Order.orderItems persists OrderItem rows automatically
         Order savedOrder = orderRepository.save(order);
 
-        // Create payment record
-        Payment payment = new Payment();
-        payment.setOrder(savedOrder);
-        payment.setAmount(totalAmount);
-        payment.setPaymentMethod(paymentMethod);
-        payment.setStatus(PaymentStatus.PENDING);
-        paymentRepository.save(payment);
+        // Create the associated payment record
+        paymentRepository.save(Payment.builder()
+                .order(savedOrder)
+                .amount(totalAmount)
+                .paymentMethod(paymentMethod)
+                .status(PaymentStatus.PENDING)
+                .build());
 
-        log.info("Order created successfully with order number: {}", savedOrder.getOrderNumber());
+        // Notify the store owner of the new incoming order
+        notifyUsers(
+                List.of(store.getOwner().getId()),
+                "New Order Received",
+                "Order #" + savedOrder.getOrderNumber() + " — "
+                        + request.getItems().size() + " item(s), total: " + totalAmount,
+                NotificationType.ORDER_CONFIRMED,
+                savedOrder.getId());
 
+        log.info("Order created: id={}, number={}", savedOrder.getId(), savedOrder.getOrderNumber());
         return entityMapper.toOrderResponse(savedOrder);
     }
 
+    // =========================================================================
+    // Cancellation
+    // =========================================================================
+
     @Override
     @Transactional
-    public OrderResponse cancelOrder(Long orderId) {
-        log.info("Cancelling order with ID: {}", orderId);
+    public OrderResponse cancelOrder(Long orderId, String reason) {
+        Order order = findOrderOrThrow(orderId);
+        User currentUser = authenticationService.getCurrentUser();
 
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
+        boolean isOrderOwner       = order.getUser().getId().equals(currentUser.getId());
+        boolean isStoreOwnerOrAdmin = authenticationService.isStoreOwnerOrAdmin(order.getStore());
 
-        // Can only cancel pending orders
-        if (order.getStatus() != OrderStatus.PENDING) {
-            throw new InvalidOperationException("Only pending orders can be cancelled");
+        if (!isOrderOwner && !isStoreOwnerOrAdmin) {
+            throw new AccessDeniedException("You do not have permission to cancel this order");
         }
 
-        // Restore stock for each item
+        // Customers may only cancel PENDING orders (store has not confirmed yet)
+        // Store owners / admins may cancel PENDING or CONFIRMED orders
+        boolean canCancel = order.getStatus() == OrderStatus.PENDING
+                || (isStoreOwnerOrAdmin && order.getStatus() == OrderStatus.CONFIRMED);
+
+        if (!canCancel) {
+            throw new InvalidOperationException(
+                    "Order cannot be cancelled in its current state: "
+                    + order.getStatus().getDisplayName());
+        }
+
+        // Restore stock for every line item atomically
         for (OrderItem item : order.getOrderItems()) {
-            FoodItem foodItem = item.getFoodItem();
-            int newQuantity = foodItem.getAvailableQuantity() + item.getQuantity();
-            foodItem.setAvailableQuantity(newQuantity);
-            
-            // Update status back to available if was sold out
-            if (foodItem.getStatus() == FoodItemStatus.SOLD_OUT && newQuantity > 0) {
-                foodItem.setStatus(FoodItemStatus.AVAILABLE);
-            }
-            
-            foodItemRepository.save(foodItem);
+            Long foodItemId = item.getFoodItem().getId();
+            foodItemRepository.incrementQuantity(foodItemId, item.getQuantity());
+            // If the item was SOLD_OUT (stock just returned), restore it to AVAILABLE
+            foodItemRepository.restoreAvailableIfSoldOut(
+                    foodItemId, FoodItemStatus.AVAILABLE, FoodItemStatus.SOLD_OUT);
         }
 
-        // Update order status
         order.setStatus(OrderStatus.CANCELLED);
-        Order updatedOrder = orderRepository.save(order);
+        order.setCancellationReason(reason);
+        order.setCancelledAt(LocalDateTime.now());
+        Order cancelled = orderRepository.save(order);
 
-        // Update payment status
-        Payment payment = paymentRepository.findByOrder(order)
-                .orElse(null);
-        if (payment != null) {
+        // Sync the associated payment record
+        paymentRepository.findByOrder(order).ifPresent(payment -> {
             payment.setStatus(PaymentStatus.CANCELLED);
             paymentRepository.save(payment);
-        }
+        });
 
-        log.info("Order cancelled successfully: {}", order.getOrderNumber());
+        // Notify the opposite party about the cancellation
+        Long notifyUserId = isOrderOwner
+                ? order.getStore().getOwner().getId()
+                : order.getUser().getId();
+        String cancelMsg = "Order #" + order.getOrderNumber() + " has been cancelled"
+                + (reason != null && !reason.isBlank() ? ": " + reason : ".");
+        notifyUsers(List.of(notifyUserId), "Order Cancelled", cancelMsg,
+                NotificationType.ORDER_CANCELLED, order.getId());
 
-        return entityMapper.toOrderResponse(updatedOrder);
+        log.info("Order cancelled: {}", order.getOrderNumber());
+        return entityMapper.toOrderResponse(cancelled);
     }
+
+    // =========================================================================
+    // Store-side status transitions  (PENDING → CONFIRMED → PREPARING → READY → COMPLETED)
+    // =========================================================================
 
     @Override
     @Transactional
     public OrderResponse confirmOrder(Long orderId) {
-        log.info("Confirming order with ID: {}", orderId);
-
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
-
-        // Can only confirm pending orders
-        if (order.getStatus() != OrderStatus.PENDING) {
-            throw new InvalidOperationException("Only pending orders can be confirmed");
-        }
+        Order order = findOrderOrThrow(orderId);
+        verifyStoreOwnerOrAdmin(order);
+        requireStatus(order, OrderStatus.PENDING, "confirmed");
 
         order.setStatus(OrderStatus.CONFIRMED);
-        Order updatedOrder = orderRepository.save(order);
+        Order updated = orderRepository.save(order);
 
-        log.info("Order confirmed successfully: {}", order.getOrderNumber());
+        notifyUsers(
+                List.of(order.getUser().getId()),
+                "Order Confirmed",
+                "Your order #" + order.getOrderNumber() + " has been confirmed by the store.",
+                NotificationType.ORDER_CONFIRMED,
+                order.getId());
 
-        return entityMapper.toOrderResponse(updatedOrder);
+        log.info("Order confirmed: {}", order.getOrderNumber());
+        return entityMapper.toOrderResponse(updated);
     }
 
     @Override
     @Transactional
     public OrderResponse startPreparingOrder(Long orderId) {
-        log.info("Starting to prepare order with ID: {}", orderId);
-
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
-
-        // Can only prepare confirmed orders
-        if (order.getStatus() != OrderStatus.CONFIRMED) {
-            throw new InvalidOperationException("Only confirmed orders can be prepared");
-        }
+        Order order = findOrderOrThrow(orderId);
+        verifyStoreOwnerOrAdmin(order);
+        requireStatus(order, OrderStatus.CONFIRMED, "set to preparing");
 
         order.setStatus(OrderStatus.PREPARING);
-        Order updatedOrder = orderRepository.save(order);
+        Order updated = orderRepository.save(order);
 
         log.info("Order preparation started: {}", order.getOrderNumber());
-
-        return entityMapper.toOrderResponse(updatedOrder);
+        return entityMapper.toOrderResponse(updated);
     }
 
     @Override
     @Transactional
     public OrderResponse markOrderReady(Long orderId) {
-        log.info("Marking order as ready with ID: {}", orderId);
-
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
-
-        // Can only mark preparing orders as ready
-        if (order.getStatus() != OrderStatus.PREPARING) {
-            throw new InvalidOperationException("Only preparing orders can be marked as ready");
-        }
+        Order order = findOrderOrThrow(orderId);
+        verifyStoreOwnerOrAdmin(order);
+        requireStatus(order, OrderStatus.PREPARING, "marked as ready");
 
         order.setStatus(OrderStatus.READY);
-        Order updatedOrder = orderRepository.save(order);
+        Order updated = orderRepository.save(order);
 
-        log.info("Order marked as ready: {}", order.getOrderNumber());
+        notifyUsers(
+                List.of(order.getUser().getId()),
+                "Order Ready for Pickup",
+                "Your order #" + order.getOrderNumber()
+                        + " is ready! Please come to " + order.getStore().getName() + ".",
+                NotificationType.ORDER_READY,
+                order.getId());
 
-        return entityMapper.toOrderResponse(updatedOrder);
+        log.info("Order marked ready: {}", order.getOrderNumber());
+        return entityMapper.toOrderResponse(updated);
     }
 
     @Override
     @Transactional
     public OrderResponse completeOrder(Long orderId) {
-        log.info("Completing order with ID: {}", orderId);
-
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
-
-        // Can only complete ready orders
-        if (order.getStatus() != OrderStatus.READY) {
-            throw new InvalidOperationException("Only ready orders can be completed");
-        }
+        Order order = findOrderOrThrow(orderId);
+        verifyStoreOwnerOrAdmin(order);
+        requireStatus(order, OrderStatus.READY, "completed");
 
         order.setStatus(OrderStatus.COMPLETED);
-        Order updatedOrder = orderRepository.save(order);
+        Order updated = orderRepository.save(order);
 
-        log.info("Order completed successfully: {}", order.getOrderNumber());
-
-        return entityMapper.toOrderResponse(updatedOrder);
+        log.info("Order completed: {}", order.getOrderNumber());
+        return entityMapper.toOrderResponse(updated);
     }
+
+    // =========================================================================
+    // Payment
+    // =========================================================================
 
     @Override
     @Transactional
     public OrderResponse processPayment(Long orderId) {
-        log.info("Processing payment for order ID: {}", orderId);
+        log.info("Processing payment for order id={}", orderId);
 
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
+        Order order = findOrderOrThrow(orderId);
+        User currentUser = authenticationService.getCurrentUser();
+
+        // Only the customer who placed the order or an admin may trigger payment
+        if (!order.getUser().getId().equals(currentUser.getId())
+                && !authenticationService.isAdmin()) {
+            throw new AccessDeniedException(
+                    "You do not have permission to process payment for this order");
+        }
+
+        if (order.getPaymentStatus() == PaymentStatus.PAID) {
+            throw new InvalidOperationException(
+                    "Payment has already been processed for order: " + order.getOrderNumber());
+        }
+
+        if (order.getStatus() == OrderStatus.CANCELLED || order.getStatus() == OrderStatus.EXPIRED) {
+            throw new InvalidOperationException(
+                    "Cannot process payment for an order with status: "
+                    + order.getStatus().getDisplayName());
+        }
 
         Payment payment = paymentRepository.findByOrder(order)
-                .orElseThrow(() -> new ResourceNotFoundException("Payment not found for order"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Payment record not found for order: " + order.getOrderNumber()));
 
-        // In real scenario, integrate with payment gateway here
-        // For now, just mark as completed
+        // In production, integrate with a payment gateway here and only mark PAID
+        // upon a successful gateway callback. This simulates an immediate success.
         payment.setStatus(PaymentStatus.PAID);
         payment.setTransactionId(UUID.randomUUID().toString());
         payment.setPaymentDate(LocalDateTime.now());
         paymentRepository.save(payment);
 
-        log.info("Payment processed successfully for order: {}", order.getOrderNumber());
+        // Keep the denormalised paymentStatus on the order in sync
+        order.setPaymentStatus(PaymentStatus.PAID);
+        Order updated = orderRepository.save(order);
 
-        return entityMapper.toOrderResponse(order);
+        log.info("Payment processed for order: {}", order.getOrderNumber());
+        return entityMapper.toOrderResponse(updated);
     }
+
+    // =========================================================================
+    // Query operations
+    // =========================================================================
 
     @Override
     public OrderResponse findById(Long orderId) {
-        log.debug("Finding order with ID: {}", orderId);
+        Order order = findOrderOrThrow(orderId);
+        User currentUser = authenticationService.getCurrentUser();
 
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + orderId));
+        boolean isOrderOwner       = order.getUser().getId().equals(currentUser.getId());
+        boolean isStoreOwnerOrAdmin = authenticationService.isStoreOwnerOrAdmin(order.getStore());
+
+        if (!isOrderOwner && !isStoreOwnerOrAdmin) {
+            throw new AccessDeniedException("You do not have permission to view this order");
+        }
 
         return entityMapper.toOrderResponse(order);
     }
 
     @Override
     public OrderResponse findByOrderNumber(String orderNumber) {
-        log.debug("Finding order with order number: {}", orderNumber);
-
         Order order = orderRepository.findByOrderNumber(orderNumber)
-                .orElseThrow(() -> new ResourceNotFoundException("Order not found with order number: " + orderNumber));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Order not found with number: " + orderNumber));
+
+        User currentUser = authenticationService.getCurrentUser();
+        boolean isOrderOwner       = order.getUser().getId().equals(currentUser.getId());
+        boolean isStoreOwnerOrAdmin = authenticationService.isStoreOwnerOrAdmin(order.getStore());
+
+        if (!isOrderOwner && !isStoreOwnerOrAdmin) {
+            throw new AccessDeniedException("You do not have permission to view this order");
+        }
 
         return entityMapper.toOrderResponse(order);
     }
 
     @Override
     public Page<OrderResponse> findMyOrders(Pageable pageable) {
-        log.debug("Finding orders for current user");
-
         User currentUser = authenticationService.getCurrentUser();
-        Page<Order> orders = orderRepository.findByUser(currentUser, pageable);
-
-        return orders.map(entityMapper::toOrderResponse);
+        return orderRepository.findByUser(currentUser, pageable)
+                .map(entityMapper::toOrderResponse);
     }
 
     @Override
     public Page<OrderResponse> findMyOrdersByStatus(String status, Pageable pageable) {
-        log.debug("Finding orders for current user with status: {}", status);
-
         User currentUser = authenticationService.getCurrentUser();
-
-        // Parse status
-        OrderStatus orderStatus;
-        try {
-            orderStatus = OrderStatus.fromDisplayName(status);
-        } catch (IllegalArgumentException e) {
-            throw new InvalidOperationException("Invalid order status: " + status);
-        }
-
+        OrderStatus orderStatus = parseOrderStatus(status);
         return orderRepository.findByUserIdAndStatus(currentUser.getId(), orderStatus, pageable)
                 .map(entityMapper::toOrderResponse);
     }
 
     @Override
     public Page<OrderResponse> findStoreOrders(Long storeId, Pageable pageable) {
-        log.debug("Finding orders for store ID: {}", storeId);
-
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Store not found with ID: " + storeId));
-
-        return orderRepository.findByStoreId(storeId, pageable).map(entityMapper::toOrderResponse);
+        Store store = findStoreOrThrow(storeId);
+        verifyStoreOwnerOrAdmin(store);
+        return orderRepository.findByStoreId(storeId, pageable)
+                .map(entityMapper::toOrderResponse);
     }
 
     @Override
     public Page<OrderResponse> findStoreOrdersByStatus(Long storeId, String status, Pageable pageable) {
-        log.debug("Finding orders for store ID: {} with status: {}", storeId, status);
-
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Store not found with ID: " + storeId));
-
-        // Parse status
-        OrderStatus orderStatus;
-        try {
-            orderStatus = OrderStatus.fromDisplayName(status);
-        } catch (IllegalArgumentException e) {
-            throw new InvalidOperationException("Invalid order status: " + status);
-        }
-
+        Store store = findStoreOrThrow(storeId);
+        verifyStoreOwnerOrAdmin(store);
+        OrderStatus orderStatus = parseOrderStatus(status);
         return orderRepository.findByStoreIdAndStatus(storeId, orderStatus, pageable)
                 .map(entityMapper::toOrderResponse);
     }
 
     @Override
     public Page<OrderResponse> findAllOrders(Pageable pageable) {
-        log.debug("Finding all orders (admin)");
-
-        Page<Order> orders = orderRepository.findAll(pageable);
-        return orders.map(entityMapper::toOrderResponse);
+        return orderRepository.findAll(pageable).map(entityMapper::toOrderResponse);
     }
 
-    // ===== Helper Methods =====
+    // =========================================================================
+    // Private helpers
+    // =========================================================================
 
     /**
-     * Generate unique order number
-     * Format: ORD-YYYYMMDD-XXXXXX
+     * Generates a human-readable, unique order number.
+     * Format: {@code ORD-YYYYMMDD-XXXXXX} (e.g. {@code ORD-20260228-A3F9C1}).
      */
     private String generateOrderNumber() {
-        String dateStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String randomStr = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
-        return "ORD-" + dateStr + "-" + randomStr;
+        String date   = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String suffix = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+        return "ORD-" + date + "-" + suffix;
+    }
+
+    /**
+     * Validates that a food item can be added to the given order/store:
+     * <ul>
+     *   <li>belongs to the target store,</li>
+     *   <li>has {@link FoodItemStatus#AVAILABLE} status,</li>
+     *   <li>is within its active flash-sale window,</li>
+     *   <li>has sufficient available stock.</li>
+     * </ul>
+     */
+    private void validateOrderItem(FoodItem foodItem, Store store, int requestedQty) {
+        if (!foodItem.getStore().getId().equals(store.getId())) {
+            throw new InvalidOperationException(
+                    "Food item '" + foodItem.getName() + "' does not belong to store '"
+                    + store.getName() + "'. All items in one order must be from the same store.");
+        }
+
+        if (foodItem.getStatus() != FoodItemStatus.AVAILABLE) {
+            throw new InvalidOperationException(
+                    "Food item '" + foodItem.getName() + "' is not available "
+                    + "(status: " + foodItem.getStatus().getDisplayName() + ")");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        if (foodItem.getSaleStartTime() == null || foodItem.getSaleEndTime() == null
+                || now.isBefore(foodItem.getSaleStartTime())
+                || !now.isBefore(foodItem.getSaleEndTime())) {
+            throw new InvalidOperationException(
+                    "Flash sale for '" + foodItem.getName() + "' is not currently active");
+        }
+
+        if (foodItem.getAvailableQuantity() < requestedQty) {
+            throw new InsufficientStockException(
+                    "Insufficient stock for '" + foodItem.getName() + "'. "
+                    + "Available: " + foodItem.getAvailableQuantity()
+                    + ", Requested: " + requestedQty);
+        }
+    }
+
+    /**
+     * Asserts that the order is in the {@code expected} status before performing a state transition.
+     */
+    private void requireStatus(Order order, OrderStatus expected, String transitionVerb) {
+        if (order.getStatus() != expected) {
+            throw new InvalidOperationException(
+                    "Order #" + order.getOrderNumber() + " cannot be " + transitionVerb
+                    + ". Current status: " + order.getStatus().getDisplayName()
+                    + ", required: " + expected.getDisplayName());
+        }
+    }
+
+    private Order findOrderOrThrow(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Order not found with ID: " + orderId));
+    }
+
+    private Store findStoreOrThrow(Long storeId) {
+        return storeRepository.findById(storeId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Store not found with ID: " + storeId));
+    }
+
+    /**
+     * Verifies that the current principal is the owner of the store that this order belongs to,
+     * or holds the ADMIN role.
+     */
+    private void verifyStoreOwnerOrAdmin(Order order) {
+        verifyStoreOwnerOrAdmin(order.getStore());
+    }
+
+    private void verifyStoreOwnerOrAdmin(Store store) {
+        if (!authenticationService.isStoreOwnerOrAdmin(store)) {
+            throw new AccessDeniedException(
+                    "You do not have permission to manage orders for store '"
+                    + store.getName() + "'");
+        }
+    }
+
+    private OrderStatus parseOrderStatus(String status) {
+        try {
+            return OrderStatus.fromDisplayName(status);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidOperationException("Invalid order status: '" + status + "'");
+        }
+    }
+
+    /**
+     * Publishes a notification message to RabbitMQ.
+     * Failures are swallowed and logged — notification delivery is best-effort and must
+     * not roll back the enclosing order transaction.
+     */
+    private void notifyUsers(List<Long> userIds, String title, String message,
+                             NotificationType type, Long referenceId) {
+        try {
+            messagePublisher.publishNotification(NotificationMessage.builder()
+                    .userIds(userIds)
+                    .title(title)
+                    .message(message)
+                    .type(type)
+                    .referenceId(referenceId)
+                    .build());
+        } catch (Exception e) {
+            log.warn("Failed to publish order notification (orderId={}, type={}): {}",
+                    referenceId, type, e.getMessage());
+        }
     }
 }
