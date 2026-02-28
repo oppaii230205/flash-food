@@ -49,7 +49,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"nguyenvana@example.com\",\n  \"password\": \"Abc@12345\",\n  \"fullName\": \"Nguyễn Văn A\",\n  \"phoneNumber\": \"0901234567\",\n  \"latitude\": 10.7769,\n  \"longitude\": 106.7009\n}",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Test1234\",\n  \"fullName\": \"Nguyễn Văn User\",\n  \"phoneNumber\": \"0901234567\",\n  \"latitude\": 10.7769,\n  \"longitude\": 106.7009\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -113,7 +113,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"nguyenvana.new@example.com\",\n  \"password\": \"Test1234\"\n}",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"Test1234\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2054,6 +2054,576 @@
         }
       ],
       "id": "d4e5f6a7-b8c9-0123-defg-123456789012"
+    },
+    {
+      "name": "Order",
+      "item": [
+        {
+          "name": "Place Order",
+          "id": "e5f6a7b8-0005-0000-0000-000000000001",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"storeId\": 1,\n  \"items\": [\n    {\n      \"foodItemId\": 1,\n      \"quantity\": 2\n    }//,\n    // {\n    //   \"foodItemId\": 2,\n    //   \"quantity\": 1\n    // }\n  ],\n  \"paymentMethod\": \"cash\",\n  \"pickupTime\": \"2026-03-01T19:30:00\",\n  \"specialInstructions\": \"Không hành, ít ớt\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/orders",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders"
+              ]
+            },
+            "description": "Place a new flash-sale order for the currently authenticated customer. Validates item availability, flash-sale window, and stock before confirming. Inventory is decremented atomically under pessimistic write-lock to prevent overselling. A corresponding Payment record is created simultaneously. Requires CUSTOMER role."
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Order",
+          "id": "e5f6a7b8-0005-0000-0000-000000000002",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Khách hàng đổi ý, không thể đến lấy đơn hàng đúng giờ\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/orders/1/cancel",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "1",
+                "cancel"
+              ]
+            },
+            "description": "Cancel an order. Customers may only cancel their own PENDING orders. Store owners and admins may cancel PENDING or CONFIRMED orders belonging to their store. Reserved inventory is restored atomically. The request body is optional — omit it or leave 'reason' blank if no reason is needed. Requires CUSTOMER, STORE_OWNER, or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm Order",
+          "id": "e5f6a7b8-0005-0000-0000-000000000003",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/orders/1/confirm",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "1",
+                "confirm"
+              ]
+            },
+            "description": "Store owner or admin confirms a PENDING order, transitioning it to CONFIRMED. The customer receives a notification. Requires STORE_OWNER or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Start Preparing Order",
+          "id": "e5f6a7b8-0005-0000-0000-000000000004",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/orders/1/preparing",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "1",
+                "preparing"
+              ]
+            },
+            "description": "Mark a CONFIRMED order as actively being prepared, transitioning it to PREPARING. Requires STORE_OWNER or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Order Ready",
+          "id": "e5f6a7b8-0005-0000-0000-000000000005",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/orders/1/ready",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "1",
+                "ready"
+              ]
+            },
+            "description": "Mark a PREPARING order as ready for customer pickup, transitioning it to READY. A notification is sent to the customer. Requires STORE_OWNER or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Complete Order",
+          "id": "e5f6a7b8-0005-0000-0000-000000000006",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/orders/1/complete",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "1",
+                "complete"
+              ]
+            },
+            "description": "Mark a READY order as completed after the customer has picked it up, transitioning it to COMPLETED. Requires STORE_OWNER or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Process Payment",
+          "id": "e5f6a7b8-0005-0000-0000-000000000007",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/orders/1/payment",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "1",
+                "payment"
+              ]
+            },
+            "description": "Simulate payment processing for a PENDING order. Updates the Payment record status to PAID and synchronises the paymentStatus field on the Order. Cannot be called on already-paid, cancelled, or expired orders. Requires CUSTOMER role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order by ID",
+          "id": "e5f6a7b8-0005-0000-0000-000000000008",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/orders/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "1"
+              ]
+            },
+            "description": "Retrieve a single order by its database ID. Access is restricted to the order's customer, the owning store's staff, or admins. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order by Number",
+          "id": "e5f6a7b8-0005-0000-0000-000000000009",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/orders/number/ORD-20260228-7B9131",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "number",
+                "ORD-20260228-7B9131"
+              ]
+            },
+            "description": "Retrieve a single order by its human-readable order number (format: ORD-YYYYMMDD-XXXXXX). Access is restricted to the order's customer, the owning store's staff, or admins. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Orders",
+          "id": "e5f6a7b8-0005-0000-0000-000000000010",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/orders/my-orders?page=0&size=20&sort=createdAt,desc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "my-orders"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
+              ]
+            },
+            "description": "Paginated list of all orders placed by the currently authenticated customer, sorted by creation date descending. Requires CUSTOMER role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Orders by Status",
+          "id": "e5f6a7b8-0005-0000-0000-000000000011",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/orders/my-orders/status/completed?page=0&size=20&sort=createdAt,desc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "my-orders",
+                "status",
+                "completed"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "uuid": "879becf4-8dd5-4fbe-983f-16effeefdf26"
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "uuid": "714a64c9-c30b-406a-b8c8-bb92a41f0b46"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc",
+                  "uuid": "eed48c25-94ad-4ae5-8ad4-d60b353b4630"
+                }
+              ]
+            },
+            "description": "Paginated list of the current customer's orders filtered by status. Valid status values: pending, confirmed, preparing, ready, completed, cancelled, expired. Requires CUSTOMER role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Store Orders",
+          "id": "e5f6a7b8-0005-0000-0000-000000000012",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/orders/store/1?page=0&size=20&sort=createdAt,desc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "store",
+                "1"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
+              ]
+            },
+            "description": "Paginated list of all orders belonging to a specific store. The caller must be the owner of that store or an admin. Requires STORE_OWNER or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Store Orders by Status",
+          "id": "e5f6a7b8-0005-0000-0000-000000000013",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/orders/store/1/status/completed?page=0&size=20&sort=createdAt,desc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "store",
+                "1",
+                "status",
+                "completed"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "uuid": "f1c0b0d3-bf63-48cb-8f8e-09b76ad94859"
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "uuid": "f0dde157-c340-4a82-bff0-96234a74c15e"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc",
+                  "uuid": "0440e820-d3f9-4ce4-839c-f3a82b6e660b"
+                }
+              ]
+            },
+            "description": "Paginated list of a store's orders filtered by status. Valid status values: pending, confirmed, preparing, ready, completed, cancelled, expired. Requires STORE_OWNER or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Orders (Admin)",
+          "id": "e5f6a7b8-0005-0000-0000-000000000014",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/orders/all?page=0&size=20&sort=createdAt,desc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "all"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
+              ]
+            },
+            "description": "Paginated list of all orders across all stores and customers. Requires ADMIN role."
+          },
+          "response": []
+        }
+      ],
+      "id": "e5f6a7b8-c9d0-1234-efgh-234567890123"
     }
   ]
 }

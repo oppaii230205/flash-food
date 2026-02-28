@@ -189,4 +189,35 @@ public interface FoodItemRepository extends JpaRepository<FoodItem, Long> {
         WHERE f.id = :id
     """)
     int incrementQuantity(@Param("id") Long id, @Param("quantity") Integer quantity);
+
+    /**
+     * Transitions an item to SOLD_OUT when its available quantity has reached zero.
+     * Called after {@link #decrementQuantity} when the remaining quantity is known to be 0,
+     * avoiding a flush + re-fetch cycle on the entity.
+     * The conditional {@code WHERE f.availableQuantity = 0} makes this operation idempotent.
+     */
+    @Modifying
+    @Query("""
+        UPDATE FoodItem f
+        SET f.status = :soldOut
+        WHERE f.id = :id
+        AND f.availableQuantity = 0
+    """)
+    int markSoldOutIfEmpty(@Param("id") Long id, @Param("soldOut") FoodItemStatus soldOut);
+
+    /**
+     * Restores an item from SOLD_OUT back to AVAILABLE after stock is returned
+     * (e.g. order cancellation). Only applies when the item currently has stock.
+     */
+    @Modifying
+    @Query("""
+        UPDATE FoodItem f
+        SET f.status = :available
+        WHERE f.id = :id
+        AND f.status = :soldOut
+        AND f.availableQuantity > 0
+    """)
+    int restoreAvailableIfSoldOut(@Param("id") Long id,
+                                  @Param("available") FoodItemStatus available,
+                                  @Param("soldOut") FoodItemStatus soldOut);
 }
