@@ -259,6 +259,8 @@ public class StoreServiceImpl implements StoreService {
             return List.of();
         }
 
+        log.debug("Store IDs found in Redis Geo: {}", storeIds);
+
         List<Store> stores = storeRepository.findByIdInAndStatus(storeIds, StoreStatus.ACTIVE);
 
         return stores.stream()
