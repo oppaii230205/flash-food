@@ -113,7 +113,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"Test1234\"\n}",
+              "raw": "{\n  \"email\": \"nguyenvana.new@example.com\",\n  \"password\": \"Test1234\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1748,7 +1748,7 @@
             "method": "PATCH",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/api/v1/food-items/1/status?status=cancelled",
+              "raw": "{{baseURL}}/api/v1/food-items/1/status?status=pending",
               "host": [
                 "{{baseURL}}"
               ],
@@ -1762,8 +1762,9 @@
               "query": [
                 {
                   "key": "status",
-                  "value": "cancelled",
-                  "description": "Store owners may only set: cancelled. Admins may set: pending, available, sold_out, expired, cancelled."
+                  "value": "pending",
+                  "description": "Store owners may only set: cancelled. Admins may set: pending, available, sold_out, expired, cancelled.",
+                  "uuid": "7bf7d047-0c19-4301-9c78-58765383e82f"
                 }
               ]
             },
