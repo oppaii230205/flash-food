@@ -1602,6 +1602,457 @@
         }
       ],
       "id": "c3d4e5f6-a7b8-9012-cdef-012345678901"
+    },
+    {
+      "name": "FoodItem",
+      "item": [
+        {
+          "name": "Create Food Item",
+          "id": "d4e5f6a7-0004-0000-0000-000000000001",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bánh mì thịt nướng\",\n  \"description\": \"Bánh mì ổ giòn, nhân thịt nướng than hoa kèm rau sống và tương ớt đặc biệt\",\n  \"imageUrl\": \"https://example.com/images/banh-mi-thit-nuong.jpg\",\n  \"originalPrice\": 45000,\n  \"flashPrice\": 25000,\n  \"quantity\": 30,\n  \"saleStartTime\": \"2026-03-01T20:00:00\",\n  \"saleEndTime\": \"2026-03-01T22:00:00\",\n  \"categoryId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/food-items/store/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "food-items",
+                "store",
+                "1"
+              ]
+            },
+            "description": "Create a new flash-sale food item for a specific store. The store must be ACTIVE and the caller must be the store owner or an admin. The initial status is derived automatically: PENDING if saleStartTime is in the future, AVAILABLE otherwise. Requires STORE_OWNER or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Food Item",
+          "id": "d4e5f6a7-0004-0000-0000-000000000002",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bánh mì thịt nướng đặc biệt\",\n  \"description\": \"Bánh mì ổ giòn, nhân thịt nướng than hoa, trứng ốp la và rau sống tươi\",\n  \"imageUrl\": \"https://example.com/images/banh-mi-thit-nuong-dac-biet.jpg\",\n  \"originalPrice\": 50000,\n  \"flashPrice\": 28000,\n  \"quantity\": 40,\n  \"saleStartTime\": \"2026-03-01T20:00:00\",\n  \"saleEndTime\": \"2026-03-01T22:00:00\",\n  \"categoryId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/api/v1/food-items/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "food-items",
+                "1"
+              ]
+            },
+            "description": "Update an existing food item. Only the store owner or an admin may call this. Items in terminal states (DELETED, CANCELLED) cannot be updated. The discount percentage is automatically recalculated. Requires STORE_OWNER or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Food Item",
+          "id": "d4e5f6a7-0004-0000-0000-000000000003",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/food-items/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "food-items",
+                "1"
+              ]
+            },
+            "description": "Soft-delete a food item by setting its status to DELETED. The item will no longer appear in any query results. Only the store owner or an admin may call this. Requires STORE_OWNER or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Food Item Status",
+          "id": "d4e5f6a7-0004-0000-0000-000000000004",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/food-items/1/status?status=cancelled",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "food-items",
+                "1",
+                "status"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "cancelled",
+                  "description": "Store owners may only set: cancelled. Admins may set: pending, available, sold_out, expired, cancelled."
+                }
+              ]
+            },
+            "description": "Manually update a food item's status. Store owners may only cancel their own items. Admins can set any valid status except 'deleted' (use the DELETE endpoint for that). Valid values: pending, available, sold_out, expired, cancelled. Requires STORE_OWNER or ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Food Item by ID",
+          "id": "d4e5f6a7-0004-0000-0000-000000000005",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/food-items/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "food-items",
+                "1"
+              ]
+            },
+            "description": "Retrieve a single food item by its ID. Response includes computed fields: isAvailable, timeUntilSaleStart, timeUntilSaleEnd (in seconds). No authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Food Items (Paginated)",
+          "id": "d4e5f6a7-0004-0000-0000-000000000006",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/food-items?page=0&size=20&sort=createdAt,desc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "food-items"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
+              ]
+            },
+            "description": "Paginated list of all food items across all statuses (except DELETED). Sorted by creation date descending by default. No authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Food Items by Store",
+          "id": "d4e5f6a7-0004-0000-0000-000000000007",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/food-items/store/1?page=0&size=20&sort=createdAt,desc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "food-items",
+                "store",
+                "1"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
+              ]
+            },
+            "description": "Paginated list of all food items belonging to a specific store. No authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Food Items by Category",
+          "id": "d4e5f6a7-0004-0000-0000-000000000008",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/food-items/category/1?page=0&size=20&sort=createdAt,desc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "food-items",
+                "category",
+                "1"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
+              ]
+            },
+            "description": "Paginated list of food items belonging to a specific category. No authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Food Items by Status",
+          "id": "d4e5f6a7-0004-0000-0000-000000000009",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/food-items/status/available?page=0&size=20&sort=createdAt,desc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "food-items",
+                "status",
+                "available"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
+              ]
+            },
+            "description": "Paginated list of food items filtered by status. Valid values: pending, available, sold_out, expired, cancelled. No authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Available Food Items",
+          "id": "d4e5f6a7-0004-0000-0000-000000000010",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/food-items/available?page=0&size=20&sort=flashPrice,asc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "food-items",
+                "available"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "flashPrice,asc"
+                }
+              ]
+            },
+            "description": "Paginated list of food items with AVAILABLE status that still have stock and have not expired. Items are sorted by flash price ascending by default (best deals first). No authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Flash Sale Food Items",
+          "id": "d4e5f6a7-0004-0000-0000-000000000011",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/food-items/flash-sale?page=0&size=20&sort=discountPercentage,desc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "food-items",
+                "flash-sale"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "discountPercentage,desc"
+                }
+              ]
+            },
+            "description": "Paginated list of food items that are currently within their active flash-sale window (saleStartTime <= now < saleEndTime), with AVAILABLE status and positive stock. Sorted by discount percentage descending by default (biggest discount first). No authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Search Food Items",
+          "id": "d4e5f6a7-0004-0000-0000-000000000012",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/api/v1/food-items/search?keyword=bánh mì&page=0&size=20&sort=createdAt,desc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "food-items",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "bánh mì"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
+              ]
+            },
+            "description": "Case-insensitive keyword search across food item name and description. The keyword must not be blank. No authentication required."
+          },
+          "response": []
+        }
+      ],
+      "id": "d4e5f6a7-b8c9-0123-defg-123456789012"
     }
   ]
 }
