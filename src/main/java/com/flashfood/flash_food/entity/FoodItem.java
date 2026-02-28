@@ -14,15 +14,29 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 /**
- * FoodItem entity - Represents flash sale food items
- */
-/**
- * Automatically excludes soft-deleted food items (status code 6 = DELETED) from
- * all queries — including derived finders, JPQL, and association joins.
+ * FoodItem entity - Represents flash sale food items offered by a store.
+ *
+ * Enum field {@code status} is stored as INTEGER via the auto-applied
+ * {@link com.flashfood.flash_food.entity.converter.FoodItemStatusConverter}.
+ * Clients always send/receive the status as a human-readable string.
+ *
+ * Optimistic locking ({@code @Version}) guards concurrent updates; for
+ * quantity decrements during order placement, use
+ * {@link com.flashfood.flash_food.repository.FoodItemRepository#findByIdWithLock}
+ * (pessimistic write lock) instead.
+ *
+ * Soft-delete: setting {@code status = DELETED} hides the row from all queries
+ * via the {@code @SQLRestriction} below.
  */
 @SQLRestriction("status <> 6")
 @Entity
-@Table(name = "food_items")
+@Table(name = "food_items", indexes = {
+    @Index(name = "idx_food_item_store_id",       columnList = "store_id"),
+    @Index(name = "idx_food_item_category_id",    columnList = "category_id"),
+    @Index(name = "idx_food_item_status",         columnList = "status"),
+    @Index(name = "idx_food_item_sale_window",    columnList = "sale_start_time,sale_end_time"),
+    @Index(name = "idx_food_item_is_expired",     columnList = "is_expired")
+})
 @Getter
 @Setter
 @Builder
@@ -63,7 +77,10 @@ public class FoodItem {
     private Integer availableQuantity;
     
     // Flash sale period
+    @Column(name = "sale_start_time")
     private LocalDateTime saleStartTime;
+
+    @Column(name = "sale_end_time")
     private LocalDateTime saleEndTime;
     
     @ManyToOne(fetch = FetchType.LAZY)
@@ -75,6 +92,7 @@ public class FoodItem {
 
     // For scheduled auto-expiry
     @Builder.Default
+    @Column(name = "is_expired", nullable = false)
     private Boolean isExpired = false;
     
     @CreationTimestamp

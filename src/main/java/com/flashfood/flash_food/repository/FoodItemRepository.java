@@ -18,17 +18,26 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repository for FoodItem entity
- * Includes pessimistic locking for high concurrency scenarios
+ * Repository for FoodItem entity.
+ *
+ * JPQL note: enum constants are always passed as named parameters so Hibernate
+ * can apply the registered {@link com.flashfood.flash_food.entity.converter.FoodItemStatusConverter}
+ * automatically — never hard-code enum literals inside a JPQL string (e.g.
+ * {@code = FoodItemStatus.AVAILABLE}) because that form bypasses the converter
+ * and compares the enum name against an integer DB column.
+ *
+ * Includes pessimistic locking helpers for high-concurrency stock management.
  */
 @Repository
 public interface FoodItemRepository extends JpaRepository<FoodItem, Long> {
 
+    // -------------------------------------------------------------------------
+    // Simple derived finders (Spring Data handles parameter binding correctly)
+    // -------------------------------------------------------------------------
+
     List<FoodItem> findByStore(Store store);
 
     List<FoodItem> findByStoreAndStatus(Store store, FoodItemStatus status);
-
-    List<FoodItem> findByStatus(FoodItemStatus status);
 
     Page<FoodItem> findByStoreId(Long storeId, Pageable pageable);
 
@@ -36,74 +45,130 @@ public interface FoodItemRepository extends JpaRepository<FoodItem, Long> {
 
     Page<FoodItem> findByStatus(FoodItemStatus status, Pageable pageable);
 
+    // -------------------------------------------------------------------------
+    // Pessimistic-lock finder (for stock decrement operations)
+    // -------------------------------------------------------------------------
+
     /**
-     * Find food item with pessimistic write lock for handling concurrency
-     * Use this when updating quantity to prevent overselling
+     * Acquires a write lock on the row; use this inside a @Transactional method
+     * when updating {@code availableQuantity} to prevent overselling.
      */
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT f FROM FoodItem f WHERE f.id = :id")
     Optional<FoodItem> findByIdWithLock(@Param("id") Long id);
 
+    // -------------------------------------------------------------------------
+    // Flash-sale public queries
+    // -------------------------------------------------------------------------
+
     /**
-     * Find available flash sale food items (paginated)
+     * Currently active flash-sale items: status AVAILABLE, in stock, within sale window.
+     * Used by the public-facing "flash sale" feed.
      */
     @Query("""
         SELECT f FROM FoodItem f
-        WHERE f.status = FoodItemStatus.AVAILABLE
+        WHERE f.status = :status
         AND f.availableQuantity > 0
         AND f.saleStartTime <= :now
         AND f.saleEndTime > :now
         AND f.isExpired = false
+        ORDER BY f.discountPercentage DESC
     """)
-    Page<FoodItem> findAvailableFlashSaleItems(@Param("now") LocalDateTime now, Pageable pageable);
+    Page<FoodItem> findActiveFlashSaleItems(
+            @Param("status") FoodItemStatus status,
+            @Param("now") LocalDateTime now,
+            Pageable pageable);
 
     /**
-     * Find available flash sale food items (list, for scheduled tasks)
+     * All items with AVAILABLE status (not necessarily in their sale window right now).
+     * Used by the general catalogue / "available" feed.
      */
     @Query("""
         SELECT f FROM FoodItem f
-        WHERE f.status = FoodItemStatus.AVAILABLE
+        WHERE f.status = :status
         AND f.availableQuantity > 0
-        AND f.saleStartTime <= :now
-        AND f.saleEndTime > :now
         AND f.isExpired = false
     """)
-    List<FoodItem> findAvailableFlashSaleItems(@Param("now") LocalDateTime now);
+    Page<FoodItem> findAvailableItems(
+            @Param("status") FoodItemStatus status,
+            Pageable pageable);
 
     /**
-     * Find food items by store that are currently on sale
+     * Active items belonging to a specific store — used in store detail screens.
      */
     @Query("""
         SELECT f FROM FoodItem f
         WHERE f.store.id = :storeId
-        AND f.status = FoodItemStatus.AVAILABLE
+        AND f.status = :status
         AND f.availableQuantity > 0
         AND f.isExpired = false
     """)
-    List<FoodItem> findAvailableItemsByStore(@Param("storeId") Long storeId);
+    List<FoodItem> findAvailableItemsByStore(
+            @Param("storeId") Long storeId,
+            @Param("status") FoodItemStatus status);
+
+    // -------------------------------------------------------------------------
+    // Search
+    // -------------------------------------------------------------------------
 
     /**
-     * Search food items by name or description (paginated)
+     * Case-insensitive keyword search across name and description.
      */
     @Query("""
         SELECT f FROM FoodItem f
         WHERE LOWER(f.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
         OR LOWER(f.description) LIKE LOWER(CONCAT('%', :keyword, '%'))
     """)
-    Page<FoodItem> searchByNameOrDescription(@Param("keyword") String keyword, Pageable pageable);
+    Page<FoodItem> searchByNameOrDescription(
+            @Param("keyword") String keyword,
+            Pageable pageable);
+
+    // -------------------------------------------------------------------------
+    // Scheduler helpers (bulk updates avoid N+1 individual saves)
+    // -------------------------------------------------------------------------
 
     /**
-     * Find expired items that need status update (for scheduler)
+     * Bulk-expires items that have passed their sale end time.
+     * Only transitions AVAILABLE and PENDING items; CANCELLED/SOLD_OUT remain unchanged.
      */
+    @Modifying
     @Query("""
-        SELECT f FROM FoodItem f
+        UPDATE FoodItem f
+        SET f.status = :expired, f.isExpired = true
         WHERE f.isExpired = false
         AND f.saleEndTime < :now
+        AND f.status IN (:available, :pending)
     """)
-    List<FoodItem> findExpiredItems(@Param("now") LocalDateTime now);
+    int bulkExpireItems(
+            @Param("expired") FoodItemStatus expired,
+            @Param("now") LocalDateTime now,
+            @Param("available") FoodItemStatus available,
+            @Param("pending") FoodItemStatus pending);
 
     /**
-     * Update quantity atomically (for high concurrency)
+     * Bulk-activates PENDING items whose sale window has opened and still have stock.
+     */
+    @Modifying
+    @Query("""
+        UPDATE FoodItem f
+        SET f.status = :available
+        WHERE f.status = :pending
+        AND f.saleStartTime <= :now
+        AND f.saleEndTime > :now
+        AND f.availableQuantity > 0
+    """)
+    int bulkActivatePendingItems(
+            @Param("available") FoodItemStatus available,
+            @Param("pending") FoodItemStatus pending,
+            @Param("now") LocalDateTime now);
+
+    // -------------------------------------------------------------------------
+    // Stock management
+    // -------------------------------------------------------------------------
+
+    /**
+     * Atomic quantity decrement — only succeeds when enough stock is available.
+     * Returns the number of rows updated (1 on success, 0 if insufficient stock).
      */
     @Modifying
     @Query("""
@@ -113,4 +178,15 @@ public interface FoodItemRepository extends JpaRepository<FoodItem, Long> {
         AND f.availableQuantity >= :quantity
     """)
     int decrementQuantity(@Param("id") Long id, @Param("quantity") Integer quantity);
+
+    /**
+     * Atomic quantity increment — used when an order is cancelled and stock is restored.
+     */
+    @Modifying
+    @Query("""
+        UPDATE FoodItem f
+        SET f.availableQuantity = f.availableQuantity + :quantity
+        WHERE f.id = :id
+    """)
+    int incrementQuantity(@Param("id") Long id, @Param("quantity") Integer quantity);
 }

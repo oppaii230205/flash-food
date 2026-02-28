@@ -4,6 +4,8 @@ import com.flashfood.flash_food.dto.response.*;
 import com.flashfood.flash_food.entity.*;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 /**
@@ -89,13 +91,16 @@ public class EntityMapper {
     }
     
     /**
-     * Map FoodItem entity to FoodItemResponse DTO
+     * Map FoodItem entity to FoodItemResponse DTO.
+     * Computes convenience fields (isAvailable, timeUntilSale*) from the current
+     * wall-clock time so callers never need to duplicate this logic.
      */
     public FoodItemResponse toFoodItemResponse(FoodItem foodItem) {
         if (foodItem == null) return null;
-        
+
         Category category = foodItem.getCategory();
-        
+        LocalDateTime now = LocalDateTime.now();
+
         return FoodItemResponse.builder()
                 .id(foodItem.getId())
                 .storeId(foodItem.getStore() != null ? foodItem.getStore().getId() : null)
@@ -114,7 +119,54 @@ public class EntityMapper {
                 .saleStartTime(foodItem.getSaleStartTime())
                 .saleEndTime(foodItem.getSaleEndTime())
                 .status(foodItem.getStatus() != null ? foodItem.getStatus().getDisplayName() : null)
+                .isExpired(foodItem.getIsExpired())
+                .isAvailable(computeIsAvailable(foodItem, now))
+                .timeUntilSaleStart(computeTimeUntilSaleStart(foodItem, now))
+                .timeUntilSaleEnd(computeTimeUntilSaleEnd(foodItem, now))
+                .createdAt(foodItem.getCreatedAt())
+                .updatedAt(foodItem.getUpdatedAt())
                 .build();
+    }
+
+    /**
+     * True only when the item is AVAILABLE, has stock, is not expired, and is
+     * currently within its declared sale window.
+     */
+    private Boolean computeIsAvailable(FoodItem foodItem, LocalDateTime now) {
+        if (foodItem.getStatus() != FoodItemStatus.AVAILABLE) return false;
+        if (foodItem.getAvailableQuantity() == null || foodItem.getAvailableQuantity() <= 0) return false;
+        if (Boolean.TRUE.equals(foodItem.getIsExpired())) return false;
+        if (foodItem.getSaleStartTime() == null || foodItem.getSaleEndTime() == null) return false;
+        return !foodItem.getSaleStartTime().isAfter(now) && foodItem.getSaleEndTime().isAfter(now);
+    }
+
+    /**
+     * Seconds until the sale starts; {@code null} if the sale has already begun or
+     * no start time is set.
+     */
+    private Long computeTimeUntilSaleStart(FoodItem foodItem, LocalDateTime now) {
+        LocalDateTime start = foodItem.getSaleStartTime();
+        if (start == null || !start.isAfter(now)) {
+            return null;
+        }
+        return Duration.between(now, start).getSeconds();
+    }
+
+    /**
+     * Seconds until the sale ends; {@code null} if the sale hasn't started yet,
+     * has already ended, or no end time is set.
+     */
+    private Long computeTimeUntilSaleEnd(FoodItem foodItem, LocalDateTime now) {
+        LocalDateTime start = foodItem.getSaleStartTime();
+        LocalDateTime end   = foodItem.getSaleEndTime();
+        if (end == null || !end.isAfter(now)) {
+            return null;
+        }
+        // Only meaningful once the sale window has opened
+        if (start != null && start.isAfter(now)) {
+            return null;
+        }
+        return Duration.between(now, end).getSeconds();
     }
     
     /**
