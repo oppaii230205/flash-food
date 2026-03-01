@@ -95,6 +95,19 @@
 			<version>2.6.0</version>
 		</dependency>
 		
+		<!-- Spring Retry (required for RabbitMQ listener retry + DLQ support) -->
+		<dependency>
+			<groupId>org.springframework.retry</groupId>
+			<artifactId>spring-retry</artifactId>
+			<version>2.0.12</version>
+		</dependency>
+
+		<!-- Jackson Datatype JSR310 for LocalDateTime serialisation in messages -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+		</dependency>
+
 		<!-- JWT Support (for later implementation) -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>

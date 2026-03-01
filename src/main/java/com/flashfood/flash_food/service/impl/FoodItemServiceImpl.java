@@ -1,5 +1,6 @@
 package com.flashfood.flash_food.service.impl;
 
+import com.flashfood.flash_food.dto.message.FlashSaleMessage;
 import com.flashfood.flash_food.dto.request.FoodItemRequest;
 import com.flashfood.flash_food.dto.response.FoodItemResponse;
 import com.flashfood.flash_food.entity.*;
@@ -12,8 +13,10 @@ import com.flashfood.flash_food.repository.FoodItemRepository;
 import com.flashfood.flash_food.repository.StoreRepository;
 import com.flashfood.flash_food.service.AuthenticationService;
 import com.flashfood.flash_food.service.FoodItemService;
+import com.flashfood.flash_food.service.MessagePublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,11 +40,16 @@ import java.time.LocalDateTime;
 @Transactional(readOnly = true)
 public class FoodItemServiceImpl implements FoodItemService {
 
-    private final FoodItemRepository foodItemRepository;
-    private final StoreRepository storeRepository;
-    private final CategoryRepository categoryRepository;
-    private final AuthenticationService authenticationService;
-    private final EntityMapper entityMapper;
+    private final FoodItemRepository     foodItemRepository;
+    private final StoreRepository        storeRepository;
+    private final CategoryRepository     categoryRepository;
+    private final AuthenticationService  authenticationService;
+    private final MessagePublisher       messagePublisher;
+    private final EntityMapper           entityMapper;
+
+    /** Radius (km) used when notifying users about a new flash-sale item. */
+    @Value("${app.flash-sale.default-radius-km:1.0}")
+    private double flashSaleRadiusKm;
 
     // =========================================================================
     // Write operations
@@ -92,6 +100,12 @@ public class FoodItemServiceImpl implements FoodItemService {
 
         FoodItem saved = foodItemRepository.save(foodItem);
         log.info("Food item created with ID: {}", saved.getId());
+
+        // Notify nearby users if the item is already within its sale window
+        if (saved.getStatus() == FoodItemStatus.AVAILABLE) {
+            publishFlashSaleEvent(saved, store);
+        }
+
         return entityMapper.toFoodItemResponse(saved);
     }
 
@@ -200,6 +214,12 @@ public class FoodItemServiceImpl implements FoodItemService {
         foodItem.setStatus(newStatus);
         FoodItem updated = foodItemRepository.save(foodItem);
         log.info("Food item status updated to '{}', ID: {}", newStatus.getDisplayName(), id);
+
+        // Notify nearby users whenever an admin manually activates an item
+        if (newStatus == FoodItemStatus.AVAILABLE) {
+            publishFlashSaleEvent(updated, updated.getStore());
+        }
+
         return entityMapper.toFoodItemResponse(updated);
     }
 
@@ -276,6 +296,36 @@ public class FoodItemServiceImpl implements FoodItemService {
     // =========================================================================
     // Private helpers
     // =========================================================================
+
+    /**
+     * Publishes a flash-sale activation event to RabbitMQ.
+     * The consumer ({@link com.flashfood.flash_food.service.NotificationConsumer})
+     * resolves nearby users via Redis Geo and persists their notifications.
+     * Failures are logged and swallowed — notification delivery is best-effort.
+     */
+    private void publishFlashSaleEvent(FoodItem item, Store store) {
+        try {
+            FlashSaleMessage event = FlashSaleMessage.builder()
+                    .foodItemId(item.getId())
+                    .storeId(store.getId())
+                    .storeName(store.getName())
+                    .itemName(item.getName())
+                    .itemImageUrl(item.getImageUrl())
+                    .originalPrice(item.getOriginalPrice())
+                    .flashPrice(item.getFlashPrice())
+                    .discountPercentage(item.getDiscountPercentage())
+                    .storeLongitude(store.getLongitude())
+                    .storeLatitude(store.getLatitude())
+                    .radiusKm(flashSaleRadiusKm)
+                    .build();
+            messagePublisher.publishFlashSaleEvent(event);
+            log.info("Flash-sale event published: foodItemId={}, store='{}'",
+                    item.getId(), store.getName());
+        } catch (Exception e) {
+            log.warn("Failed to publish flash-sale event (foodItemId={}): {}",
+                    item.getId(), e.getMessage());
+        }
+    }
 
     private void validatePricesAndTimes(FoodItemRequest request) {
         if (request.getFlashPrice() >= request.getOriginalPrice()) {
