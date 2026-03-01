@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flash Food – Rescue Food. Save Money. Protect the Planet.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ─────────────────────────────────────────────
+       CSS RESET & VARIABLES
+    ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-900:  #1a3d2b;
+      --green-700:  #2d6a4f;
+      --green-600:  #3a8a62;
+      --green-500:  #52b788;
+      --green-400:  #74c69d;
+      --green-300:  #95d5b2;
+      --green-200:  #b7e4c7;
+      --green-100:  #d8f3dc;
+      --green-50:   #f0faf3;
+
+      --mint-400:   #80ded9;
+      --mint-200:   #b5ead7;
+      --mint-100:   #d4f4ee;
+
+      --beige-700:  #a0856a;
+      --beige-500:  #c9a07a;
+      --beige-300:  #e8d5b7;
+      --beige-200:  #f3e9d8;
+      --beige-100:  #faf4ec;
+      --beige-50:   #fdfaf5;
+
+      --orange-400: #f4a261;
+      --orange-500: #e76f51;
+
+      --text-dark:  #1c2b22;
+      --text-mid:   #3d5545;
+      --text-soft:  #6b8c74;
+      --text-muted: #9ab8a0;
+
+      --white:      #ffffff;
+      --shadow-xs:  0 1px 3px rgba(52,120,80,.06);
+      --shadow-sm:  0 2px 8px rgba(52,120,80,.09);
+      --shadow-md:  0 4px 20px rgba(52,120,80,.13);
+      --shadow-lg:  0 8px 40px rgba(52,120,80,.18);
+      --radius-sm:  10px;
+      --radius-md:  16px;
+      --radius-lg:  24px;
+      --radius-xl:  36px;
+      --transition: .25s cubic-bezier(.4,0,.2,1);
+
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      color: var(--text-dark);
+      background: var(--beige-50);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    img { max-width: 100%; display: block; }
+    a   { text-decoration: none; color: inherit; }
+    ul  { list-style: none; }
+
+    .container {
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--green-600);
+      background: var(--green-50);
+      border: 1.5px solid var(--green-200);
+      border-radius: 100px;
+      padding: 4px 14px;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      color: var(--green-900);
+      line-height: 1.22;
+    }
+
+    .section-sub {
+      font-size: 1rem;
+      color: var(--text-soft);
+      margin-top: 10px;
+      max-width: 520px;
+    }
+
+    /* ─────────────────────────────────────────────
+       NAVBAR
+    ───────────────────────────────────────────── */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 14px 0;
+      transition: background var(--transition), box-shadow var(--transition);
+    }
+    .navbar.scrolled {
+      background: rgba(253,250,245,.96);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-sm);
+    }
+    .navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--green-700);
+    }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--green-500), var(--mint-400));
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 1.1rem;
+    }
+    .nav-links {
+      display: none;
+      gap: 30px;
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--text-mid);
+    }
+    .nav-links a:hover { color: var(--green-600); }
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--green-600);
+      color: var(--white) !important;
+      padding: 9px 20px;
+      border-radius: 100px;
+      font-weight: 700;
+      font-size: .88rem;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+      box-shadow: 0 2px 10px rgba(58,138,98,.3);
+    }
+    .nav-cta:hover {
+      background: var(--green-700);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 18px rgba(58,138,98,.4);
+    }
+    .hamburger {
+      width: 34px; height: 34px;
+      background: none; border: none;
+      cursor: pointer;
+      display: flex; flex-direction: column;
+      justify-content: center; gap: 5px;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block; height: 2px;
+      background: var(--green-700);
+      border-radius: 2px;
+      transition: transform var(--transition), opacity var(--transition);
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: rgba(253,250,245,.98);
+      backdrop-filter: blur(12px);
+      position: fixed;
+      top: 64px; left: 0; right: 0;
+      padding: 20px;
+      gap: 4px;
+      z-index: 99;
+      border-bottom: 1px solid var(--green-100);
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      padding: 12px 16px;
+      font-weight: 600;
+      color: var(--text-mid);
+      border-radius: var(--radius-sm);
+      transition: background var(--transition);
+    }
+    .mobile-menu a:hover { background: var(--green-50); color: var(--green-700); }
+
+    @media (min-width: 768px) {
+      .nav-links { display: flex; }
+      .hamburger  { display: none; }
+    }
+
+    /* ─────────────────────────────────────────────
+       HERO
+    ───────────────────────────────────────────── */
+    .hero {
+      min-height: 100svh;
+      padding: 120px 0 80px;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 0%, var(--green-100) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 100%, var(--mint-100) 0%, transparent 55%),
+        var(--beige-50);
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      top: -200px; right: -200px;
+      background: radial-gradient(circle, var(--green-100) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: floatBg 8s ease-in-out infinite;
+    }
+    @keyframes floatBg {
+      0%, 100% { transform: translate(0, 0); }
+      50%       { transform: translate(-20px, 20px); }
+    }
+    .hero .container {
+      display: grid;
+      gap: 60px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--green-50), var(--mint-100));
+      border: 1.5px solid var(--green-200);
+      border-radius: 100px;
+      padding: 6px 16px 6px 8px;
+      font-size: .8rem;
+      font-weight: 700;
+      color: var(--green-700);
+      width: fit-content;
+      margin-bottom: 20px;
+      animation: fadeDown .7s ease both;
+    }
+    .hero-badge-dot {
+      width: 24px; height: 24px;
+      background: var(--green-500);
+      border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: .75rem;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(82,183,136,.5); }
+      60%       { box-shadow: 0 0 0 8px rgba(82,183,136,0); }
+    }
+    .hero-title {
+      font-size: clamp(2rem, 6vw, 3.6rem);
+      font-weight: 800;
+      color: var(--green-900);
+      line-height: 1.15;
+      animation: fadeDown .8s .1s ease both;
+    }
+    .hero-title .highlight {
+      color: var(--green-500);
+      position: relative;
+    }
+    .hero-title .highlight::after {
+      content: '';
+      position: absolute;
+      bottom: 2px; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--green-400), var(--mint-400));
+      border-radius: 4px;
+      opacity: .45;
+    }
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--text-soft);
+      max-width: 500px;
+      margin-top: 16px;
+      animation: fadeDown .8s .2s ease both;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+      animation: fadeDown .8s .3s ease both;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--green-600), var(--green-500));
+      color: var(--white);
+      padding: 14px 28px;
+      border-radius: 100px;
+      font-weight: 700;
+      font-size: .95rem;
+      box-shadow: 0 4px 20px rgba(58,138,98,.35);
+      transition: transform var(--transition), box-shadow var(--transition);
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(58,138,98,.45);
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--white);
+      color: var(--green-700);
+      padding: 14px 28px;
+      border-radius: 100px;
+      font-weight: 700;
+      font-size: .95rem;
+      border: 2px solid var(--green-200);
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+      cursor: pointer;
+    }
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      border-color: var(--green-400);
+      box-shadow: var(--shadow-sm);
+    }
+    .hero-trust {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 24px;
+      animation: fadeDown .8s .4s ease both;
+    }
+    .hero-trust-avatars {
+      display: flex;
+    }
+    .hero-trust-avatars span {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: 2.5px solid var(--white);
+      margin-left: -10px;
+      font-size: .75rem;
+      display: grid; place-items: center;
+      background: var(--green-200);
+      color: var(--green-800);
+      font-weight: 700;
+    }
+    .hero-trust-avatars span:first-child { margin-left: 0; }
+    .hero-trust-text { font-size: .8rem; color: var(--text-soft); font-weight: 500; }
+    .hero-trust-text strong { color: var(--green-700); }
+
+    /* Hero visual */
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      animation: fadeUp .9s .2s ease both;
+    }
+    .hero-phone {
+      width: min(280px, 85vw);
+      background: var(--white);
+      border-radius: 36px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      border: 8px solid var(--white);
+      outline: 2px solid var(--green-100);
+      position: relative;
+    }
+    .phone-status-bar {
+      background: var(--green-900);
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      font-size: .6rem;
+      color: var(--white);
+      font-weight: 600;
+    }
+    .phone-screen {
+      background: var(--beige-50);
+      padding: 14px;
+    }
+    .phone-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .phone-location {
+      display: flex; align-items: center; gap: 5px;
+      font-size: .72rem; font-weight: 700; color: var(--green-700);
+    }
+    .phone-notif {
+      width: 28px; height: 28px;
+      background: var(--green-100); border-radius: 8px;
+      display: grid; place-items: center; font-size: .85rem;
+    }
+    .phone-search {
+      background: var(--white);
+      border-radius: 100px;
+      padding: 8px 14px;
+      font-size: .7rem;
+      color: var(--text-muted);
+      display: flex; align-items: center; gap: 6px;
+      border: 1.5px solid var(--green-100);
+      margin-bottom: 14px;
+    }
+    .phone-section-label {
+      font-size: .68rem; font-weight: 800;
+      color: var(--green-900);
+      text-transform: uppercase; letter-spacing: .05em;
+      margin-bottom: 8px;
+    }
+    .phone-card {
+      background: var(--white);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      margin-bottom: 8px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      box-shadow: var(--shadow-xs);
+    }
+    .phone-card-thumb {
+      width: 48px; height: 48px;
+      border-radius: 8px;
+      font-size: 1.5rem;
+      display: grid; place-items: center;
+      flex-shrink: 0;
+    }
+    .phone-card-name { font-size: .72rem; font-weight: 700; color: var(--text-dark); }
+    .phone-card-meta { font-size: .63rem; color: var(--text-soft); margin-top: 2px; }
+    .phone-card-price { margin-left: auto; text-align: right; }
+    .phone-card-new  { font-size: .72rem; font-weight: 800; color: var(--green-600); }
+    .phone-card-old  { font-size: .62rem; color: var(--text-muted); text-decoration: line-through; }
+    .phone-timer {
+      background: linear-gradient(135deg, var(--green-900), var(--green-700));
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+    }
+    .phone-timer-label { font-size: .63rem; color: var(--green-200); font-weight: 600; }
+    .phone-timer-time  { font-size: .9rem; color: var(--white); font-weight: 800; font-variant-numeric: tabular-nums; }
+
+    /* Floating badges around phone */
+    .hero-float {
+      position: absolute;
+      background: var(--white);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+      padding: 10px 14px;
+      font-size: .75rem;
+      font-weight: 700;
+      display: flex; align-items: center; gap: 8px;
+      animation: floatCard 4s ease-in-out infinite;
+    }
+    .hero-float.left  {
+      left: -20px; top: 30%;
+      animation-delay: 0s;
+      color: var(--green-700);
+    }
+    .hero-float.right {
+      right: -20px; bottom: 28%;
+      animation-delay: 1.5s;
+      color: var(--orange-500);
+    }
+    .hero-float .float-icon {
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      display: grid; place-items: center;
+      font-size: 1rem;
+    }
+    .hero-float.left  .float-icon { background: var(--green-50); }
+    .hero-float.right .float-icon { background: #fff3ee; }
+    @keyframes floatCard {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-8px); }
+    }
+
+    @media (min-width: 900px) {
+      .hero .container {
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+      }
+      .hero-float.left  { left: -30px; }
+      .hero-float.right { right: -30px; }
+    }
+
+    /* ─────────────────────────────────────────────
+       SCROLL TICKER
+    ───────────────────────────────────────────── */
+    .ticker-wrap {
+      background: var(--green-900);
+      color: var(--green-200);
+      padding: 11px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .ticker-track {
+      display: inline-flex;
+      gap: 48px;
+      animation: ticker 28s linear infinite;
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .8rem;
+      font-weight: 600;
+    }
+    .ticker-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green-500); flex-shrink: 0; }
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ─────────────────────────────────────────────
+       DEALS SECTION
+    ───────────────────────────────────────────── */
+    .deals {
+      padding: 80px 0;
+      background: var(--white);
+    }
+    .deals-header {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+    @media (min-width: 640px) {
+      .deals-header {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+      }
+    }
+    .deals-filter {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 7px 16px;
+      border-radius: 100px;
+      border: 1.5px solid var(--green-200);
+      background: transparent;
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: all var(--transition);
+      font-family: var(--font);
+    }
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--green-600);
+      border-color: var(--green-600);
+      color: var(--white);
+    }
+    .deals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .deal-card {
+      background: var(--beige-50);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1.5px solid var(--green-100);
+      transition: transform var(--transition), box-shadow var(--transition);
+      cursor: pointer;
+      position: relative;
+    }
+    .deal-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    .deal-thumb {
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .deal-badge {
+      position: absolute;
+      top: 12px; left: 12px;
+      background: var(--orange-500);
+      color: var(--white);
+      font-size: .7rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 100px;
+      letter-spacing: .03em;
+    }
+    .deal-quantity {
+      position: absolute;
+      top: 12px; right: 12px;
+      background: rgba(26,61,43,.85);
+      color: var(--green-200);
+      font-size: .65rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 100px;
+      backdrop-filter: blur(4px);
+    }
+    .deal-body { padding: 16px; }
+    .deal-store {
+      font-size: .72rem;
+      color: var(--text-soft);
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .deal-name {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--green-900);
+      margin-bottom: 6px;
+    }
+    .deal-desc {
+      font-size: .78rem;
+      color: var(--text-soft);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    .deal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .deal-prices { display: flex; align-items: baseline; gap: 6px; }
+    .deal-price-new {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--green-600);
+    }
+    .deal-price-old {
+      font-size: .82rem;
+      color: var(--text-muted);
+      text-decoration: line-through;
+    }
+    .deal-timer {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--orange-500);
+      background: #fff3ee;
+      border-radius: 100px;
+      padding: 4px 10px;
+    }
+    .deal-timer svg { flex-shrink: 0; }
+    .deal-cta-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .deal-rescue-btn {
+      flex: 1;
+      background: linear-gradient(135deg, var(--green-600), var(--green-500));
+      color: var(--white);
+      border: none;
+      border-radius: 100px;
+      padding: 10px;
+      font-weight: 700;
+      font-size: .82rem;
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition);
+      font-family: var(--font);
+    }
+    .deal-rescue-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(58,138,98,.3);
+    }
+    .deal-save-btn {
+      width: 36px; height: 36px;
+      background: var(--white);
+      border: 1.5px solid var(--green-200);
+      border-radius: 50%;
+      display: grid; place-items: center;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-size: .95rem;
+      flex-shrink: 0;
+    }
+    .deal-save-btn:hover { background: var(--green-50); border-color: var(--green-400); }
+    .deal-save-btn.saved { background: var(--green-50); border-color: var(--green-400); }
+
+    /* ─────────────────────────────────────────────
+       HOW IT WORKS
+    ───────────────────────────────────────────── */
+    .how {
+      padding: 80px 0;
+      background:
+        radial-gradient(ellipse 70% 80% at 0% 50%, var(--green-50) 0%, transparent 60%),
+        var(--beige-50);
+    }
+    .how-header { text-align: center; margin-bottom: 52px; }
+    .how-header .section-sub { margin: 10px auto 0; }
+    .how-steps {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 40px;
+      position: relative;
+    }
+    @media (min-width: 768px) {
+      .how-steps {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+      .how-steps::before {
+        content: '';
+        position: absolute;
+        top: 36px;
+        left: calc(16.67% + 36px);
+        right: calc(16.67% + 36px);
+        height: 2px;
+        background: linear-gradient(90deg, var(--green-200), var(--mint-200), var(--green-200));
+        border-radius: 2px;
+      }
+    }
+    .step-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 16px;
+      padding: 32px 24px;
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1.5px solid var(--green-100);
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition), box-shadow var(--transition);
+      position: relative;
+    }
+    .step-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+    .step-number {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 28px; height: 28px;
+      background: var(--green-600);
+      color: var(--white);
+      border-radius: 50%;
+      font-size: .75rem;
+      font-weight: 800;
+      display: grid; place-items: center;
+      border: 3px solid var(--white);
+    }
+    .step-icon {
+      width: 72px; height: 72px;
+      border-radius: var(--radius-md);
+      display: grid; place-items: center;
+      font-size: 2rem;
+    }
+    .step-icon.green { background: var(--green-100); }
+    .step-icon.mint  { background: var(--mint-100); }
+    .step-icon.beige { background: var(--beige-200); }
+    .step-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--green-900);
+    }
+    .step-desc {
+      font-size: .88rem;
+      color: var(--text-soft);
+      line-height: 1.6;
+    }
+
+    /* ─────────────────────────────────────────────
+       IMPACT
+    ───────────────────────────────────────────── */
+    .impact {
+      padding: 80px 0;
+      background: linear-gradient(160deg, var(--green-900) 0%, #1e4d35 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .impact::before {
+      content: '';
+      position: absolute;
+      width: 700px; height: 700px;
+      top: -200px; left: -200px;
+      background: radial-gradient(circle, rgba(82,183,136,.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .impact::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      bottom: -100px; right: -100px;
+      background: radial-gradient(circle, rgba(128,222,217,.1) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .impact .container { position: relative; z-index: 1; }
+    .impact-header { text-align: center; margin-bottom: 52px; }
+    .impact-header .section-label {
+      background: rgba(82,183,136,.15);
+      border-color: rgba(82,183,136,.3);
+      color: var(--green-300);
+    }
+    .impact-header .section-title { color: var(--white); }
+    .impact-header .section-sub   { color: var(--green-300); margin: 10px auto 0; }
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    @media (min-width: 768px) {
+      .impact-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .impact-stat {
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius-lg);
+      padding: 28px 20px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      transition: transform var(--transition), background var(--transition);
+    }
+    .impact-stat:hover {
+      transform: translateY(-4px);
+      background: rgba(255,255,255,.11);
+    }
+    .impact-stat-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    .impact-stat-num {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 6px;
+      font-variant-numeric: tabular-nums;
+    }
+    .impact-stat-num span { color: var(--green-400); }
+    .impact-stat-label {
+      font-size: .8rem;
+      color: var(--green-300);
+      font-weight: 500;
+    }
+    .impact-bar-section {
+      margin-top: 52px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+    }
+    .impact-bar-title {
+      font-size: .9rem;
+      font-weight: 700;
+      color: var(--green-200);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .impact-bars { display: flex; flex-direction: column; gap: 14px; }
+    .impact-bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .impact-bar-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: .78rem;
+      color: var(--green-300);
+      font-weight: 600;
+    }
+    .impact-bar-track {
+      height: 8px;
+      background: rgba(255,255,255,.1);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .impact-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--green-500), var(--mint-400));
+      width: 0;
+      transition: width 1.4s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ─────────────────────────────────────────────
+       TESTIMONIALS
+    ───────────────────────────────────────────── */
+    .testimonials {
+      padding: 80px 0;
+      background: var(--white);
+      overflow: hidden;
+    }
+    .testimonials-header { text-align: center; margin-bottom: 44px; }
+    .testimonials-header .section-sub { margin: 10px auto 0; }
+    .testimonials-track-wrap {
+      overflow: hidden;
+      margin: 0 -20px;
+      padding: 12px 20px;
+    }
+    .testimonials-track {
+      display: flex;
+      gap: 16px;
+      width: max-content;
+      animation: scrollCards 30s linear infinite;
+    }
+    .testimonials-track:hover { animation-play-state: paused; }
+    @keyframes scrollCards {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .testimonial-card {
+      background: var(--beige-50);
+      border: 1.5px solid var(--green-100);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      width: 300px;
+      flex-shrink: 0;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .testimonial-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+    .testimonial-stars { margin-bottom: 12px; color: #f4b942; font-size: .9rem; letter-spacing: 2px; }
+    .testimonial-text  {
+      font-size: .88rem;
+      color: var(--text-mid);
+      line-height: 1.65;
+      margin-bottom: 16px;
+    }
+    .testimonial-author { display: flex; align-items: center; gap: 10px; }
+    .testimonial-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: .9rem;
+      font-weight: 800;
+      color: var(--white);
+      flex-shrink: 0;
+    }
+    .testimonial-name { font-size: .85rem; font-weight: 700; color: var(--green-900); }
+    .testimonial-meta { font-size: .73rem; color: var(--text-soft); }
+    .testimonial-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--green-50);
+      color: var(--green-700);
+      border-radius: 100px;
+      padding: 3px 10px;
+      font-size: .68rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    /* ─────────────────────────────────────────────
+       CTA / DOWNLOAD
+    ───────────────────────────────────────────── */
+    .cta {
+      padding: 80px 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 100% 50%, var(--mint-100) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 60% at 0% 50%, var(--green-100) 0%, transparent 55%),
+        var(--beige-50);
+    }
+    .cta-inner {
+      background: linear-gradient(135deg, var(--green-900), #1e4d35);
+      border-radius: var(--radius-xl);
+      padding: clamp(36px, 6vw, 64px);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-inner::before {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      top: -250px; right: -150px;
+      background: radial-gradient(circle, rgba(82,183,136,.18) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .cta-inner > * { position: relative; z-index: 1; }
+    .cta-emoji { font-size: 3rem; margin-bottom: 16px; }
+    .cta-title {
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+    .cta-sub {
+      color: var(--green-300);
+      font-size: 1rem;
+      margin-bottom: 32px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cta-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+    .store-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,.12);
+      border: 1.5px solid rgba(255,255,255,.2);
+      border-radius: var(--radius-md);
+      padding: 12px 22px;
+      color: var(--white);
+      font-weight: 700;
+      font-size: .88rem;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+      backdrop-filter: blur(8px);
+    }
+    .store-btn:hover {
+      background: rgba(255,255,255,.2);
+      transform: translateY(-2px);
+    }
+    .store-btn-icon { font-size: 1.5rem; }
+    .store-btn-text-xs { font-size: .65rem; font-weight: 500; opacity: .75; display: block; }
+    .cta-divider {
+      display: flex; align-items: center; gap: 14px;
+      justify-content: center;
+      margin: 16px 0;
+      color: var(--green-400);
+      font-size: .8rem; font-weight: 600;
+    }
+    .cta-divider::before, .cta-divider::after {
+      content: '';
+      flex: 1; max-width: 80px;
+      height: 1px;
+      background: rgba(255,255,255,.15);
+    }
+    .cta-signup {
+      display: flex;
+      gap: 8px;
+      max-width: 400px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .cta-signup input {
+      flex: 1;
+      min-width: 200px;
+      padding: 13px 18px;
+      border-radius: 100px;
+      border: 1.5px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.1);
+      color: var(--white);
+      font-family: var(--font);
+      font-size: .9rem;
+      backdrop-filter: blur(4px);
+      outline: none;
+      transition: border-color var(--transition);
+    }
+    .cta-signup input::placeholder { color: var(--green-400); }
+    .cta-signup input:focus { border-color: var(--green-400); }
+    .cta-perks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 28px;
+    }
+    .cta-perk {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,.08);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: .78rem;
+      color: var(--green-200);
+      font-weight: 600;
+    }
+
+    /* ─────────────────────────────────────────────
+       FOOTER
+    ───────────────────────────────────────────── */
+    .footer {
+      background: var(--green-900);
+      color: var(--green-300);
+      padding: 48px 0 28px;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 36px;
+      margin-bottom: 40px;
+    }
+    @media (min-width: 768px) {
+      .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; }
+    }
+    .footer-brand .logo { color: var(--green-300); margin-bottom: 12px; }
+    .footer-brand p {
+      font-size: .84rem;
+      line-height: 1.65;
+      max-width: 240px;
+      color: var(--green-400);
+    }
+    .footer-social {
+      display: flex; gap: 10px; margin-top: 18px;
+    }
+    .footer-social a {
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.08);
+      display: grid; place-items: center;
+      font-size: .85rem;
+      transition: background var(--transition);
+    }
+    .footer-social a:hover { background: rgba(255,255,255,.16); }
+    .footer-col h4 {
+      font-size: .82rem;
+      font-weight: 800;
+      color: var(--white);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin-bottom: 14px;
+    }
+    .footer-col ul { display: flex; flex-direction: column; gap: 8px; }
+    .footer-col li a {
+      font-size: .84rem;
+      color: var(--green-400);
+      transition: color var(--transition);
+    }
+    .footer-col li a:hover { color: var(--green-200); }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,.08);
+      padding-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      text-align: center;
+      font-size: .78rem;
+      color: var(--green-500);
+    }
+    @media (min-width: 640px) {
+      .footer-bottom { flex-direction: row; justify-content: space-between; }
+    }
+    .footer-cert {
+      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+    }
+    .footer-cert span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: .72rem;
+      background: rgba(255,255,255,.07);
+      border-radius: 100px;
+      padding: 3px 10px;
+    }
+
+    /* ─────────────────────────────────────────────
+       ANIMATIONS (scroll-reveal)
+    ───────────────────────────────────────────── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+
+    /* ─────────────────────────────────────────────
+       SCROLL TO TOP
+    ───────────────────────────────────────────── */
+    .scroll-top {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      width: 44px; height: 44px;
+      background: var(--green-600);
+      color: var(--white);
+      border: none;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity var(--transition), transform var(--transition), box-shadow var(--transition);
+      z-index: 90;
+      box-shadow: var(--shadow-md);
+    }
+    .scroll-top.show { opacity: 1; transform: translateY(0); }
+    .scroll-top:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAVBAR ── -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="#" class="logo">
+        <span class="logo-icon">🌿</span>
+        Flash Food
+      </a>
+      <ul class="nav-links">
+        <li><a href="#deals">Deals</a></li>
+        <li><a href="#how">How It Works</a></li>
+        <li><a href="#impact">Impact</a></li>
+        <li><a href="#community">Community</a></li>
+        <li><a href="#get-started" class="nav-cta">Rescue Food ↗</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <nav class="mobile-menu" id="mobileMenu">
+    <a href="#deals" class="mobile-nav-link">🥡 Today's Deals</a>
+    <a href="#how"   class="mobile-nav-link">✨ How It Works</a>
+    <a href="#impact" class="mobile-nav-link">🌍 Our Impact</a>
+    <a href="#community" class="mobile-nav-link">💬 Community</a>
+    <a href="#get-started" class="btn-primary" style="margin-top:8px;justify-content:center;">Rescue Food ↗</a>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="hero" id="home">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="hero-badge-dot">🌿</span>
+          New deals drop every evening at 9 PM
+        </div>
+        <h1 class="hero-title">
+          Rescue Food.<br/>
+          <span class="highlight">Save Money.</span><br/>
+          Protect the Planet.
+        </h1>
+        <p class="hero-desc">
+          Flash Food connects you with surplus meals from local restaurants and bakeries — up to <strong>70% off</strong>, pickup between 9–10 PM, before food goes to waste.
+        </p>
+        <div class="hero-actions">
+          <a href="#deals" class="btn-primary">
+            🥡 View Today's Deals
+          </a>
+          <a href="#how" class="btn-secondary">
+            How it works →
+          </a>
+        </div>
+        <div class="hero-trust">
+          <div class="hero-trust-avatars">
+            <span>🧑</span><span>👩</span><span>👨</span><span>🧕</span>
+          </div>
+          <p class="hero-trust-text"><strong>12,400+</strong> meals rescued this month by neighbors like you</p>
+        </div>
+      </div>
+
+      <!-- Mock phone UI -->
+      <div class="hero-visual">
+        <div style="position:relative; display:inline-block;">
+          <!-- Left floating badge -->
+          <div class="hero-float left">
+            <span class="float-icon">💚</span>
+            <div>
+              <div style="font-size:.72rem;font-weight:800;color:var(--green-700);">Meal Rescued!</div>
+              <div style="font-size:.63rem;color:var(--text-soft);font-weight:500;">Saved 1.2kg of waste</div>
+            </div>
+          </div>
+
+          <div class="hero-phone">
+            <div class="phone-status-bar">
+              <span>9:12 PM</span>
+              <span>●●●</span>
+              <span>🔋</span>
+            </div>
+            <div class="phone-screen">
+              <div class="phone-header">
+                <div class="phone-location">📍 Midtown, NYC</div>
+                <div class="phone-notif">🔔</div>
+              </div>
+              <div class="phone-search">🔍 Search deals near you...</div>
+              <div class="phone-section-label">⚡ Flash Deals Tonight</div>
+
+              <div class="phone-card">
+                <div class="phone-card-thumb" style="background:var(--green-50);">🥗</div>
+                <div>
+                  <div class="phone-card-name">Fresh Salad Bowl</div>
+                  <div class="phone-card-meta">🏪 Green Leaf Café · 0.4 mi</div>
+                </div>
+                <div class="phone-card-price">
+                  <div class="phone-card-new">$3.50</div>
+                  <div class="phone-card-old">$12.00</div>
+                </div>
+              </div>
+
+              <div class="phone-card">
+                <div class="phone-card-thumb" style="background:#fff3ee;">🥐</div>
+                <div>
+                  <div class="phone-card-name">Pastry Bundle</div>
+                  <div class="phone-card-meta">🏪 Sunrise Bakery · 0.2 mi</div>
+                </div>
+                <div class="phone-card-price">
+                  <div class="phone-card-new">$4.00</div>
+                  <div class="phone-card-old">$14.00</div>
+                </div>
+              </div>
+
+              <div class="phone-timer">
+                <div>
+                  <div class="phone-timer-label">⏰ Pickup window closes in</div>
+                </div>
+                <div class="phone-timer-time" id="phoneTimer">00:47:22</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right floating badge -->
+          <div class="hero-float right">
+            <span class="float-icon" style="">🔥</span>
+            <div>
+              <div style="font-size:.72rem;font-weight:800;color:var(--orange-500);">Only 2 left!</div>
+              <div style="font-size:.63rem;color:var(--text-soft);font-weight:500;">70% off tonight</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TICKER ── -->
+  <div class="ticker-wrap" aria-hidden="true">
+    <div class="ticker-track">
+      <span class="ticker-item"><span class="ticker-dot"></span> 12,400 meals rescued this month</span>
+      <span class="ticker-item"><span class="ticker-dot"></span> 340+ partner restaurants</span>
+      <span class="ticker-item"><span class="ticker-dot"></span> 8.6 tons of food waste prevented</span>
+      <span class="ticker-item"><span class="ticker-dot"></span> Average 63% savings per rescue</span>
+      <span class="ticker-item"><span class="ticker-dot"></span> Available in 40+ neighborhoods</span>
+      <span class="ticker-item"><span class="ticker-dot"></span> 9–10 PM pickup window daily</span>
+      <span class="ticker-item"><span class="ticker-dot"></span> Join 52,000 food rescuers</span>
+      <!-- duplicate for seamless loop -->
+      <span class="ticker-item"><span class="ticker-dot"></span> 12,400 meals rescued this month</span>
+      <span class="ticker-item"><span class="ticker-dot"></span> 340+ partner restaurants</span>
+      <span class="ticker-item"><span class="ticker-dot"></span> 8.6 tons of food waste prevented</span>
+      <span class="ticker-item"><span class="ticker-dot"></span> Average 63% savings per rescue</span>
+      <span class="ticker-item"><span class="ticker-dot"></span> Available in 40+ neighborhoods</span>
+      <span class="ticker-item"><span class="ticker-dot"></span> 9–10 PM pickup window daily</span>
+      <span class="ticker-item"><span class="ticker-dot"></span> Join 52,000 food rescuers</span>
+    </div>
+  </div>
+
+  <!-- ── DEALS ── -->
+  <section class="deals" id="deals">
+    <div class="container">
+      <div class="deals-header">
+        <div>
+          <div class="section-label reveal">⚡ Tonight's Rescue Deals</div>
+          <h2 class="section-title reveal reveal-delay-1">Surplus food. Real savings.<br/>Ready for pickup.</h2>
+          <p class="section-sub reveal reveal-delay-2">Deals refresh daily at 9 PM. Quantities are limited — rescue yours before they're gone.</p>
+        </div>
+        <div class="deals-filter reveal">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="bakery">Bakery</button>
+          <button class="filter-btn" data-filter="cafe">Café</button>
+          <button class="filter-btn" data-filter="restaurant">Restaurant</button>
+        </div>
+      </div>
+
+      <div class="deals-grid" id="dealsGrid">
+        <!-- Cards injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HOW IT WORKS ── -->
+  <section class="how" id="how">
+    <div class="container">
+      <div class="how-header">
+        <div class="section-label reveal">✨ Simple as 1–2–3</div>
+        <h2 class="section-title reveal reveal-delay-1">How Flash Food Works</h2>
+        <p class="section-sub reveal reveal-delay-2">From discovery to pickup in under 3 minutes. No subscriptions, no waste, no fuss.</p>
+      </div>
+      <div class="how-steps">
+        <div class="step-card reveal">
+          <div class="step-number">1</div>
+          <div class="step-icon green">🗺️</div>
+          <div class="step-title">Discover Nearby Deals</div>
+          <p class="step-desc">Open the app at 9 PM and browse surplus food from restaurants, cafés, and bakeries within walking distance of you.</p>
+        </div>
+        <div class="step-card reveal reveal-delay-1">
+          <div class="step-number">2</div>
+          <div class="step-icon mint">⚡</div>
+          <div class="step-title">Rescue in One Tap</div>
+          <p class="step-desc">Select your meal, checkout instantly, and pay securely. You'll receive a QR code confirmation within seconds.</p>
+        </div>
+        <div class="step-card reveal reveal-delay-2">
+          <div class="step-number">3</div>
+          <div class="step-icon beige">🌿</div>
+          <div class="step-title">Pick Up & Feel Good</div>
+          <p class="step-desc">Swing by the store between 9–10 PM, show your QR code, and collect your rescued meal. Planet saved, money saved.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── IMPACT ── -->
+  <section class="impact" id="impact">
+    <div class="container">
+      <div class="impact-header">
+        <div class="section-label reveal">🌍 Real Numbers, Real Change</div>
+        <h2 class="section-title reveal reveal-delay-1">Our Community's Impact</h2>
+        <p class="section-sub reveal reveal-delay-2">Every rescue you make reduces methane emissions, supports local businesses, and feeds families in need.</p>
+      </div>
+
+      <div class="impact-grid">
+        <div class="impact-stat reveal">
+          <div class="impact-stat-icon">🥡</div>
+          <div class="impact-stat-num counter" data-target="148400">0<span>+</span></div>
+          <div class="impact-stat-label">Meals Rescued</div>
+        </div>
+        <div class="impact-stat reveal reveal-delay-1">
+          <div class="impact-stat-icon">🌱</div>
+          <div class="impact-stat-num counter" data-target="103">0<span> tons</span></div>
+          <div class="impact-stat-label">Food Waste Prevented</div>
+        </div>
+        <div class="impact-stat reveal reveal-delay-2">
+          <div class="impact-stat-icon">🏪</div>
+          <div class="impact-stat-num counter" data-target="340">0<span>+</span></div>
+          <div class="impact-stat-label">Partner Stores</div>
+        </div>
+        <div class="impact-stat reveal reveal-delay-3">
+          <div class="impact-stat-icon">💰</div>
+          <div class="impact-stat-num"><span>$</span><span class="counter-val" data-target="620000">0</span></div>
+          <div class="impact-stat-label">Saved by Rescuers</div>
+        </div>
+      </div>
+
+      <div class="impact-bar-section reveal" style="transition-delay:.2s">
+        <div class="impact-bar-title">📊 Environmental Breakdown</div>
+        <div class="impact-bars">
+          <div class="impact-bar-row">
+            <div class="impact-bar-meta"><span>CO₂ Emissions Avoided</span><span>78%</span></div>
+            <div class="impact-bar-track"><div class="impact-bar-fill" data-width="78"></div></div>
+          </div>
+          <div class="impact-bar-row">
+            <div class="impact-bar-meta"><span>Water Waste Reduced</span><span>65%</span></div>
+            <div class="impact-bar-track"><div class="impact-bar-fill" data-width="65"></div></div>
+          </div>
+          <div class="impact-bar-row">
+            <div class="impact-bar-meta"><span>Landfill Diversion Rate</span><span>91%</span></div>
+            <div class="impact-bar-track"><div class="impact-bar-fill" data-width="91"></div></div>
+          </div>
+          <div class="impact-bar-row">
+            <div class="impact-bar-meta"><span>Partner Satisfaction</span><span>96%</span></div>
+            <div class="impact-bar-track"><div class="impact-bar-fill" data-width="96"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TESTIMONIALS ── -->
+  <section class="testimonials" id="community">
+    <div class="container">
+      <div class="testimonials-header">
+        <div class="section-label reveal">💬 Community Stories</div>
+        <h2 class="section-title reveal reveal-delay-1">Neighbors Who Rescue</h2>
+        <p class="section-sub reveal reveal-delay-2">Join thousands of conscious eaters making a difference one meal at a time.</p>
+      </div>
+    </div>
+    <div class="testimonials-track-wrap">
+      <div class="testimonials-track" id="testimonialsTrack">
+        <!-- injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ── -->
+  <section class="cta" id="get-started">
+    <div class="container">
+      <div class="cta-inner">
+        <div class="cta-emoji">🌿</div>
+        <h2 class="cta-title">Ready to Rescue<br/>Your First Meal?</h2>
+        <p class="cta-sub">Download the app or sign up online — and save up to 70% on delicious surplus food tonight.</p>
+
+        <div class="cta-actions">
+          <button class="store-btn">
+            <span class="store-btn-icon">🍎</span>
+            <span>
+              <span class="store-btn-text-xs">Download on the</span>
+              App Store
+            </span>
+          </button>
+          <button class="store-btn">
+            <span class="store-btn-icon">▶️</span>
+            <span>
+              <span class="store-btn-text-xs">Get it on</span>
+              Google Play
+            </span>
+          </button>
+        </div>
+
+        <div class="cta-divider">or sign up with email</div>
+
+        <form class="cta-signup" onsubmit="handleSignup(event)">
+          <input type="email" placeholder="your@email.com" required />
+          <button type="submit" class="btn-primary" style="white-space:nowrap;">
+            Get Early Access
+          </button>
+        </form>
+
+        <div class="cta-perks">
+          <span class="cta-perk">✅ Free to join</span>
+          <span class="cta-perk">🔒 No spam, ever</span>
+          <span class="cta-perk">🌿 1 tree planted per signup</span>
+          <span class="cta-perk">⚡ Instant access</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="logo">
+            <span class="logo-icon">🌿</span>
+            Flash Food
+          </div>
+          <p>A real-time food rescue marketplace connecting surplus meals with conscious eaters in your neighborhood.</p>
+          <div class="footer-social">
+            <a href="#" title="Instagram">📸</a>
+            <a href="#" title="X / Twitter">🐦</a>
+            <a href="#" title="TikTok">🎵</a>
+            <a href="#" title="LinkedIn">💼</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="#">How It Works</a></li>
+            <li><a href="#">Today's Deals</a></li>
+            <li><a href="#">For Businesses</a></li>
+            <li><a href="#">Partner Stores</a></li>
+            <li><a href="#">Pricing</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Our Mission</a></li>
+            <li><a href="#">Impact Report</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Accessibility</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Flash Food Inc. · Made with 💚 for the planet</span>
+        <div class="footer-cert">
+          <span>🌱 Carbon Neutral</span>
+          <span>♻️ Certified B-Corp</span>
+          <span>🏆 2025 Sustainability Award</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scroll to top -->
+  <button class="scroll-top" id="scrollTop" aria-label="Scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+  <script>
+    // ─── DEALS DATA ─────────────────────────────────────
+    const deals = [
+      {
+        emoji: '🥗', bg: 'var(--green-50)',
+        badge: '71% OFF', qty: '3 left',
+        store: '🏪 Green Leaf Café', name: 'Garden Salad Bag',
+        desc: 'Mixed greens, grilled vegetables, quinoa & 2 dressings — freshly prepared.',
+        newPrice: '$3.50', oldPrice: '$12.00',
+        timer: '00:47', category: 'cafe', saved: false
+      },
+      {
+        emoji: '🥐', bg: '#fff3ee',
+        badge: '70% OFF', qty: '5 left',
+        store: '🏪 Sunrise Bakery', name: 'Pastry Rescue Bundle',
+        desc: 'Assorted croissants, muffins & danish pastries — baked fresh this morning.',
+        newPrice: '$4.20', oldPrice: '$14.00',
+        timer: '00:51', category: 'bakery', saved: false
+      },
+      {
+        emoji: '🍱', bg: 'var(--beige-200)',
+        badge: '65% OFF', qty: '2 left',
+        store: '🏪 Sakura Kitchen', name: 'Bento Dinner Box',
+        desc: 'Rice, teriyaki protein, pickled veggies & miso soup — authentic Japanese flavors.',
+        newPrice: '$5.25', oldPrice: '$15.00',
+        timer: '00:39', category: 'restaurant', saved: false
+      },
+      {
+        emoji: '🍕', bg: '#fff8f0',
+        badge: '68% OFF', qty: '4 left',
+        store: '🏪 Slice of Life', name: 'Pizza Rescue Pack',
+        desc: '4 slices of assorted wood-fired pizzas — tonight\'s leftover menu mix.',
+        newPrice: '$4.80', oldPrice: '$15.00',
+        timer: '00:55', category: 'restaurant', saved: false
+      },
+      {
+        emoji: '☕', bg: 'var(--mint-100)',
+        badge: '60% OFF', qty: '6 left',
+        store: '🏪 Morning Grounds', name: 'Café Snack Pack',
+        desc: 'Granola bar, banana bread slice, trail mix + a drink voucher for tomorrow.',
+        newPrice: '$2.80', oldPrice: '$7.00',
+        timer: '00:43', category: 'cafe', saved: false
+      },
+      {
+        emoji: '🍜', bg: '#f0f8ff',
+        badge: '72% OFF', qty: '1 left',
+        store: '🏪 Noodle House', name: 'Ramen Surprise Bowl',
+        desc: 'Chef\'s noodle bowl with broth, toppings and a side — a true daily special.',
+        newPrice: '$3.90', oldPrice: '$14.00',
+        timer: '00:33', category: 'restaurant', saved: false
+      }
+    ];
+
+    let activeFilter = 'all';
+
+    function renderDeals() {
+      const grid = document.getElementById('dealsGrid');
+      const filtered = activeFilter === 'all' ? deals : deals.filter(d => d.category === activeFilter);
+      grid.innerHTML = filtered.map((d, i) => `
+        <div class="deal-card reveal" style="transition-delay:${(i%3)*.1}s" data-index="${i}">
+          <div class="deal-thumb" style="background:${d.bg}">
+            <span style="font-size:3.5rem">${d.emoji}</span>
+            <span class="deal-badge">${d.badge}</span>
+            <span class="deal-quantity">⚡ ${d.qty}</span>
+          </div>
+          <div class="deal-body">
+            <div class="deal-store">${d.store}</div>
+            <div class="deal-name">${d.name}</div>
+            <div class="deal-desc">${d.desc}</div>
+            <div class="deal-footer">
+              <div class="deal-prices">
+                <span class="deal-price-new">${d.newPrice}</span>
+                <span class="deal-price-old">${d.oldPrice}</span>
+              </div>
+              <div class="deal-timer">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                ${d.timer}
+              </div>
+            </div>
+            <div class="deal-cta-row">
+              <button class="deal-rescue-btn" onclick="rescueDeal(${i})">🌿 Rescue This Meal</button>
+              <button class="deal-save-btn ${d.saved ? 'saved' : ''}" onclick="saveDeal(event, ${i})" title="Save for later">
+                ${d.saved ? '💚' : '🤍'}
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      // re-observe new cards
+      revealObserver.disconnect();
+      observeAll();
+    }
+
+    function rescueDeal(i) {
+      const d = deals[i];
+      showToast(`🌿 Rescued! "${d.name}" — QR code sent to your email.`, 'green');
+    }
+
+    function saveDeal(e, i) {
+      e.stopPropagation();
+      deals[i].saved = !deals[i].saved;
+      renderDeals();
+    }
+
+    // Filter
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.filter;
+        renderDeals();
+      });
+    });
+
+    // ─── TESTIMONIALS DATA ───────────────────────────────
+    const testimonials = [
+      { stars:'★★★★★', text: '"I rescue 3–4 meals a week now. The savings are incredible — and I love knowing I\'m reducing food waste in my city. It\'s become a ritual."', name: 'Maya R.', role: 'Designer · Midtown', avatar: '🧕', color: 'var(--green-500)', tag: '🌿 Planet Hero' },
+      { stars:'★★★★★', text: '"Flash Food genuinely changed how I eat. The food quality is amazing — restaurant-level meals for the price of a snack. Completely addicted."', name: 'James T.', role: 'Developer · Brooklyn', avatar: '👨', color: 'var(--green-700)', tag: '⚡ Power Rescuer' },
+      { stars:'★★★★★', text: '"As a single mom, the savings matter enormously. My kids love \"rescue night\" — we try something new every week and it feels meaningful too."', name: 'Sofia M.', role: 'Teacher · Queens', avatar: '👩', color: 'var(--mint-400)', tag: '💚 Family Saver' },
+      { stars:'★★★★★', text: '"Managing a bakery, Flash Food helps us sell surplus we\'d otherwise throw out. The platform is simple, the community is wonderful."', name: 'Chen W.', role: 'Bakery Owner · SoHo', avatar: '🧑', color: 'var(--beige-500)', tag: '🏪 Partner Store' },
+      { stars:'★★★★★', text: '"I was skeptical at first, but the food quality blew me away. Sushi, pastries, Thai — all fresh, all at 70% off. Absolutely brilliant concept."', name: 'Priya K.', role: 'Nurse · Upper East Side', avatar: '👩', color: '#e57373', tag: '🌱 New Rescuer' },
+      { stars:'★★★★★', text: '"It\'s the app I recommend to literally everyone I meet. Simple, fast, meaningful. Flash Food is what conscious consumption looks like."', name: 'Leon D.', role: 'Environmental Consultant', avatar: '👨', color: 'var(--green-600)', tag: '🌍 Ambassador' },
+    ];
+
+    function renderTestimonials() {
+      const track = document.getElementById('testimonialsTrack');
+      const doubled = [...testimonials, ...testimonials]; // duplicate for infinite loop
+      track.innerHTML = doubled.map(t => `
+        <div class="testimonial-card">
+          <div class="testimonial-stars">${t.stars}</div>
+          <p class="testimonial-text">${t.text}</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="background:${t.color}">${t.avatar}</div>
+            <div>
+              <div class="testimonial-name">${t.name}</div>
+              <div class="testimonial-meta">${t.role}</div>
+              <span class="testimonial-tag">${t.tag}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ─── SIGNUP HANDLER ─────────────────────────────────
+    function handleSignup(e) {
+      e.preventDefault();
+      const email = e.target.querySelector('input').value;
+      showToast(`🌿 Welcome! Check ${email} for your early access link.`, 'green');
+      e.target.reset();
+    }
+
+    // ─── TOAST ──────────────────────────────────────────
+    function showToast(msg, type = 'green') {
+      const toast = document.createElement('div');
+      Object.assign(toast.style, {
+        position: 'fixed', bottom: '80px', left: '50%',
+        transform: 'translateX(-50%) translateY(20px)',
+        background: type === 'green' ? 'var(--green-800, #1a3d2b)' : '#333',
+        color: '#fff', padding: '12px 22px',
+        borderRadius: '100px', fontSize: '.88rem',
+        fontWeight: '700', zIndex: '9999',
+        boxShadow: '0 4px 20px rgba(0,0,0,.2)',
+        transition: 'transform .3s ease, opacity .3s ease',
+        whiteSpace: 'nowrap', fontFamily: 'var(--font)',
+        maxWidth: '90vw', textAlign: 'center',
+        opacity: '0',
+      });
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      requestAnimationFrame(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+      });
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(20px)';
+        setTimeout(() => toast.remove(), 350);
+      }, 3500);
+    }
+
+    // ─── NAVBAR SCROLL ──────────────────────────────────
+    const navbar = document.getElementById('navbar');
+    const scrollTopBtn = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
+      scrollTopBtn.classList.toggle('show', window.scrollY > 400);
+    }, { passive: true });
+
+    // ─── HAMBURGER ──────────────────────────────────────
+    const hamburger   = document.getElementById('hamburger');
+    const mobileMenu  = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+    });
+    document.querySelectorAll('.mobile-nav-link, .mobile-menu .btn-primary').forEach(el => {
+      el.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+      });
+    });
+
+    // ─── COUNTDOWN (phone & deal timers) ────────────────
+    function getPickupTarget() {
+      const now = new Date();
+      const target = new Date(now);
+      target.setHours(22, 0, 0, 0); // 10 PM
+      if (now >= target) target.setDate(target.getDate() + 1);
+      return target;
+    }
+
+    function formatTime(ms) {
+      const s  = Math.floor(ms / 1000);
+      const hh = String(Math.floor(s / 3600)).padStart(2, '0');
+      const mm = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+      const ss = String(s % 60).padStart(2, '0');
+      return `${hh}:${mm}:${ss}`;
+    }
+
+    function tick() {
+      const remaining = getPickupTarget() - Date.now();
+      const el = document.getElementById('phoneTimer');
+      if (el) el.textContent = formatTime(remaining);
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // ─── SCROLL REVEAL ──────────────────────────────────
+    let revealObserver;
+    function observeAll() {
+      revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            // trigger counters
+            e.target.querySelectorAll('.counter, .counter-val').forEach(startCounter);
+            // trigger bars
+            e.target.querySelectorAll('.impact-bar-fill').forEach(bar => {
+              bar.style.width = bar.dataset.width + '%';
+            });
+          }
+        });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal, .impact-bar-section').forEach(el => revealObserver.observe(el));
+      // also observe bars directly
+      document.querySelectorAll('.impact-bar-fill').forEach(bar => revealObserver.observe(bar.closest('.impact-bar-section') || bar));
+    }
+
+    // ─── COUNTER ANIMATION ──────────────────────────────
+    const countedEls = new WeakSet();
+    function startCounter(el) {
+      if (countedEls.has(el)) return;
+      countedEls.add(el);
+      const target = parseInt(el.dataset.target, 10);
+      const suffix = el.querySelector('span') ? el.querySelector('span').outerHTML : '';
+      const duration = 1600;
+      const startTime = performance.now();
+      function step(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(ease * target);
+        if (el.classList.contains('counter-val')) {
+          el.textContent = current >= 1000
+            ? (current >= 1000000 ? (current/1000000).toFixed(1)+'M' : Math.round(current/1000)+'K')
+            : current;
+        } else {
+          el.innerHTML = (current >= 1000
+            ? (current >= 100000 ? Math.round(current/1000)+'K' : current.toLocaleString())
+            : current) + suffix;
+        }
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    // ─── INIT ────────────────────────────────────────────
+    renderDeals();
+    renderTestimonials();
+    observeAll();
+
+    // Bars in impact section trigger on section enter
+    const impactSection = document.querySelector('.impact');
+    const barObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          document.querySelectorAll('.impact-bar-fill').forEach(bar => {
+            bar.style.width = bar.dataset.width + '%';
+          });
+          document.querySelectorAll('.counter, .counter-val').forEach(startCounter);
+        }
+      });
+    }, { threshold: 0.1 });
+    if (impactSection) barObserver.observe(impactSection);
+  </script>
+</body>
+</html>
