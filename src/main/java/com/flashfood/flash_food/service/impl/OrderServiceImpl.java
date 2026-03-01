@@ -1,7 +1,7 @@
 package com.flashfood.flash_food.service.impl;
 
 import com.flashfood.flash_food.dto.request.CreateOrderRequest;
-import com.flashfood.flash_food.dto.message.NotificationMessage;
+import com.flashfood.flash_food.dto.message.OrderEventMessage;
 import com.flashfood.flash_food.dto.response.OrderResponse;
 import com.flashfood.flash_food.entity.*;
 import com.flashfood.flash_food.exception.AccessDeniedException;
@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -37,8 +36,10 @@ import java.util.UUID;
  *       any out-of-order transition raises {@link InvalidOperationException}.</li>
  *   <li><b>Authorization</b>: every mutating method re-validates ownership/role at the service
  *       layer — the {@code @PreAuthorize} annotations on the controller are a first defence only.</li>
- *   <li><b>Notification</b>: order events are published asynchronously to RabbitMQ via
- *       {@link MessagePublisher} so the HTTP response is never delayed by downstream consumers.</li>
+ *   <li><b>Notification</b>: order lifecycle events are published asynchronously to RabbitMQ
+ *       via {@link com.flashfood.flash_food.service.MessagePublisher#publishOrderEvent}, where
+ *       {@link com.flashfood.flash_food.service.OrderEventConsumer} resolves which party to
+ *       notify and forwards the message to the notification queue.</li>
  * </ul>
  */
 @Slf4j
@@ -151,14 +152,9 @@ public class OrderServiceImpl implements OrderService {
                 .status(PaymentStatus.PENDING)
                 .build());
 
-        // Notify the store owner of the new incoming order
-        notifyUsers(
-                List.of(store.getOwner().getId()),
-                "New Order Received",
-                "Order #" + savedOrder.getOrderNumber() + " — "
-                        + request.getItems().size() + " item(s), total: " + totalAmount,
-                NotificationType.ORDER_CONFIRMED,
-                savedOrder.getId());
+        // Emit an order-created event → OrderEventConsumer decides who/how to notify
+        publishOrderLifecycleEvent(savedOrder, OrderStatus.PENDING,
+                currentUser.getId(), store, request.getItems().size(), null, null);
 
         log.info("Order created: id={}, number={}", savedOrder.getId(), savedOrder.getOrderNumber());
         return entityMapper.toOrderResponse(savedOrder);
@@ -212,14 +208,10 @@ public class OrderServiceImpl implements OrderService {
             paymentRepository.save(payment);
         });
 
-        // Notify the opposite party about the cancellation
-        Long notifyUserId = isOrderOwner
-                ? order.getStore().getOwner().getId()
-                : order.getUser().getId();
-        String cancelMsg = "Order #" + order.getOrderNumber() + " has been cancelled"
-                + (reason != null && !reason.isBlank() ? ": " + reason : ".");
-        notifyUsers(List.of(notifyUserId), "Order Cancelled", cancelMsg,
-                NotificationType.ORDER_CANCELLED, order.getId());
+        // Emit a cancelled event; OrderEventConsumer determines who to notify
+        publishOrderLifecycleEvent(cancelled, OrderStatus.CANCELLED,
+                order.getUser().getId(), order.getStore(),
+                order.getOrderItems().size(), reason, isOrderOwner);
 
         log.info("Order cancelled: {}", order.getOrderNumber());
         return entityMapper.toOrderResponse(cancelled);
@@ -239,12 +231,9 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(OrderStatus.CONFIRMED);
         Order updated = orderRepository.save(order);
 
-        notifyUsers(
-                List.of(order.getUser().getId()),
-                "Order Confirmed",
-                "Your order #" + order.getOrderNumber() + " has been confirmed by the store.",
-                NotificationType.ORDER_CONFIRMED,
-                order.getId());
+        publishOrderLifecycleEvent(updated, OrderStatus.CONFIRMED,
+                order.getUser().getId(), order.getStore(),
+                order.getOrderItems().size(), null, null);
 
         log.info("Order confirmed: {}", order.getOrderNumber());
         return entityMapper.toOrderResponse(updated);
@@ -260,6 +249,10 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(OrderStatus.PREPARING);
         Order updated = orderRepository.save(order);
 
+        publishOrderLifecycleEvent(updated, OrderStatus.PREPARING,
+                order.getUser().getId(), order.getStore(),
+                order.getOrderItems().size(), null, null);
+
         log.info("Order preparation started: {}", order.getOrderNumber());
         return entityMapper.toOrderResponse(updated);
     }
@@ -274,13 +267,9 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(OrderStatus.READY);
         Order updated = orderRepository.save(order);
 
-        notifyUsers(
-                List.of(order.getUser().getId()),
-                "Order Ready for Pickup",
-                "Your order #" + order.getOrderNumber()
-                        + " is ready! Please come to " + order.getStore().getName() + ".",
-                NotificationType.ORDER_READY,
-                order.getId());
+        publishOrderLifecycleEvent(updated, OrderStatus.READY,
+                order.getUser().getId(), order.getStore(),
+                order.getOrderItems().size(), null, null);
 
         log.info("Order marked ready: {}", order.getOrderNumber());
         return entityMapper.toOrderResponse(updated);
@@ -523,23 +512,31 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * Publishes a notification message to RabbitMQ.
-     * Failures are swallowed and logged — notification delivery is best-effort and must
-     * not roll back the enclosing order transaction.
+     * Builds and publishes an {@link OrderEventMessage} to the order exchange.
+     * Failures are swallowed and logged — notification delivery is best-effort
+     * and must not roll back the enclosing order transaction.
      */
-    private void notifyUsers(List<Long> userIds, String title, String message,
-                             NotificationType type, Long referenceId) {
+    private void publishOrderLifecycleEvent(Order order, OrderStatus status,
+                                            Long customerId, Store store,
+                                            int itemCount, String cancellationReason,
+                                            Boolean cancelledByCustomer) {
         try {
-            messagePublisher.publishNotification(NotificationMessage.builder()
-                    .userIds(userIds)
-                    .title(title)
-                    .message(message)
-                    .type(type)
-                    .referenceId(referenceId)
+            messagePublisher.publishOrderEvent(OrderEventMessage.builder()
+                    .orderId(order.getId())
+                    .orderNumber(order.getOrderNumber())
+                    .status(status)
+                    .customerId(customerId)
+                    .storeId(store.getId())
+                    .storeOwnerId(store.getOwner().getId())
+                    .totalAmount(order.getTotalAmount())
+                    .itemCount(itemCount)
+                    .cancellationReason(cancellationReason)
+                    .cancelledByCustomer(cancelledByCustomer)
+                    .eventTime(LocalDateTime.now())
                     .build());
         } catch (Exception e) {
-            log.warn("Failed to publish order notification (orderId={}, type={}): {}",
-                    referenceId, type, e.getMessage());
+            log.warn("Failed to publish order lifecycle event (orderId={}, status={}): {}",
+                    order.getId(), status, e.getMessage());
         }
     }
 }

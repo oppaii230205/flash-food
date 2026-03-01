@@ -113,7 +113,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"user3@example.com\",\n  \"password\": \"Test1234\"\n}",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Test1234\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1632,7 +1632,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Bánh mì thịt nướng\",\n  \"description\": \"Bánh mì ổ giòn, nhân thịt nướng than hoa kèm rau sống và tương ớt đặc biệt\",\n  \"imageUrl\": \"https://example.com/images/banh-mi-thit-nuong.jpg\",\n  \"originalPrice\": 45000,\n  \"flashPrice\": 25000,\n  \"quantity\": 30,\n  \"saleStartTime\": \"2026-03-01T20:00:00\",\n  \"saleEndTime\": \"2026-03-01T22:00:00\",\n  \"categoryId\": 1\n}",
+              "raw": "{\n  \"name\": \"Bánh mì chả cá\",\n  \"description\": \"Bánh mì ổ giòn, nhân chả cá kèm rau sống và tương ớt đặc biệt\",\n  \"imageUrl\": \"https://example.com/images/banh-mi-cha-ca.jpg\",\n  \"originalPrice\": 40000,\n  \"flashPrice\": 20000,\n  \"quantity\": 30,\n  \"saleStartTime\": \"2026-03-01T00:00:00\",\n  \"saleEndTime\": \"2026-03-31T23:00:00\",\n  \"categoryId\": 1\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2170,7 +2170,7 @@
             "method": "PATCH",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/api/v1/orders/1/confirm",
+              "raw": "{{baseURL}}/api/v1/orders/2/confirm",
               "host": [
                 "{{baseURL}}"
               ],
@@ -2178,7 +2178,7 @@
                 "api",
                 "v1",
                 "orders",
-                "1",
+                "2",
                 "confirm"
               ]
             },
@@ -2203,7 +2203,7 @@
             "method": "PATCH",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/api/v1/orders/1/preparing",
+              "raw": "{{baseURL}}/api/v1/orders/2/preparing",
               "host": [
                 "{{baseURL}}"
               ],
@@ -2211,7 +2211,7 @@
                 "api",
                 "v1",
                 "orders",
-                "1",
+                "2",
                 "preparing"
               ]
             },
@@ -2236,7 +2236,7 @@
             "method": "PATCH",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/api/v1/orders/1/ready",
+              "raw": "{{baseURL}}/api/v1/orders/2/ready",
               "host": [
                 "{{baseURL}}"
               ],
@@ -2244,7 +2244,7 @@
                 "api",
                 "v1",
                 "orders",
-                "1",
+                "2",
                 "ready"
               ]
             },
@@ -2269,7 +2269,7 @@
             "method": "PATCH",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/api/v1/orders/1/complete",
+              "raw": "{{baseURL}}/api/v1/orders/2/complete",
               "host": [
                 "{{baseURL}}"
               ],
@@ -2277,7 +2277,7 @@
                 "api",
                 "v1",
                 "orders",
-                "1",
+                "2",
                 "complete"
               ]
             },
