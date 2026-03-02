@@ -35,3 +35,7 @@ build/
 ### Docker / environment secrets ###
 .env
 **/application.properties
+
+### Frontend ###
+node_modules/
+dist/
