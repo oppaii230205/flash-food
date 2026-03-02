@@ -1,11 +1,13 @@
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "@phosphor-icons/react";
+import { X, Eye, EyeSlash } from "@phosphor-icons/react";
 import { authApi } from "@/api/auth.api";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/Button";
+import { cn } from "@/utils/cn";
 import toast from "react-hot-toast";
 
 const schema = z
@@ -30,15 +32,26 @@ interface Props {
 
 export function SignupModal({ open, onClose, onSwitchLogin }: Props) {
   const { login } = useAuthStore();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
+
+  // Reset form state whenever the modal closes
+  useEffect(() => {
+    if (!open) {
+      reset();
+      setShowPassword(false);
+      setShowConfirm(false);
+    }
+  }, [open, reset]);
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -48,16 +61,17 @@ export function SignupModal({ open, onClose, onSwitchLogin }: Props) {
         fullName: data.fullName,
         phoneNumber: data.phone,
       });
-      const auth = res.data.data;
-      login(auth.accessToken, auth.user);
-      toast.success("🌿 Account created! Welcome to Flash Food.");
-      reset();
-      onClose();
-    } catch (err: any) {
-      toast.error(
-        err?.response?.data?.message ??
-          "Registration failed. Please try again.",
+      const { accessToken, expiresIn, user } = res.data.data;
+      login(accessToken, user, expiresIn ?? undefined);
+      toast.success(
+        `Welcome to Flash Food, ${user.fullName?.split(" ")[0] ?? "there"}!`,
       );
+      onClose();
+    } catch (err: unknown) {
+      const message =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message ?? "Registration failed. Please try again.";
+      toast.error(message);
     }
   };
 
@@ -82,7 +96,7 @@ export function SignupModal({ open, onClose, onSwitchLogin }: Props) {
             transition={{ duration: 0.28, ease: "easeOut" }}
             className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
           >
-            <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full max-w-sm shadow-xl border border-green-100">
+            <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full max-w-sm shadow-xl border border-green-100 max-h-[92dvh] overflow-y-auto">
               {/* Header */}
               <div className="flex items-center justify-between p-6 pb-0">
                 <div>
@@ -113,10 +127,17 @@ export function SignupModal({ open, onClose, onSwitchLogin }: Props) {
                     {...register("fullName")}
                     type="text"
                     placeholder="Jane Doe"
-                    className="w-full rounded-full border border-green-200 px-4 py-2.5 text-[0.9rem] outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition"
+                    autoComplete="name"
+                    className={cn(
+                      "w-full rounded-full border px-4 py-2.5 text-[0.9rem] outline-none transition",
+                      "focus:ring-2 focus:ring-green-100",
+                      errors.fullName
+                        ? "border-red-300 focus:border-red-400 bg-red-50/40"
+                        : "border-green-200 focus:border-green-500",
+                    )}
                   />
                   {errors.fullName && (
-                    <p className="text-red-500 text-[0.72rem] mt-1">
+                    <p className="text-red-500 text-[0.72rem] mt-1 pl-1">
                       {errors.fullName.message}
                     </p>
                   )}
@@ -129,11 +150,18 @@ export function SignupModal({ open, onClose, onSwitchLogin }: Props) {
                   <input
                     {...register("phone")}
                     type="tel"
-                    placeholder="+1 555 000 0000"
-                    className="w-full rounded-full border border-green-200 px-4 py-2.5 text-[0.9rem] outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition"
+                    placeholder="+84 90 000 0000"
+                    autoComplete="tel"
+                    className={cn(
+                      "w-full rounded-full border px-4 py-2.5 text-[0.9rem] outline-none transition",
+                      "focus:ring-2 focus:ring-green-100",
+                      errors.phone
+                        ? "border-red-300 focus:border-red-400 bg-red-50/40"
+                        : "border-green-200 focus:border-green-500",
+                    )}
                   />
                   {errors.phone && (
-                    <p className="text-red-500 text-[0.72rem] mt-1">
+                    <p className="text-red-500 text-[0.72rem] mt-1 pl-1">
                       {errors.phone.message}
                     </p>
                   )}
@@ -147,10 +175,17 @@ export function SignupModal({ open, onClose, onSwitchLogin }: Props) {
                     {...register("email")}
                     type="email"
                     placeholder="you@example.com"
-                    className="w-full rounded-full border border-green-200 px-4 py-2.5 text-[0.9rem] outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition"
+                    autoComplete="email"
+                    className={cn(
+                      "w-full rounded-full border px-4 py-2.5 text-[0.9rem] outline-none transition",
+                      "focus:ring-2 focus:ring-green-100",
+                      errors.email
+                        ? "border-red-300 focus:border-red-400 bg-red-50/40"
+                        : "border-green-200 focus:border-green-500",
+                    )}
                   />
                   {errors.email && (
-                    <p className="text-red-500 text-[0.72rem] mt-1">
+                    <p className="text-red-500 text-[0.72rem] mt-1 pl-1">
                       {errors.email.message}
                     </p>
                   )}
@@ -160,14 +195,38 @@ export function SignupModal({ open, onClose, onSwitchLogin }: Props) {
                   <label className="block text-[0.8rem] font-bold text-green-800 mb-1">
                     Password
                   </label>
-                  <input
-                    {...register("password")}
-                    type="password"
-                    placeholder="Min. 8 characters"
-                    className="w-full rounded-full border border-green-200 px-4 py-2.5 text-[0.9rem] outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition"
-                  />
+                  <div className="relative">
+                    <input
+                      {...register("password")}
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Min. 8 characters"
+                      autoComplete="new-password"
+                      className={cn(
+                        "w-full rounded-full border px-4 py-2.5 pr-11 text-[0.9rem] outline-none transition",
+                        "focus:ring-2 focus:ring-green-100",
+                        errors.password
+                          ? "border-red-300 focus:border-red-400 bg-red-50/40"
+                          : "border-green-200 focus:border-green-500",
+                      )}
+                    />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-green-400 hover:text-green-600 transition-colors"
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
+                    >
+                      {showPassword ? (
+                        <EyeSlash size={16} weight="bold" />
+                      ) : (
+                        <Eye size={16} weight="bold" />
+                      )}
+                    </button>
+                  </div>
                   {errors.password && (
-                    <p className="text-red-500 text-[0.72rem] mt-1">
+                    <p className="text-red-500 text-[0.72rem] mt-1 pl-1">
                       {errors.password.message}
                     </p>
                   )}
@@ -177,14 +236,38 @@ export function SignupModal({ open, onClose, onSwitchLogin }: Props) {
                   <label className="block text-[0.8rem] font-bold text-green-800 mb-1">
                     Confirm Password
                   </label>
-                  <input
-                    {...register("confirmPassword")}
-                    type="password"
-                    placeholder="Repeat password"
-                    className="w-full rounded-full border border-green-200 px-4 py-2.5 text-[0.9rem] outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition"
-                  />
+                  <div className="relative">
+                    <input
+                      {...register("confirmPassword")}
+                      type={showConfirm ? "text" : "password"}
+                      placeholder="Repeat password"
+                      autoComplete="new-password"
+                      className={cn(
+                        "w-full rounded-full border px-4 py-2.5 pr-11 text-[0.9rem] outline-none transition",
+                        "focus:ring-2 focus:ring-green-100",
+                        errors.confirmPassword
+                          ? "border-red-300 focus:border-red-400 bg-red-50/40"
+                          : "border-green-200 focus:border-green-500",
+                      )}
+                    />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      onClick={() => setShowConfirm((v) => !v)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-green-400 hover:text-green-600 transition-colors"
+                      aria-label={
+                        showConfirm ? "Hide password" : "Show password"
+                      }
+                    >
+                      {showConfirm ? (
+                        <EyeSlash size={16} weight="bold" />
+                      ) : (
+                        <Eye size={16} weight="bold" />
+                      )}
+                    </button>
+                  </div>
                   {errors.confirmPassword && (
-                    <p className="text-red-500 text-[0.72rem] mt-1">
+                    <p className="text-red-500 text-[0.72rem] mt-1 pl-1">
                       {errors.confirmPassword.message}
                     </p>
                   )}
@@ -202,8 +285,8 @@ export function SignupModal({ open, onClose, onSwitchLogin }: Props) {
                   .
                 </p>
 
-                <Button type="submit" className="w-full">
-                  Create Free Account
+                <Button type="submit" className="w-full" loading={isSubmitting}>
+                  {isSubmitting ? "Creating account…" : "Create Account"}
                 </Button>
 
                 <p className="text-center text-[0.8rem] text-green-600/70">

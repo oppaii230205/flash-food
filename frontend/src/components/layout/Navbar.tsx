@@ -11,6 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuthStore } from "@/store/authStore";
+import { authApi } from "@/api/auth.api";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/utils/cn";
 
@@ -32,6 +33,19 @@ export function Navbar({ onLoginClick, onSignupClick }: NavbarProps = {}) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const location = useLocation();
+
+  // Revoke the refresh-token cookie server-side, then clear local state
+  const handleLogout = async () => {
+    try {
+      await authApi.logout();
+    } catch {
+      // Proceed even if the API call fails (token may already be expired)
+    } finally {
+      logout();
+      setUserMenuOpen(false);
+      setMenuOpen(false);
+    }
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -126,10 +140,7 @@ export function Navbar({ onLoginClick, onSignupClick }: NavbarProps = {}) {
                       </Link>
                       <hr className="my-1 border-green-100" />
                       <button
-                        onClick={() => {
-                          logout();
-                          setUserMenuOpen(false);
-                        }}
+                        onClick={handleLogout}
                         className="flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-semibold w-full text-left"
                       >
                         <SignOut size={15} weight="bold" /> Sign Out
@@ -196,7 +207,7 @@ export function Navbar({ onLoginClick, onSignupClick }: NavbarProps = {}) {
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={logout}
+                    onClick={handleLogout}
                     className="flex-1"
                   >
                     Sign Out

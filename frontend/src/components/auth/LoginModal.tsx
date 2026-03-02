@@ -1,11 +1,13 @@
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "@phosphor-icons/react";
+import { X, Eye, EyeSlash } from "@phosphor-icons/react";
 import { authApi } from "@/api/auth.api";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/Button";
+import { cn } from "@/utils/cn";
 import toast from "react-hot-toast";
 
 const schema = z.object({
@@ -22,26 +24,40 @@ interface Props {
 
 export function LoginModal({ open, onClose, onSwitchSignup }: Props) {
   const { login } = useAuthStore();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
+  // Reset form state whenever the modal closes
+  useEffect(() => {
+    if (!open) {
+      reset();
+      setShowPassword(false);
+    }
+  }, [open, reset]);
+
   const onSubmit = async (data: FormData) => {
     try {
       const res = await authApi.login(data);
-      const auth = res.data.data;
-      login(auth.accessToken, auth.user);
-      toast.success(`🌿 Welcome back, ${auth.user.email.split("@")[0]}!`);
-      reset();
+      const { accessToken, expiresIn, user } = res.data.data;
+      login(accessToken, user, expiresIn ?? undefined);
+      toast.success(
+        `Welcome back, ${user.fullName?.split(" ")[0] ?? "there"}!`,
+      );
       onClose();
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message ?? "Invalid credentials");
+    } catch (err: unknown) {
+      console.log("Login error:", err);
+      const message =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message ?? "Invalid email or password";
+      toast.error(message);
     }
   };
 
@@ -100,10 +116,17 @@ export function LoginModal({ open, onClose, onSwitchSignup }: Props) {
                     {...register("email")}
                     type="email"
                     placeholder="you@example.com"
-                    className="w-full rounded-full border border-green-200 px-4 py-2.5 text-[0.9rem] outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition"
+                    autoComplete="email"
+                    className={cn(
+                      "w-full rounded-full border px-4 py-2.5 text-[0.9rem] outline-none transition",
+                      "focus:ring-2 focus:ring-green-100",
+                      errors.email
+                        ? "border-red-300 focus:border-red-400 bg-red-50/40"
+                        : "border-green-200 focus:border-green-500",
+                    )}
                   />
                   {errors.email && (
-                    <p className="text-red-500 text-[0.72rem] mt-1">
+                    <p className="text-red-500 text-[0.72rem] mt-1 pl-1">
                       {errors.email.message}
                     </p>
                   )}
@@ -114,21 +137,49 @@ export function LoginModal({ open, onClose, onSwitchSignup }: Props) {
                   <label className="block text-[0.8rem] font-bold text-green-800 mb-1">
                     Password
                   </label>
-                  <input
-                    {...register("password")}
-                    type="password"
-                    placeholder="••••••••"
-                    className="w-full rounded-full border border-green-200 px-4 py-2.5 text-[0.9rem] outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition"
-                  />
+                  <div className="relative">
+                    <input
+                      {...register("password")}
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      autoComplete="current-password"
+                      className={cn(
+                        "w-full rounded-full border px-4 py-2.5 pr-11 text-[0.9rem] outline-none transition",
+                        "focus:ring-2 focus:ring-green-100",
+                        errors.password
+                          ? "border-red-300 focus:border-red-400 bg-red-50/40"
+                          : "border-green-200 focus:border-green-500",
+                      )}
+                    />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-green-400 hover:text-green-600 transition-colors"
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
+                    >
+                      {showPassword ? (
+                        <EyeSlash size={16} weight="bold" />
+                      ) : (
+                        <Eye size={16} weight="bold" />
+                      )}
+                    </button>
+                  </div>
                   {errors.password && (
-                    <p className="text-red-500 text-[0.72rem] mt-1">
+                    <p className="text-red-500 text-[0.72rem] mt-1 pl-1">
                       {errors.password.message}
                     </p>
                   )}
                 </div>
 
-                <Button type="submit" className="w-full mt-1">
-                  Sign In
+                <Button
+                  type="submit"
+                  className="w-full mt-1"
+                  loading={isSubmitting}
+                >
+                  {isSubmitting ? "Signing in…" : "Sign In"}
                 </Button>
 
                 <p className="text-center text-[0.8rem] text-green-600/70">
