@@ -32,7 +32,9 @@ export function ProtectedRoute({ children, role }: Props) {
     );
   }
 
-  if (role && user?.role !== role) {
+  const roles = user?.role ? user.role.split(",") : [];
+
+  if (role && !roles.includes(role)) {
     return <Navigate to="/unauthorized" replace />;
   }
 

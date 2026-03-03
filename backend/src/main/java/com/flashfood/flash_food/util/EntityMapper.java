@@ -29,7 +29,7 @@ public class EntityMapper {
         String rolesStr = user.getRoles() != null && !user.getRoles().isEmpty()
                 ? user.getRoles().stream()
                     .map(UserRole::getDisplayName)
-                    .collect(Collectors.joining(", "))
+                    .collect(Collectors.joining(","))
                 : null;
 
         return UserResponse.builder()

@@ -59,9 +59,9 @@ export function LoginModal({ open, onClose, onSwitchSignup }: Props) {
       const from = (location.state as { from?: string })?.from;
       if (from && from !== "/") {
         navigate(from, { replace: true });
-      } else if (user.role === "STORE_OWNER") {
+      } else if (user.role?.includes("store_owner")) {
         navigate("/store", { replace: true });
-      } else if (user.role === "ADMIN") {
+      } else if (user.role?.includes("admin")) {
         navigate("/admin", { replace: true });
       }
       // CUSTOMER stays on the landing page
