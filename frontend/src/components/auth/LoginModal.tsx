@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Eye, EyeSlash } from "@phosphor-icons/react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { authApi } from "@/api/auth.api";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/Button";
@@ -25,6 +26,8 @@ interface Props {
 export function LoginModal({ open, onClose, onSwitchSignup }: Props) {
   const { login } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const {
     register,
@@ -52,6 +55,16 @@ export function LoginModal({ open, onClose, onSwitchSignup }: Props) {
         `Welcome back, ${user.fullName?.split(" ")[0] ?? "there"}!`,
       );
       onClose();
+      // Redirect based on role, or back to the page that triggered the login prompt
+      const from = (location.state as { from?: string })?.from;
+      if (from && from !== "/") {
+        navigate(from, { replace: true });
+      } else if (user.role === "STORE_OWNER") {
+        navigate("/store", { replace: true });
+      } else if (user.role === "ADMIN") {
+        navigate("/admin", { replace: true });
+      }
+      // CUSTOMER stays on the landing page
     } catch (err: unknown) {
       console.log("Login error:", err);
       const message =

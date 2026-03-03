@@ -1,4 +1,4 @@
-import axiosClient from './axiosClient'
+import axiosClient from "./axiosClient";
 import type {
   ApiResponse,
   PageResponse,
@@ -6,15 +6,18 @@ import type {
   CreateOrderRequest,
   CancelOrderRequest,
   OrderQueryParams,
-} from '@/types'
+} from "@/types";
 
 export const ordersApi = {
   // ── Customer ─────────────────────────────────────────────────────────────
   create: (data: CreateOrderRequest) =>
-    axiosClient.post<ApiResponse<OrderResponse>>('/orders', data),
+    axiosClient.post<ApiResponse<OrderResponse>>("/orders", data),
 
   getMyOrders: (params?: OrderQueryParams) =>
-    axiosClient.get<ApiResponse<PageResponse<OrderResponse>>>('/orders/my-orders', { params }),
+    axiosClient.get<ApiResponse<PageResponse<OrderResponse>>>(
+      "/orders/my-orders",
+      { params },
+    ),
 
   getById: (id: number) =>
     axiosClient.get<ApiResponse<OrderResponse>>(`/orders/${id}`),
@@ -26,6 +29,11 @@ export const ordersApi = {
     axiosClient.post<ApiResponse<OrderResponse>>(`/orders/${id}/payment`),
 
   // ── Store Owner ───────────────────────────────────────────────────────────
+  getByStore: (storeId: number, params?: OrderQueryParams) =>
+    axiosClient.get<ApiResponse<PageResponse<OrderResponse>>>(
+      `/orders/store/${storeId}`,
+      { params },
+    ),
   confirm: (id: number) =>
     axiosClient.patch<ApiResponse<OrderResponse>>(`/orders/${id}/confirm`),
 
@@ -37,4 +45,4 @@ export const ordersApi = {
 
   complete: (id: number) =>
     axiosClient.patch<ApiResponse<OrderResponse>>(`/orders/${id}/complete`),
-}
+};

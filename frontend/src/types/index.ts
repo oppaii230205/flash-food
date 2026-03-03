@@ -282,4 +282,5 @@ export interface OrderQueryParams {
   size?: number;
   sort?: string;
   status?: OrderStatus;
+  storeId?: number;
 }
