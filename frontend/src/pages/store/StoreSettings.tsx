@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,6 +11,8 @@ import {
   CheckCircle,
   Warning,
   X,
+  Trash,
+  Power,
 } from "@phosphor-icons/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { storesApi } from "@/api/stores.api";
@@ -319,6 +321,57 @@ function StoreFormModal({
   );
 }
 
+// ─── Delete confirmation dialog ───────────────────────────────────────────────
+function DeleteStoreDialog({
+  store,
+  onConfirm,
+  onCancel,
+  loading,
+}: {
+  store: StoreResponse;
+  onConfirm: () => void;
+  onCancel: () => void;
+  loading: boolean;
+}) {
+  return (
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96, y: 8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 8 }}
+        className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm"
+      >
+        <div className="w-12 h-12 bg-red-50 rounded-2xl grid place-items-center mb-4">
+          <Trash size={22} weight="duotone" className="text-red-500" />
+        </div>
+        <h3 className="font-extrabold text-gray-900 mb-1.5">Delete store?</h3>
+        <p className="text-sm text-gray-500 mb-5 leading-relaxed">
+          <strong className="text-gray-700">{store.name}</strong> and all its
+          data will be permanently removed.
+        </p>
+        <div className="flex gap-2.5">
+          <button
+            onClick={onCancel}
+            className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={loading}
+            className="flex-1 px-4 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 disabled:opacity-60 text-white text-sm font-bold transition-colors flex items-center justify-center gap-2"
+          >
+            {loading && (
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            )}
+            Delete
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 // ─── Main page ─────────────────────────────────────────────────────────────────
 export function StoreSettings() {
   const [searchParams] = useSearchParams();
@@ -326,6 +379,29 @@ export function StoreSettings() {
     searchParams.get("action") === "create",
   );
   const [editStore, setEditStore] = useState<StoreResponse | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<StoreResponse | null>(null);
+
+  const qc = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => storesApi.delete(id),
+    onSuccess: () => {
+      toast.success("Store deleted.");
+      qc.invalidateQueries({ queryKey: ["my-stores"] });
+      setDeleteTarget(null);
+    },
+    onError: () => toast.error("Failed to delete store."),
+  });
+
+  const toggleStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: string }) =>
+      storesApi.updateStatus(id, status),
+    onSuccess: () => {
+      toast.success("Store status updated.");
+      qc.invalidateQueries({ queryKey: ["my-stores"] });
+    },
+    onError: () => toast.error("Failed to update status."),
+  });
 
   const {
     data: stores,
@@ -449,6 +525,38 @@ export function StoreSettings() {
                 >
                   <PencilSimple size={15} weight="bold" />
                 </button>
+                {(store.status === "ACTIVE" || store.status === "INACTIVE") && (
+                  <button
+                    onClick={() =>
+                      toggleStatusMutation.mutate({
+                        id: store.id,
+                        status:
+                          store.status === "ACTIVE" ? "INACTIVE" : "ACTIVE",
+                      })
+                    }
+                    disabled={toggleStatusMutation.isPending}
+                    title={
+                      store.status === "ACTIVE"
+                        ? "Deactivate store"
+                        : "Activate store"
+                    }
+                    className={cn(
+                      "w-8 h-8 rounded-lg grid place-items-center transition-colors shrink-0 disabled:opacity-50",
+                      store.status === "ACTIVE"
+                        ? "text-amber-500 hover:bg-amber-50"
+                        : "text-green-600 hover:bg-green-50",
+                    )}
+                  >
+                    <Power size={15} weight="bold" />
+                  </button>
+                )}
+                <button
+                  onClick={() => setDeleteTarget(store)}
+                  className="w-8 h-8 rounded-lg grid place-items-center text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors shrink-0"
+                  title="Delete store"
+                >
+                  <Trash size={15} weight="bold" />
+                </button>
               </div>
 
               {store.description && (
@@ -469,6 +577,17 @@ export function StoreSettings() {
         }}
         editStore={editStore}
       />
+
+      <AnimatePresence>
+        {deleteTarget && (
+          <DeleteStoreDialog
+            store={deleteTarget}
+            onConfirm={() => deleteMutation.mutate(deleteTarget.id)}
+            onCancel={() => setDeleteTarget(null)}
+            loading={deleteMutation.isPending}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

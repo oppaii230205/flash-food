@@ -34,7 +34,11 @@ export function ProtectedRoute({ children, role }: Props) {
 
   const roles = user?.role ? user.role.split(",") : [];
 
-  if (role && !roles.includes(role)) {
+  // Case-insensitive comparison: backend may return "store_owner", "STORE_OWNER", etc.
+  if (
+    role &&
+    !roles.some((r) => r.trim().toUpperCase() === role.toUpperCase())
+  ) {
     return <Navigate to="/unauthorized" replace />;
   }
 

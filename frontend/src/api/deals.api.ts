@@ -1,14 +1,15 @@
-import axiosClient from './axiosClient'
+﻿import axiosClient from './axiosClient'
 import type {
   ApiResponse,
   PageResponse,
   FoodItemResponse,
   FoodItemRequest,
   FoodItemQueryParams,
+  FoodItemStatus,
 } from '@/types'
 
 export const dealsApi = {
-  // ── Public ──────────────────────────────────────────────────────────────
+  // -- Public ------------------------------------------------------------------
   getAll: (params?: FoodItemQueryParams) =>
     axiosClient.get<ApiResponse<PageResponse<FoodItemResponse>>>('/food-items', { params }),
 
@@ -20,10 +21,23 @@ export const dealsApi = {
       `/food-items/store/${storeId}`, { params }
     ),
 
-  getActiveByStore: (storeId: number) =>
-    axiosClient.get<ApiResponse<FoodItemResponse[]>>(`/food-items/store/${storeId}/active`),
+  getByCategory: (categoryId: number, params?: FoodItemQueryParams) =>
+    axiosClient.get<ApiResponse<PageResponse<FoodItemResponse>>>(
+      `/food-items/category/${categoryId}`, { params }
+    ),
 
-  // ── Store Owner / Admin ──────────────────────────────────────────────────
+  getAvailable: (params?: FoodItemQueryParams) =>
+    axiosClient.get<ApiResponse<PageResponse<FoodItemResponse>>>('/food-items/available', { params }),
+
+  getFlashSale: (params?: FoodItemQueryParams) =>
+    axiosClient.get<ApiResponse<PageResponse<FoodItemResponse>>>('/food-items/flash-sale', { params }),
+
+  search: (keyword: string, params?: FoodItemQueryParams) =>
+    axiosClient.get<ApiResponse<PageResponse<FoodItemResponse>>>('/food-items/search', {
+      params: { keyword, ...params },
+    }),
+
+  // -- Store Owner / Admin -----------------------------------------------------
   create: (storeId: number, data: FoodItemRequest) =>
     axiosClient.post<ApiResponse<FoodItemResponse>>(`/food-items/store/${storeId}`, data),
 
@@ -33,9 +47,15 @@ export const dealsApi = {
   delete: (id: number) =>
     axiosClient.delete<ApiResponse<void>>(`/food-items/${id}`),
 
-  activate: (id: number) =>
-    axiosClient.patch<ApiResponse<FoodItemResponse>>(`/food-items/${id}/activate`),
-
-  deactivate: (id: number) =>
-    axiosClient.patch<ApiResponse<FoodItemResponse>>(`/food-items/${id}/deactivate`),
+  /**
+   * Update the status of a food item.
+   * Backend: PATCH /api/v1/food-items/{id}/status?status={status}
+   * Valid statuses: ACTIVE, INACTIVE, PENDING, SOLD_OUT, EXPIRED
+   */
+  updateStatus: (id: number, status: FoodItemStatus) =>
+    axiosClient.patch<ApiResponse<FoodItemResponse>>(
+      `/food-items/${id}/status`,
+      null,
+      { params: { status } }
+    ),
 }

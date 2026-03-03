@@ -1,4 +1,4 @@
-import axiosClient from "./axiosClient";
+﻿import axiosClient from "./axiosClient";
 import type {
   ApiResponse,
   PageResponse,
@@ -9,7 +9,7 @@ import type {
 } from "@/types";
 
 export const ordersApi = {
-  // ── Customer ─────────────────────────────────────────────────────────────
+  // -- Customer ----------------------------------------------------------------
   create: (data: CreateOrderRequest) =>
     axiosClient.post<ApiResponse<OrderResponse>>("/orders", data),
 
@@ -23,17 +23,30 @@ export const ordersApi = {
     axiosClient.get<ApiResponse<OrderResponse>>(`/orders/${id}`),
 
   cancel: (id: number, data?: CancelOrderRequest) =>
-    axiosClient.patch<ApiResponse<OrderResponse>>(`/orders/${id}/cancel`, data),
+    axiosClient.patch<ApiResponse<OrderResponse>>(`/orders/${id}/cancel`, data ?? {}),
 
   processPayment: (id: number) =>
     axiosClient.post<ApiResponse<OrderResponse>>(`/orders/${id}/payment`),
 
-  // ── Store Owner ───────────────────────────────────────────────────────────
-  getByStore: (storeId: number, params?: OrderQueryParams) =>
+  // -- Store Owner -------------------------------------------------------------
+  /** GET /orders/store/{storeId} - all orders regardless of status */
+  getByStore: (storeId: number, params?: Omit<OrderQueryParams, "status">) =>
     axiosClient.get<ApiResponse<PageResponse<OrderResponse>>>(
       `/orders/store/${storeId}`,
       { params },
     ),
+
+  /** GET /orders/store/{storeId}/status/{status} - filtered by a specific status */
+  getByStoreAndStatus: (
+    storeId: number,
+    status: string,
+    params?: Omit<OrderQueryParams, "status">,
+  ) =>
+    axiosClient.get<ApiResponse<PageResponse<OrderResponse>>>(
+      `/orders/store/${storeId}/status/${status}`,
+      { params },
+    ),
+
   confirm: (id: number) =>
     axiosClient.patch<ApiResponse<OrderResponse>>(`/orders/${id}/confirm`),
 

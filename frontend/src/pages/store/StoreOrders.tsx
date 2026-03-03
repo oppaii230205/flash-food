@@ -72,6 +72,14 @@ function OrderStatusBadge({ status }: { status: OrderStatus }) {
 }
 
 // ─── Next action button for each order status ─────────────────────────────────
+function fmtVND(amount: number) {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
 function OrderActions({
   order,
   onAction,
@@ -83,30 +91,48 @@ function OrderActions({
 }) {
   const btnClass =
     "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors disabled:opacity-50";
+  const cancelBtn = (
+    <button
+      onClick={() => onAction("cancel", order.id)}
+      disabled={loading}
+      className={cn(
+        btnClass,
+        "bg-red-50 hover:bg-red-100 text-red-600 border border-red-200",
+      )}
+    >
+      Cancel
+    </button>
+  );
 
   switch (order.status) {
     case "PENDING":
       return (
-        <button
-          onClick={() => onAction("confirm", order.id)}
-          disabled={loading}
-          className={cn(btnClass, "bg-blue-600 hover:bg-blue-700 text-white")}
-        >
-          <CheckCircle size={13} weight="bold" /> Confirm
-        </button>
+        <div className="flex flex-col gap-1.5">
+          <button
+            onClick={() => onAction("confirm", order.id)}
+            disabled={loading}
+            className={cn(btnClass, "bg-blue-600 hover:bg-blue-700 text-white")}
+          >
+            <CheckCircle size={13} weight="bold" /> Confirm
+          </button>
+          {cancelBtn}
+        </div>
       );
     case "CONFIRMED":
       return (
-        <button
-          onClick={() => onAction("preparing", order.id)}
-          disabled={loading}
-          className={cn(
-            btnClass,
-            "bg-violet-600 hover:bg-violet-700 text-white",
-          )}
-        >
-          <CookingPot size={13} weight="bold" /> Preparing
-        </button>
+        <div className="flex flex-col gap-1.5">
+          <button
+            onClick={() => onAction("preparing", order.id)}
+            disabled={loading}
+            className={cn(
+              btnClass,
+              "bg-violet-600 hover:bg-violet-700 text-white",
+            )}
+          >
+            <CookingPot size={13} weight="bold" /> Preparing
+          </button>
+          {cancelBtn}
+        </div>
       );
     case "PREPARING":
       return (
@@ -141,6 +167,7 @@ const TABS: { label: string; value: OrderStatus | "" }[] = [
   { label: "Preparing", value: "PREPARING" },
   { label: "Ready", value: "READY" },
   { label: "Completed", value: "COMPLETED" },
+  { label: "Cancelled", value: "CANCELLED" },
 ];
 
 // ─── Main page ────────────────────────────────────────────────────────────────
@@ -169,12 +196,13 @@ export function StoreOrders() {
   } = useQuery({
     queryKey: ["store-orders", selectedStore, activeTab],
     queryFn: () =>
-      ordersApi
-        .getByStore(selectedStore!, {
-          status: activeTab || undefined,
-          size: 50,
-        })
-        .then((r) => r.data.data),
+      activeTab
+        ? ordersApi
+            .getByStoreAndStatus(selectedStore!, activeTab, { size: 50 })
+            .then((r) => r.data.data)
+        : ordersApi
+            .getByStore(selectedStore!, { size: 50 })
+            .then((r) => r.data.data),
     enabled: !!selectedStore,
     refetchInterval: 30_000, // poll every 30s for new orders
   });
@@ -193,6 +221,8 @@ export function StoreOrders() {
           return ordersApi.markReady(id);
         case "complete":
           return ordersApi.complete(id);
+        case "cancel":
+          return ordersApi.cancel(id, { reason: "Cancelled by store" });
         default:
           return Promise.reject(new Error("Unknown action"));
       }
@@ -203,6 +233,7 @@ export function StoreOrders() {
         preparing: "Order is being prepared.",
         ready: "Order marked as ready!",
         complete: "Order completed.",
+        cancel: "Order cancelled.",
       };
       toast.success(labels[action] ?? "Updated.");
       qc.invalidateQueries({ queryKey: ["store-orders"] });
@@ -214,9 +245,7 @@ export function StoreOrders() {
     actionMutation.mutate({ action, id });
   };
 
-  const filteredOrders = activeTab
-    ? orders.filter((o) => o.status === activeTab)
-    : orders;
+  const filteredOrders = orders;
 
   if (!isLoading && storeList.length === 0) {
     return (
@@ -333,11 +362,11 @@ export function StoreOrders() {
                   <span>
                     Total:{" "}
                     <strong className="text-gray-700">
-                      ${order.totalAmount.toFixed(2)}
+                      {fmtVND(order.totalAmount)}
                     </strong>
                   </span>
                   <span>
-                    {new Date(order.createdAt).toLocaleString("en-US", {
+                    {new Date(order.createdAt).toLocaleString("vi-VN", {
                       month: "short",
                       day: "numeric",
                       hour: "2-digit",

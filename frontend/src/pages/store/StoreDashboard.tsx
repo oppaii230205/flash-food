@@ -12,8 +12,17 @@ import {
 import { useAuthStore } from "@/store/authStore";
 import { storesApi } from "@/api/stores.api";
 import { dealsApi } from "@/api/deals.api";
+import { ordersApi } from "@/api/orders.api";
 import { cn } from "@/utils/cn";
 import type { StoreResponse, FoodItemResponse } from "@/types";
+
+function fmtVND(amount: number) {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 function StatCard({
@@ -134,9 +143,22 @@ export function StoreDashboard() {
     enabled: !!activeStore,
   });
 
+  const { data: pendingOrdersPage, isLoading: pendingOrdersLoading } = useQuery(
+    {
+      queryKey: ["store-pending-orders", activeStore?.id],
+      queryFn: () =>
+        ordersApi
+          .getByStoreAndStatus(activeStore!.id, "PENDING", { size: 1 })
+          .then((r) => r.data.data),
+      enabled: !!activeStore,
+      refetchInterval: 30_000,
+    },
+  );
+
   const recentItems: FoodItemResponse[] = itemsData?.content ?? [];
   const totalItems = itemsData?.totalElements ?? 0;
   const activeItems = recentItems.filter((i) => i.status === "ACTIVE").length;
+  const pendingOrderCount = pendingOrdersPage?.totalElements ?? 0;
 
   if (storesError) {
     return (
@@ -206,9 +228,9 @@ export function StoreDashboard() {
           loading={itemsLoading}
         />
         <StatCard
-          label="Orders"
-          value="—"
-          sub="View all orders"
+          label="Pending Orders"
+          value={pendingOrdersLoading ? "..." : pendingOrderCount}
+          sub="Awaiting confirmation"
           icon={
             <ClipboardText
               size={22}
@@ -217,6 +239,7 @@ export function StoreDashboard() {
             />
           }
           color="bg-violet-50"
+          loading={pendingOrdersLoading}
         />
       </div>
 
@@ -332,9 +355,9 @@ export function StoreDashboard() {
                       {item.name}
                     </p>
                     <p className="text-xs text-gray-400">
-                      ${item.flashPrice.toFixed(2)}{" "}
+                      {fmtVND(item.flashPrice)}{" "}
                       <span className="line-through text-gray-300">
-                        ${item.originalPrice.toFixed(2)}
+                        {fmtVND(item.originalPrice)}
                       </span>
                       {" · "}
                       {item.availableQuantity} left

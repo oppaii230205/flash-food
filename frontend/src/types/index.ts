@@ -122,19 +122,24 @@ export interface CategoryResponse {
   name: string;
   slug: string;
   description?: string;
-  imageUrl?: string;
+  /** Icon URL (field name on backend is iconUrl, not imageUrl) */
+  iconUrl?: string;
   displayOrder: number;
-  active: boolean;
-  createdAt: string;
+  isActive: boolean;
+  parentId?: number;
+  parentName?: string;
+  /** Nesting depth: 0 = root, 1 = child, etc. */
+  level?: number;
 }
 
 export interface CategoryRequest {
   name: string;
   slug?: string;
   description?: string;
-  imageUrl?: string;
+  iconUrl?: string;
   displayOrder?: number;
-  active?: boolean;
+  isActive?: boolean;
+  parentId?: number;
 }
 
 // ─── Store ────────────────────────────────────────────────────────────────────
@@ -156,8 +161,11 @@ export interface StoreResponse {
   totalRatings: number;
   ownerId: number;
   ownerName?: string;
+  /** Whether the store is currently within its declared operating hours */
+  isOpen?: boolean;
+  /** Distance from the requester in metres (only for nearby queries) */
+  distance?: number;
   createdAt: string;
-  distanceKm?: number;
 }
 
 export interface CreateStoreRequest {
@@ -181,9 +189,9 @@ export interface FoodItemResponse {
   id: number;
   storeId: number;
   storeName: string;
-  storeAddress?: string;
   categoryId?: number;
   categoryName?: string;
+  categorySlug?: string;
   name: string;
   description?: string;
   imageUrl?: string;
@@ -196,7 +204,14 @@ export interface FoodItemResponse {
   saleEndTime: string;
   status: FoodItemStatus;
   isExpired: boolean;
+  /** True when item is available, in stock, and within its sale window right now */
+  isAvailable?: boolean;
+  /** Seconds until sale starts; null if already started or expired */
+  timeUntilSaleStart?: number;
+  /** Seconds until sale ends; null if not yet started or expired */
+  timeUntilSaleEnd?: number;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface FoodItemRequest {
@@ -226,10 +241,11 @@ export interface OrderItemResponse {
   id: number;
   foodItemId: number;
   foodItemName: string;
-  foodItemImageUrl?: string;
+  /** Backend field name is foodItemImage (no URL suffix) */
+  foodItemImage?: string;
   quantity: number;
   unitPrice: number;
-  subtotal: number;
+  totalPrice: number;
 }
 
 export interface OrderResponse {
