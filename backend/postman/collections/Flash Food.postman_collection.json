@@ -1536,7 +1536,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/api/v1/stores/nearby?lat=10.7769&lon=106.7009&radius=1.0",
+              "raw": "{{baseURL}}/api/v1/stores/nearby?lat=10.7769&lon=106.7009&radius=3.0",
               "host": [
                 "{{baseURL}}"
               ],
@@ -1561,7 +1561,7 @@
                 },
                 {
                   "key": "radius",
-                  "value": "1.0",
+                  "value": "3.0",
                   "description": "Search radius in kilometres (default 5.0)",
                   "uuid": "c5838567-2d5c-4ad9-8b99-a94541de8a8d"
                 }
