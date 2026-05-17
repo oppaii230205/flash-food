@@ -20,7 +20,7 @@ export default function () {
   const lat = 10.7769;
   const lng = 106.7009;
   const storesRes = http.get(
-    `http://localhost:3000/api/stores/nearby?lat=${lat}&lng=${lng}`,
+    `http://localhost:8080/api/v1/stores/nearby?lat=${lat}&lng=${lng}&radius=100`,
   );
 
   check(storesRes, {
@@ -31,9 +31,19 @@ export default function () {
   // Mô phỏng thời gian người dùng lướt xem danh sách cửa hàng (think time)
   sleep(Math.random() * 2 + 1); // Nghỉ ngẫu nhiên từ 1 đến 3 giây
 
-  // 2. Chọn ngẫu nhiên một cửa hàng để xem thực đơn và chi tiết món ăn thừa
-  const storeId = Math.floor(Math.random() * 50) + 1; // Giả sử có 50 cửa hàng (ID 1-50)
-  const menuRes = http.get(`http://localhost:3000/api/stores/${storeId}/menu`);
+  // 2. Chọn một cửa hàng thực tế từ response để xem thực đơn
+  const storesBody = storesRes.json();
+  const stores = storesBody && storesBody.data ? storesBody.data : [];
+
+  if (stores.length === 0) {
+    sleep(1);
+    return;
+  }
+
+  const store = stores[Math.floor(Math.random() * stores.length)];
+  const menuRes = http.get(
+    `http://localhost:8080/api/v1/stores/${store.id}/menu`,
+  );
 
   check(menuRes, {
     "GET store menu status is 200": (r) => r.status === 200,
