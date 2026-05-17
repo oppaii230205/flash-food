@@ -1,0 +1,54 @@
+import http from "k6/http";
+import { check, sleep } from "k6";
+
+// Định nghĩa cấu hình các giai đoạn test
+export const options = {
+  stages: [
+    { duration: "10s", target: 50 }, // Ramping up: Tăng dần lên 50 user trong 10 giây
+    { duration: "1m", target: 50 }, // Bình ổn: Giữ nguyên 50 user trong 1 phút để làm nóng hệ thống
+    { duration: "10s", target: 500 }, // Spike: Đột ngột tăng vọt lên 500 user (giả lập khoảnh khắc mở bán)
+    { duration: "30s", target: 500 }, // Giữ tải cao trong 30 giây để xem database có bị treo không
+    { duration: "10s", target: 0 }, // Ramping down: Giảm dần về 0
+  ],
+};
+
+export default function () {
+  const url = "http://localhost:8080/api/v1/orders"; // Đổi thành URL API nội bộ của bạn
+  const mockToken =
+    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGVzIjpbIlJPTEVfQURNSU4iLCJST0xFX0NVU1RPTUVSIl0sImlhdCI6MTc3OTAyMjEyMiwiZXhwIjoxNzc5MDIzMDIyfQ.DTNtaxRfsuLiCmYuYcfVjgs6VqKORIr9qKUXscBe_ioaiseCIVGkNc1LutGaDvJzFoobT_7zvxppO5lvrvW5yg";
+  const payload = JSON.stringify({
+    storeId: 1,
+    items: [
+      {
+        foodItemId: 2,
+        quantity: 1,
+      }, //,
+      // {
+      //   "foodItemId": 2,
+      //   "quantity": 1
+      // }
+    ],
+    paymentMethod: "cash",
+    pickupTime: "2026-03-01T19:30:00",
+    specialInstructions: "Không hành, ít ớt",
+  });
+
+  const params = {
+    headers: {
+      "Content-Type": "application/json",
+      // Có thể tạo một hàm sinh mock token đơn giản để bypass logic auth phức tạp khi test
+      Authorization: `Bearer ${mockToken}`,
+    },
+  };
+
+  const res = http.post(url, payload, params);
+
+  // Kiểm tra xem request có thành công không (HTTP status 201) và tốc độ có đảm bảo không
+  check(res, {
+    "is status 201": (r) => r.status === 201,
+    "transaction time < 500ms": (r) => r.timings.duration < 500,
+  });
+
+  // Nghỉ 1 giây để mô phỏng thời gian chờ thực tế của con người giữa các thao tác
+  sleep(1);
+}
