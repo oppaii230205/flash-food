@@ -1839,7 +1839,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/api/v1/food-items/store/1?page=0&size=20&sort=createdAt,desc",
+              "raw": "{{baseURL}}/api/v1/food-items/store/8?page=0&size=20&sort=createdAt,desc",
               "host": [
                 "{{baseURL}}"
               ],
@@ -1848,20 +1848,23 @@
                 "v1",
                 "food-items",
                 "store",
-                "1"
+                "8"
               ],
               "query": [
                 {
                   "key": "page",
-                  "value": "0"
+                  "value": "0",
+                  "uuid": "72d9f384-19b6-4330-ba05-6eda7b69e8d8"
                 },
                 {
                   "key": "size",
-                  "value": "20"
+                  "value": "20",
+                  "uuid": "1e8ec726-5e4c-4648-abf0-c212a76642fb"
                 },
                 {
                   "key": "sort",
-                  "value": "createdAt,desc"
+                  "value": "createdAt,desc",
+                  "uuid": "bd0561d7-57ff-40f9-b4a3-29c5ba1e359b"
                 }
               ]
             },

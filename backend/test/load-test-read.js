@@ -18,9 +18,9 @@ export const options = {
 export default function () {
   // 1. Lấy danh sách cửa hàng lân cận (Giả lập tọa độ tại trung tâm TP.HCM)
   const lat = 10.7769;
-  const lng = 106.7009;
+  const lon = 106.7009;
   const storesRes = http.get(
-    `http://localhost:8080/api/v1/stores/nearby?lat=${lat}&lng=${lng}&radius=100`,
+    `http://localhost:8080/api/v1/stores/nearby?lat=${lat}&lon=${lon}&radius=100`,
   );
 
   check(storesRes, {
@@ -42,7 +42,7 @@ export default function () {
 
   const store = stores[Math.floor(Math.random() * stores.length)];
   const menuRes = http.get(
-    `http://localhost:8080/api/v1/stores/${store.id}/menu`,
+    `http://localhost:8080/api/v1/food-items/store/${store.id}?page=0&size=20`,
   );
 
   check(menuRes, {
