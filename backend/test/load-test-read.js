@@ -4,8 +4,8 @@ import { check, sleep } from "k6";
 // Thiết lập cấu hình Load Test: Duy trì tải ổn định trong thời gian dài
 export const options = {
   stages: [
-    { duration: "30s", target: 200 }, // Ramping up: Tăng dần lên 200 users trong 30 giây
-    { duration: "3m", target: 200 }, // Steady state: Duy trì liên tục 200 users trong 3 phút
+    { duration: "30s", target: 500 }, // Ramping up: Tăng dần lên 500 users trong 30 giây
+    { duration: "2m", target: 500 }, // Steady state: Duy trì liên tục 500 users trong 2 phút
     { duration: "30s", target: 0 }, // Ramping down: Giảm dần về 0
   ],
   thresholds: {

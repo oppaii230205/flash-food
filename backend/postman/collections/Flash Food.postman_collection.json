@@ -113,7 +113,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"Test1234\"\n}",
+              "raw": "{\n  \"email\": \"user5@example.com\",\n  \"password\": \"Test1234\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1839,7 +1839,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/api/v1/food-items/store/8?page=0&size=20&sort=createdAt,desc",
+              "raw": "{{baseURL}}/api/v1/food-items/store/1?page=0&size=20&sort=createdAt,desc",
               "host": [
                 "{{baseURL}}"
               ],
@@ -1848,7 +1848,7 @@
                 "v1",
                 "food-items",
                 "store",
-                "8"
+                "1"
               ],
               "query": [
                 {
@@ -2087,7 +2087,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"storeId\": 1,\n  \"items\": [\n    {\n      \"foodItemId\": 1,\n      \"quantity\": 2\n    }//,\n    // {\n    //   \"foodItemId\": 2,\n    //   \"quantity\": 1\n    // }\n  ],\n  \"paymentMethod\": \"cash\",\n  \"pickupTime\": \"2026-03-01T19:30:00\",\n  \"specialInstructions\": \"Không hành, ít ớt\"\n}",
+              "raw": "{\n  \"storeId\": 1,\n  \"items\": [\n    {\n      \"foodItemId\": 49925,\n      \"quantity\": 1\n    }//,\n    // {\n    //   \"foodItemId\": 2,\n    //   \"quantity\": 1\n    // }\n  ],\n  \"paymentMethod\": \"cash\",\n  \"pickupTime\": \"2026-03-01T19:30:00\",\n  \"specialInstructions\": \"Không hành, ít ớt\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
