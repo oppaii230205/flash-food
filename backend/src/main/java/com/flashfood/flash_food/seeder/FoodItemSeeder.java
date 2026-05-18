@@ -62,7 +62,9 @@ public class FoodItemSeeder implements ApplicationRunner {
 
         List<Store> stores = storeRepository.findAll();
         List<Category> categories = categoryRepository.findAll();
-
+        
+        // So, if we run the app at first times, the stores and categories may not be seeded yet, we should skip seeding food items to avoid foreign key issues.
+        // To enable seeding food items, we should run the app at least twice, first to seed stores and categories, then to seed food items.
         if (stores.isEmpty() || categories.isEmpty()) {
             log.warn("FoodItemSeeder: stores or categories missing, skipping seeding.");
             return;
