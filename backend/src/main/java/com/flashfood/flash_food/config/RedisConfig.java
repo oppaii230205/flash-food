@@ -11,6 +11,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import org.springframework.cache.CacheManager;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import java.time.Duration;
+
 /**
  * Redis configuration for caching and geo-spatial operations
  */
@@ -53,5 +60,21 @@ public class RedisConfig {
         
         template.afterPropertiesSet();
         return template;
+    }
+
+    @Bean
+    public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+            // Đặt thời gian sống cho cache (ví dụ: 15 phút) để tự động dọn dẹp RAM
+            .entryTtl(Duration.ofMinutes(15)) 
+            // Tắt việc tự động thêm tiền tố (prefix) khó hiểu của Spring nếu muốn key gọn gàng
+            .disableCachingNullValues()
+            // Chỉ định dùng JSON để serialize dữ liệu cache (giống với RedisTemplate)
+            .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+
+        return RedisCacheManager.builder(connectionFactory)
+            .cacheDefaults(config)
+            .build();
     }
 }
