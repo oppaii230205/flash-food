@@ -79,15 +79,15 @@ services:
       - flashfood_net
 
   # ─────────────────────────────────────────────
-  # Single API Node (Dành cho Baseline Test)
+  # 3 API nodes — stateless Spring Boot app
   # ─────────────────────────────────────────────
   api_node_1:
     build: .
     container_name: flashfood_api_1
     restart: unless-stopped
     ports:
-      # Mở port 8080 ra máy tính của bạn để k6 có thể bắn request vào
-      - "8080:8080"
+      # Not mapping to host port since we have a load balancer in front
+      - "8080"
     environment:
       # Ghi đè cấu hình trong application.properties bằng biến môi trường
       # Chú ý: Dùng tên service 'postgres', 'redis', 'rabbitmq' thay cho 'localhost'
@@ -107,6 +107,76 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    networks:
+      - flashfood_net
+
+  api_node_2:
+    build: .
+    container_name: flashfood_api_2
+    restart: unless-stopped
+    ports:
+      - "8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-flashfood_db}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER:-postgres}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_USER:-guest}
+      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-guest}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - flashfood_net
+
+  api_node_3:
+    build: .
+    container_name: flashfood_api_3
+    restart: unless-stopped
+    ports:
+      - "8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-flashfood_db}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER:-postgres}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_USER:-guest}
+      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-guest}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - flashfood_net
+
+  # ─────────────────────────────────────────────
+  # Nginx Load Balancer
+  # ─────────────────────────────────────────────
+  nginx_lb:
+    image: nginx:alpine
+    container_name: flashfood_lb
+    restart: unless-stopped
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80" # Map port 80 của Nginx ra máy của bạn
+    depends_on:
+      - api_node_1
+      - api_node_2
+      - api_node_3
     networks:
       - flashfood_net
 
