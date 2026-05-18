@@ -66,7 +66,7 @@ public class RedisConfig {
     public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
             // Đặt thời gian sống cho cache (ví dụ: 15 phút) để tự động dọn dẹp RAM
-            .entryTtl(Duration.ofMinutes(15)) 
+            .entryTtl(Duration.ofMinutes(15))
             // Tắt việc tự động thêm tiền tố (prefix) khó hiểu của Spring nếu muốn key gọn gàng
             .disableCachingNullValues()
             // Chỉ định dùng JSON để serialize dữ liệu cache (giống với RedisTemplate)

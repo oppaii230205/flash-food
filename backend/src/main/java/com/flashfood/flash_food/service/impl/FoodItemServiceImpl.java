@@ -17,6 +17,7 @@ import com.flashfood.flash_food.service.MessagePublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -241,6 +242,7 @@ public class FoodItemServiceImpl implements FoodItemService {
     }
 
     @Override
+    @Cacheable(value = "foodItemsByStore", key = "#storeId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<FoodItemResponse> findByStore(Long storeId, Pageable pageable) {
         if (!storeRepository.existsById(storeId)) {
             throw new ResourceNotFoundException("Store not found with ID: " + storeId);
