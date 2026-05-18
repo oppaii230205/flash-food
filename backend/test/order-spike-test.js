@@ -15,7 +15,8 @@ export const options = {
 // Need to set mockToken (15min)
 // Need to change storeId and foodItemId in payload to match your seeded data (huge quantity)
 export default function () {
-  const url = "http://localhost:8080/api/v1/orders"; // Đổi thành URL API nội bộ của bạn
+  const port = 80;
+  const url = `http://localhost:${port}/api/v1/orders`; // Đổi thành URL API nội bộ của bạn
   const mockToken =
     "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyNUBleGFtcGxlLmNvbSIsInJvbGVzIjpbIlJPTEVfQ1VTVE9NRVIiXSwiaWF0IjoxNzc5MDk0OTc0LCJleHAiOjE3NzkwOTU4NzR9.yDbCMEF9-rO44AZq688mpHGApQLzp1Lz87TVfAagaDYJccErV7_TkoVBuHnm8hBytK6Upftpkj1yQ5mlYtxeog";
   const payload = JSON.stringify({
