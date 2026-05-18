@@ -91,6 +91,7 @@ public class SecurityConfig {
                                 "/swagger-ui.html").permitAll()
                         // Health check
                         .requestMatchers("/api/v1/health/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()   // 👈 allows actuator
                         // TODO: Everything else requires authentication
                         // .anyRequest().authenticated()
                         .anyRequest().permitAll()  // TEMP: allow all for now
